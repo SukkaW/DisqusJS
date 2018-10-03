@@ -1,0 +1,29 @@
+{
+  "name": "disqusjs",
+  "version": "0.1.0",
+  "description": "Show comments list from Disqus API",
+  "main": "dist/disqus.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SukkaW/DisqusJS.git"
+  },
+  "keywords": [
+    "Disqus",
+    "API",
+    "XHR",
+    "JSON"
+  ],
+  "author": "Sukka",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/SukkaW/DisqusJS/issues"
+  },
+  "homepage": "https://github.com/SukkaW/DisqusJS#readme",
+  "dependencies": {
+    "gulp": "4",
+    "gulp-uglify": "^3.0.1"
+  }
+}

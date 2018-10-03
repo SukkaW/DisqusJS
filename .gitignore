@@ -1,0 +1,14 @@
+
+.DS_Store
+
+*.log
+
+node_modules
+
+.idea
+
+.directory
+
+_build
+
+public
