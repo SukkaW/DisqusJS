@@ -12,3 +12,5 @@ node_modules
 _build
 
 public
+
+src/index.html
