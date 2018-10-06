@@ -80,9 +80,8 @@ function checkDisqus() {
         };
         img.src = 'https://' + domain + '/favicon.ico?' + +(new Date);
     };
-
-    for (var i of domain) {
-        check(i)
+    for (var i = 0; i < domain.length; i++) {
+        check(domain[i])
     };
 }
 
