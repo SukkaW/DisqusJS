@@ -24,7 +24,6 @@
   "homepage": "https://github.com/SukkaW/DisqusJS#readme",
   "dependencies": {
     "gulp": "4",
-    "gulp-rename": "^1.4.0",
     "gulp-uglify": "^3.0.1"
   }
 }
