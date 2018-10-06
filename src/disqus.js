@@ -29,6 +29,32 @@ disqusjs.page = {};
 disqusjs.mode = 'proxy';
 var xhr = new XMLHttpRequest();
 
+var setLS = function (key, value) {
+    try {
+        localStorage.setItem(key, value)
+    } catch (o) {
+        console.log(o), console.log("Failed to set localStorage item")
+    }
+}
+
+var getLS = function (key) {
+    return localStorage.getItem(key);
+}
+
+/*
+ * Name: getMode()
+ * Description: get mode from localstorage
+ */
+
+function getMode() {
+    var s = getLS('disqusjs_mode');
+    if (!s) {
+        checkDisqus();
+    } else {
+        disqusjs.mode = s;
+    }
+}
+
 /*
  * Name: loadDisqus()
  * Descriptin: load disqus as it should be.
@@ -53,33 +79,35 @@ function checkDisqus() {
         success = 0;
     var setmode = function () {
         if (success = test) {
-            disqusjs.mode = 'direct';
+            disqusjs.mode = 'direct',
+            setLS('disqusjs_mode', 'direct');
         } else {
-            disqusjs.mode = 'proxy';
+            disqusjs.mode = 'proxy',
+            setLS('disqusjs_mode', 'proxy');
         }
     };
     var check = function (domain) {
         var img = new Image;
         var checker = setTimeout(function () {
             img.onerror = img.onload = null,
-            test++,
-            setmode();
+                test++ ,
+                setmode();
         }, 2500);
         img.onerror = function () {
             clearTimeout(checker),
-            test++,
-            setmode();
+                test++ ,
+                setmode();
         };
         img.onload = function () {
             clearTimeout(checker),
-            success++,
-            test++,
-            setmode();
+                success++ ,
+                test++ ,
+                setmode();
         };
         img.src = 'https://' + domain + '/favicon.ico?' + +(new Date);
     };
     for (var i = 0; i < domain.length; i++) {
-        check(domain[i])
+        check(domain[i]);
     };
 }
 
@@ -140,3 +168,5 @@ function getComment() {
         console.log(e)
     };
 }
+
+getMode();
