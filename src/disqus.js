@@ -22,25 +22,25 @@
  * disqusjs.page.lenfth - How many comment in this thread
  */
 
+disqusjs.page = {};
 var xhr = new XMLHttpRequest();
 
 /*
- * Name: getThreadID()
- * Descr: Disqus API only support get thread list by ID, not identifter. So get Thread ID before get thread list.
+ * Name: getThreadInfo()
+ * Description: Disqus API only support get thread list by ID, not identifter. So get Thread ID before get thread list.
  * API Docs: https://disqus.com/api/docs/threads/list/
  * API URI: /3.0/threads/list.json?forum=[disqus_shortname]&thread=ident:[identifier]&api_key=[apikey]
 */
 
 
 function getThreadInfo() {
-    var url = disqusjs.config.api + '/3.0/threads/list.json?forum=' + disqusjs.config.shortname + '&thread=ident:'+ disqusjs.config.identifier + '&api_key=' + disqusjs.config.apikey;
+    var url = disqusjs.config.api + '3.0/threads/list.json?forum=' + disqusjs.config.shortname + '&thread=ident:'+ disqusjs.config.identifier + '&api_key=' + disqusjs.config.apikey;
     xhr.open('GET', url, true);
     xhr.timeout = 4000;
     xhr.send();
     xhr.onload = function() {
         if (this.status == 200||this.status == 304) {
             var response = JSON.parse(this.responseText).response[0];
-            console.log(response);
             disqusjs.page = {
                 id: response.id,
                 title: response.title,
@@ -48,6 +48,7 @@ function getThreadInfo() {
                 length: response.posts
             };
             console.log(disqusjs);
+            getComment();
         }
     };
     xhr.ontimeout = function(e) {
@@ -58,3 +59,29 @@ function getThreadInfo() {
     };
 }
 
+/*
+ * Name: getComment()
+ * Description: get the comment content
+ * API URI: /3.0/posts/list.json?forum=[shortname]&thread=[thread id]&api_key=[apikey]
+ */
+
+function getComment() {
+    var url = disqusjs.config.api + '3.0/posts/list.json?forum=' + disqusjs.config.shortname + '&thread=' + disqusjs.page.id + '&api_key=' + disqusjs.config.apikey;
+    xhr.open('GET', url, true);
+    xhr.timeout = 4000;
+    xhr.send();
+    xhr.onload = function() {
+        if (this.status == 200||this.status == 304) {
+            var response = JSON.parse(this.responseText);
+            console.log(response);
+        }
+    };
+    xhr.ontimeout = function(e) {
+        console.log(e)
+    };
+    xhr.onerror = function(e) {
+        console.log(e)
+    };
+}
+
+getThreadInfo();
