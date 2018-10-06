@@ -8,13 +8,15 @@
 /*
  * The variable used in DisqusJS
  *
+ * DisqusJS Mode
+ * disqusjs.mode = proxy | direct - Set which mode to use, should store and get in localStorage
+ *
  * DisqusJS Config
  * disqusjs.config.shortname - The disqus shortname
  * disqusjs.config.identifier - The identifier of the page
  * disqusjs.config.url - The url of the page
  * disqusjs.config,api - Where to get data
  * disqusjs.config.apikey - The apikey used to request Disqus API
- * disqusjs.config.mode - proxy | direct - Set which mode to use, should store and get in localStorage
  *
  * DisqusJS Info
  * disqusjs.page.id = The thread id, used at next API call
@@ -24,6 +26,7 @@
  */
 
 disqusjs.page = {};
+disqusjs.mode = 'proxy';
 var xhr = new XMLHttpRequest();
 
 /*
@@ -47,36 +50,39 @@ function loadDisqus() {
     Then check [shortname].disqus.com/favicon.ico is avaliable in 3000 or not.
 */
 function checkDisqus() {
-    xhr.open('GET', 'https://disqus.com/next/config.json', true);
-    xhr.timeout = 2000;
-    xhr.send();
-    xhr.onload = function () {
-        if (this.status == 200 || this.status == 304) {
-            var img = new Image;
-            var checker = setTimeout(function () {
-                img.onerror = img.onload = null;
-                disqusjs.config.mode = 'proxy';
-            }, 2500);
-            img.onerror = function () {
-                clearTimeout(checker);
-                disqusjs.config.mode = 'proxy';
-                console.log(disqusjs)
-            };
-            img.onload = function () {
-                clearTimeout(checker);
-                disqusjs.config.mode = 'direct';
-                console.log(disqusjs)
-            };
-            img.src = "https://" + disqusjs.config.shortname + ".disqus.com/favicon.ico?" + +(new Date);
+    var domain = ['disqus.com', disqusjs.config.shortname + '.disqus.com'],
+        test = 0,
+        success = 0;
+    var setmode = function (d) {
+        if (success = test) {
+            disqusjs.mode = 'direct';
+        } else {
+            disqusjs.mode = 'proxy';
         }
     };
-    xhr.ontimeout = function (e) {
-        disqusjs.config.mode = 'proxy';
-        console.log(disqusjs)
+    var check = function (domain) {
+        var img = new Image;
+        var checker = setTimeout(function () {
+            img.onerror = img.onload = null,
+            test++,
+            setmode();
+        }, 2500);
+        img.onerror = function () {
+            clearTimeout(checker),
+            test++,
+            setmode();
+        };
+        img.onload = function () {
+            clearTimeout(checker),
+            success++,
+            test++,
+            setmode();
+        };
+        img.src = 'https://' + domain + '/favicon.ico?' + +(new Date);
     };
-    xhr.onerror = function (e) {
-        disqusjs.config.mode = 'proxy';
-        console.log(disqusjs)
+
+    for (var i of domain) {
+        check(i)
     };
 }
 
@@ -137,7 +143,3 @@ function getComment() {
         console.log(e)
     };
 }
-
-checkDisqus();
-
-/* getThreadInfo(); */
