@@ -45,15 +45,13 @@ function loadDisqus() {
 /*
  * Name: checkDisqus()
  * Description: Check disqus is avaliable for visitor or not
- * How it works:
-    First check https://disqus.com/next/config.json is avaliable in 2000 or not.
-    Then check [shortname].disqus.com/favicon.ico is avaliable in 3000 or not.
+ * How it works: check favicons under 2 domains can be loaded or not.
 */
 function checkDisqus() {
     var domain = ['disqus.com', disqusjs.config.shortname + '.disqus.com'],
         test = 0,
         success = 0;
-    var setmode = function (d) {
+    var setmode = function () {
         if (success = test) {
             disqusjs.mode = 'direct';
         } else {
