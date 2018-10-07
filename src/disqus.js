@@ -30,7 +30,7 @@ disqusjs.page = [];
 disqusjs.mode = 'proxy';
 var xhr = new XMLHttpRequest();
 
-var setLS = function (key, value) {
+setLS = (key, value) => {
     try {
         localStorage.setItem(key, value)
     } catch (o) {
@@ -38,7 +38,7 @@ var setLS = function (key, value) {
     }
 }
 
-var getLS = function (key) {
+getLS = (key) => {
     return localStorage.getItem(key);
 }
 
@@ -80,7 +80,7 @@ Date.prototype.Format = function (fmt) {
  */
 
 function getMode() {
-    var s = getLS('disqusjs_mode');
+    let s = getLS('disqusjs_mode');
     if (!s) {
         // Run checkDisqus() when no localStorage item
         // disqusjs.mode will be set in checkDisqus()
@@ -109,10 +109,10 @@ function loadDisqus() {
  * How it works: check favicons under 2 domains can be loaded or not.
 */
 function checkDisqus() {
-    var domain = ['disqus.com', disqusjs.config.shortname + '.disqus.com'],
+    let domain = ['disqus.com', disqusjs.config.shortname + '.disqus.com'],
         test = 0,
         success = 0;
-    var setmode = function () {
+    setmode = () => {
         if (success = test) {
             disqusjs.mode = 'direct',
                 setLS('disqusjs_mode', 'direct');
@@ -121,19 +121,19 @@ function checkDisqus() {
                 setLS('disqusjs_mode', 'proxy');
         }
     };
-    var check = function (domain) {
+    check = (domain) => {
         var img = new Image;
-        var checker = setTimeout(function () {
+        var checker = setTimeout(() => {
             img.onerror = img.onload = null,
                 test++ ,
                 setmode();
-        }, 2500);
-        img.onerror = function () {
+        }, 3000);
+        img.onerror = () => {
             clearTimeout(checker),
                 test++ ,
                 setmode();
         };
-        img.onload = function () {
+        img.onload = () => {
             clearTimeout(checker),
                 success++ ,
                 test++ ,
@@ -141,7 +141,7 @@ function checkDisqus() {
         };
         img.src = 'https://' + domain + '/favicon.ico?' + +(new Date);
     };
-    for (var i of domain) {
+    for (let i of domain) {
         check(i);
     };
 }
@@ -161,8 +161,8 @@ function getThreadInfo() {
      * API URI: /3.0/posts/list.json?forum=[shortname]&thread=[thread id]&api_key=[apikey]
      */
 
-    var getComment = function () {
-        var url = disqusjs.config.api + '3.0/posts/list.json?forum=' + disqusjs.config.shortname + '&thread=' + disqusjs.page.id + '&api_key=' + disqusjs.config.apikey;
+    getComment = () => {
+        let url = disqusjs.config.api + '3.0/posts/list.json?forum=' + disqusjs.config.shortname + '&thread=' + disqusjs.page.id + '&api_key=' + disqusjs.config.apikey;
         xhr.open('GET', url, true);
         xhr.timeout = 4000;
         xhr.send();
@@ -177,15 +177,15 @@ function getThreadInfo() {
 
             }
         };
-        xhr.ontimeout = function (e) {
+        xhr.ontimeout = (e) => {
             console.log(e)
         };
-        xhr.onerror = function (e) {
+        xhr.onerror = (e) => {
             console.log(e)
         };
     }
 
-    var url = disqusjs.config.api + '3.0/threads/list.json?forum=' + disqusjs.config.shortname + '&thread=ident:' + disqusjs.config.identifier + '&api_key=' + disqusjs.config.apikey;
+    let url = disqusjs.config.api + '3.0/threads/list.json?forum=' + disqusjs.config.shortname + '&thread=ident:' + disqusjs.config.identifier + '&api_key=' + disqusjs.config.apikey;
     xhr.open('GET', url, true);
     xhr.timeout = 4000;
     xhr.send();
@@ -201,10 +201,10 @@ function getThreadInfo() {
             getComment();
         }
     };
-    xhr.ontimeout = function (e) {
+    xhr.ontimeout = (e) => {
         console.log(e)
     };
-    xhr.onerror = function (e) {
+    xhr.onerror = (e) => {
         console.log(e)
     };
 }
@@ -218,32 +218,30 @@ function getCommentList(data) {
     var topLevelComments = [];
     var childComments = [];
 
-    data.forEach(function (comment) {
+    data.forEach(comment => {
         (comment.parent ? childComments : topLevelComments)['push'](comment)
     })
 
-    var commentLists = topLevelComments.map(function (comment) {
+    var commentLists = topLevelComments.map(comment => {
         return {
             comment,
             author: comment.author.name,
             isPrimary: comment.author.username === disqusjs.config.admin,
-            children: getChildren(Number(comment.id))
+            children: getChildren(+comment.id)
         };
     });
 
     function getChildren(id) {
-        if (childComments.length === 0) {
-            return null;
-        }
+        if (childComments.length === 0) return null;
 
         var list = [];
-        for (var comment of childComments) {
+        for (let comment of childComments) {
             if (comment.parent === id) {
                 list.unshift({
                     comment,
                     author: comment.author.name,
                     isPrimary: comment.author.username === disqusjs.config.admin,
-                    children: getChildren(Number(comment.id))
+                    children: getChildren(+comment.id)
                 });
             }
         }
@@ -259,37 +257,96 @@ function getCommentList(data) {
 }
 
 function renderComment(data) {
-    var disqusjsBaseTpl = '<div id="dsqjs"><section class="dsqjs-action"></section><header></header><section class="dsqjs-container"><ul id="dsqjs-list" class="dsqjs-list"></ul></section></div>';
+    var disqusjsBaseTpl = `
+    <div id="dsqjs">
+        <section class="dsqjs-action"></section>
+        <header></header>
+        <section class="dsqjs-container"><ul id="dsqjs-list" class="dsqjs-list"></ul></section>
+    </div>
+    `;
     document.getElementById('disqus_thread').innerHTML = disqusjsBaseTpl;
 
-    data.map(function (s) {
-        var comment = s.comment;
-        if (typeof comment.author.profileUrl === null) {
-            comment.author.profileUrl = "#"
+    data.map(s => {
+        childrenComments = (s) => {
+            var children = (s.children || []);
+            if (typeof children === 'null') return;
+
+            var html = '<ul class="dsqjs-list dsqjs-children">';
+            console.log(children)
+            children.map(s => {
+                let comment = s.comment
+
+                if (comment.author.profileUrl) {
+                    var avatar = `
+                    <a href="${comment.author.profileUrl}" target="_blank" rel="nofollow noopener noreferrer">
+                        <img src="${comment.author.avatar.cache}">
+                    </a>
+                    `;
+                    var author = `<a href="${comment.author.profileUrl}">${comment.author.name}</a>`
+                } else {
+                    var avatar = `<img src="${comment.author.avatar.cache}">`;
+                    var author = `${comment.author.name}`
+                }
+
+                html += `
+                <li class="dsqjs-item" id="comment-${comment.id}">
+                <div class="dsqjs-item-container">
+                    <div class="dsqjs-avater">
+                        ${avatar}
+                    </div>
+                    <div class="dsqjs-body">
+                        <header class="dsqjs-header">
+                            <span class="dsqjs-author">${author}</span>
+                            <span class="dsqjs-bullet"></span>
+                            <span class="dsqjs-meta"><time>${(new Date(comment.createdAt)).Format("yyyy-MM-dd hh:mm:ss")}</time></span>
+                        </header>
+                        <div class="dsqjs-content">${comment.message}</div>
+                    </div>
+                </div>
+                ${childrenComments(s)}
+                </li>
+                `
+            })
+
+            html += '</ul>';
+
+            if (html.length !== 0) {
+                return html;
+            } else {
+                return;
+            }
+        };
+
+        let comment = s.comment;
+
+        if (comment.author.profileUrl) {
+            var avatar = `
+            <a href="${comment.author.profileUrl}" target="_blank" rel="nofollow noopener noreferrer">
+                <img src="${comment.author.avatar.cache}">
+            </a>
+            `;
+            var author = `<a href="${comment.author.profileUrl}">${comment.author.name}</a>`
+        } else {
+            var avatar = `<img src="${comment.author.avatar.cache}">`;
+            var author = `${comment.author.name}`
         }
-        var html = `
+
+        let html = `
         <li class="dsqjs-item" id="comment-${comment.id}">
         <div class="dsqjs-item-container">
             <div class="dsqjs-avater">
-                <a href="${comment.author.profileUrl}" target="_blank" rel="nofollow noopener noreferrer">
-                    <img src="${comment.author.avatar.cache}">
-                </a>
+                ${avatar}
             </div>
             <div class="dsqjs-body">
-                <header class="dsqjs-header"><span class="dsqjs-author">
-                       <a href="${comment.author.profileUrl}">
-                        ${comment.author.name}
-                        </a>
-                        </span><span class="dsqjs-bullet"></span>
-                        <span class="dsqjs-meta"><time>
-                            ${(new Date(comment.createdAt)).Format("yyyy-MM-dd hh:mm:ss")}</time>
-                        </span>
+                <header class="dsqjs-header">
+                    <span class="dsqjs-author">${author}</span>
+                    <span class="dsqjs-bullet"></span>
+                    <span class="dsqjs-meta"><time>${(new Date(comment.createdAt)).Format("yyyy-MM-dd hh:mm:ss")}</time></span>
                 </header>
-                <div class="dsqjs-content">
-                    ${comment.message}
-                </div>
+                <div class="dsqjs-content">${comment.message}</div>
             </div>
         </div>
+        ${childrenComments(s)}
         </li>
         `;
         document.getElementById('dsqjs-list').insertAdjacentHTML('beforeend', html);
