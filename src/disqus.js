@@ -127,7 +127,7 @@ function getThreadInfo() {
      * API URI: /3.0/posts/list.json?forum=[shortname]&thread=[thread id]&api_key=[apikey]
      */
 
-    getComment = function () {
+    var getComment = function () {
         var url = disqusjs.config.api + '3.0/posts/list.json?forum=' + disqusjs.config.shortname + '&thread=' + disqusjs.page.id + '&api_key=' + disqusjs.config.apikey;
         xhr.open('GET', url, true);
         xhr.timeout = 4000;
@@ -136,7 +136,7 @@ function getThreadInfo() {
             if (this.status == 200 || this.status == 304) {
                 var res = JSON.parse(this.responseText);
                 if (res.code === 0) {
-                    renderCommentList(res.response);
+                    getCommentList(res.response);
                 } else {
                     // Have error when get comments.
                 }
@@ -176,11 +176,11 @@ function getThreadInfo() {
 }
 
 /*
- * Name: renderCommentList(data)
+ * Name: getCommentList(data)
  * Description: Render JSON to comment list components
  */
 
-function renderCommentList(data) {
+function getCommentList(data) {
     var topLevelComments = [];
     var childComments = [];
 
@@ -199,30 +199,37 @@ function renderCommentList(data) {
 
     function getChildren(id) {
         if (childComments.length === 0) {
-            return null
+            return null;
         }
 
-        var list = []
+        var list = [];
         for (var i = 0; i < childComments.length; i++) {
             var comment = childComments[i];
             if (comment.parent === id) {
                 list.unshift({
-                    comment,
+                    comment: comment,
                     author: comment.author.name,
                     isPrimary: comment.author.username === disqusjs.config.admin,
-                    children: getChildren(+comment.id)
-                })
+                    children: getChildren(Number(comment.id))
+                });
             }
         }
 
         if (list.length) {
-            return list
+            return list;
         } else {
-            return null
+            return null;
         }
     }
 
-    console.log(commentLists)
+    renderComment(commentLists)
+}
+
+function renderComment(data) {
+    data.map(function (comment) {
+        console.log(comment)
+    })
 }
 
 
+getThreadInfo();
