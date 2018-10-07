@@ -141,8 +141,8 @@ function checkDisqus() {
         };
         img.src = 'https://' + domain + '/favicon.ico?' + +(new Date);
     };
-    for (var i = 0; i < domain.length; i++) {
-        check(domain[i]);
+    for (var i of domain) {
+        check(i);
     };
 }
 
@@ -224,7 +224,7 @@ function getCommentList(data) {
 
     var commentLists = topLevelComments.map(function (comment) {
         return {
-            comment: comment,
+            comment,
             author: comment.author.name,
             isPrimary: comment.author.username === disqusjs.config.admin,
             children: getChildren(Number(comment.id))
@@ -237,11 +237,10 @@ function getCommentList(data) {
         }
 
         var list = [];
-        for (var i = 0; i < childComments.length; i++) {
-            var comment = childComments[i];
+        for (var comment of childComments) {
             if (comment.parent === id) {
                 list.unshift({
-                    comment: comment,
+                    comment,
                     author: comment.author.name,
                     isPrimary: comment.author.username === disqusjs.config.admin,
                     children: getChildren(Number(comment.id))
@@ -263,10 +262,36 @@ function renderComment(data) {
     var disqusjsBaseTpl = '<div id="dsqjs"><section class="dsqjs-action"></section><header></header><section class="dsqjs-container"><ul id="dsqjs-list" class="dsqjs-list"></ul></section></div>';
     document.getElementById('disqus_thread').innerHTML = disqusjsBaseTpl;
 
-    var commentItemTpl = '<li class="dsqjs-item" id="comment-<%= comment.id %>"><div class="dsqjs-item-container"><div class="dsqjs-avater"><% if (comment.author.profileUrl) { %><a href="<%= comment.author.profileUrl %>" target="_blank" rel="nofollow noopener noreferrer"><% } %><img src="<%= comment.author.avatar.cache %>"><% if (comment.author.profileUrl) { %></a><% } %></div><div class="dsqjs-body"><header class="dsqjs-header"><span class="dsqjs-author"><% if (comment.author.profileUrl) { %><a href="<%= comment.author.profileUrl %>"><% } %><%= comment.author.name %><% if (comment.author.profileUrl) { %></a><% } %></span><span class="dsqjs-bullet"></span><span class="dsqjs-meta"><time><%= (new Date(comment.createdAt)).Format("yyyy-MM-dd hh:mm:ss") %></time></span></header><div class="dsqjs-content"><%- comment.message %></div></div></div></li>';
-
     data.map(function (s) {
-        var html = baidu.template(commentItemTpl, s);
+        var comment = s.comment;
+        if (typeof comment.author.profileUrl === null) {
+            comment.author.profileUrl = "#"
+        }
+        var html = `
+        <li class="dsqjs-item" id="comment-${comment.id}">
+        <div class="dsqjs-item-container">
+            <div class="dsqjs-avater">
+                <a href="${comment.author.profileUrl}" target="_blank" rel="nofollow noopener noreferrer">
+                    <img src="${comment.author.avatar.cache}">
+                </a>
+            </div>
+            <div class="dsqjs-body">
+                <header class="dsqjs-header"><span class="dsqjs-author">
+                       <a href="${comment.author.profileUrl}">
+                        ${comment.author.name}
+                        </a>
+                        </span><span class="dsqjs-bullet"></span>
+                        <span class="dsqjs-meta"><time>
+                            ${(new Date(comment.createdAt)).Format("yyyy-MM-dd hh:mm:ss")}</time>
+                        </span>
+                </header>
+                <div class="dsqjs-content">
+                    ${comment.message}
+                </div>
+            </div>
+        </div>
+        </li>
+        `;
         document.getElementById('dsqjs-list').insertAdjacentHTML('beforeend', html);
     })
 }
