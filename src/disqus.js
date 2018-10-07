@@ -1,10 +1,3 @@
-/*!
- * DisqusJS | v0.1.0
- * Author: SukkaW
- * Link: https://github.com/SukkaW/DisqusJS
- * License: GPL-3.0
- */
-
 // Start import baiduTemplate
 
 /*! baiduTemplate | Verison 1.0.6 | BSD License */
@@ -227,6 +220,13 @@
 
 // Finish import baiduTemplate
 
+/*!
+ * DisqusJS | v0.1.0
+ * Author: SukkaW
+ * Link: https://github.com/SukkaW/DisqusJS
+ * License: GPL-3.0
+ */
+
 /*
  * The variable used in DisqusJS
  *
@@ -265,6 +265,38 @@ var getLS = function (key) {
 }
 
 /*
+ * Name: Date.Format()
+ *
+ * Usage:
+ * Month - M | MM
+ * Date - d | dd
+ * Hour - h | hh
+ * Minute - m | mm
+ * Second - s | ss
+ * Season - q | qq
+ * Year - y | yy | yyyy
+ * ms - S
+ *
+ * Example: (new Date()).Format("yyyy-MM-dd hh:mm:ss.S")
+ */
+
+Date.prototype.Format = function (fmt) {
+    var o = {
+        "M+": this.getMonth() + 1, // Minth
+        "d+": this.getDate(), // Date
+        "h+": this.getHours(), // Hour
+        "m+": this.getMinutes(), // Minute
+        "s+": this.getSeconds(), // Second
+        "q+": Math.floor((this.getMonth() + 3) / 3), // Season
+        "S": this.getMilliseconds() // ms
+    };
+    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+    for (var k in o)
+        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+    return fmt;
+}
+
+/*
  * Name: getMode()
  * Description: get mode from localstorage
  */
@@ -272,6 +304,8 @@ var getLS = function (key) {
 function getMode() {
     var s = getLS('disqusjs_mode');
     if (!s) {
+        // Run checkDisqus() when no localStorage item
+        // disqusjs.mode will be set in checkDisqus()
         checkDisqus();
     } else {
         disqusjs.mode = s;
@@ -448,6 +482,19 @@ function getCommentList(data) {
 }
 
 function renderComment(data) {
+    var commentContainerTpl = `
+    <section class="dsqjs-container">
+        <ul class="dsqjs-list">
+            ${commentItem}
+        </ul>
+    </section>
+    `;
+
+    var commentItemTpl = `
+    
+    `
+
+    var commentItem;
     data.map(function (comment) {
         console.log(comment)
     })
