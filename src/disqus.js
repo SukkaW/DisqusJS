@@ -487,8 +487,6 @@ function renderComment(data) {
     `;
     document.getElementById('disqus_thread').innerHTML = disqusjsBaseTpl;
 
-
-
     var commentBodyTpl = `
     <div class="dsqjs-item-container">
         <div class="dsqjs-avater">
@@ -504,14 +502,26 @@ function renderComment(data) {
         </div>
     </div>
     `
+
     data.map(s => {
         childrenComments = (s) => {
-            var children = (s.children || []);
-            if (typeof children === 'null') return;
+            var nesting = s.nesting
 
-            var html = '<ul class="dsqjs-list dsqjs-children">';
-            console.log(children)
+            var children = (s.children || []);
+
+            if (typeof children === 'null') {
+                return;
+            }
+
+            console.log(nesting < 4)
+            if (nesting < 4) {
+                var html = '<ul class="dsqjs-list dsqjs-children">';
+            } else {
+                var html = '<ul class="dsqjs-list">';
+            }
+
             children.map(s => {
+
                 let comment = s.comment
 
                 if (comment.author.profileUrl) {
@@ -526,7 +536,9 @@ function renderComment(data) {
                     comment.authorEl = `${comment.author.name}`
                 }
 
-                html += '<li class="dsqjs-item" id="comment-${comment.id}">'
+                s.nesting = nesting + 1
+
+                html += `<li class="dsqjs-item" id="comment-${comment.id}">`
 
                 html += baidu.template(commentBodyTpl, comment)
 
@@ -557,7 +569,11 @@ function renderComment(data) {
             comment.authorEl = `${comment.author.name}`
         }
 
-        let html = '<li class="dsqjs-item" id="comment-${comment.id}">'
+        if (s.children) {
+            s.nesting = 1
+        }
+
+        let html = `<li class="dsqjs-item" id="comment-${comment.id}">`
 
         html += baidu.template(commentBodyTpl, comment)
 

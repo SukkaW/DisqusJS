@@ -90,7 +90,7 @@
     word-wrap: break-word;
 }
 
-#dsqjs .dsqjs-children .dsqjs-item {
+#dsqjs .dsqjs-children>.dsqjs-item {
     margin-left: 60px;
 }
 
