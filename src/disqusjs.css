@@ -43,8 +43,8 @@
 }
 
 #dsqjs .dsqjs-avater img {
-    width: 48px;
-    height: 48px;
+    width: 42px;
+    height: 42px;
     display: block;
     border-radius: 4px;
 }
@@ -56,8 +56,6 @@
 #dsqjs .dsqjs-header {
     line-height: 1;
     font-size: 13px;
-    margin-top: 4px;
-    margin-bottom: 4px;
 }
 
 #dsqjs .dsqjs-bullet {
@@ -99,9 +97,4 @@
 #dsqjs .dsqjs-children .dsqjs-avater img {
     width: 38px;
     height: 38px;
-}
-
-#dsqjs .dsqjs-children .dsqjs-header {
-    margin-top: 0;
-    margin-bottom: 0
 }
