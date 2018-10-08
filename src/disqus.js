@@ -248,388 +248,391 @@
  * disqusjs.page.lenfth - How many comment in this thread
  */
 
-disqusjs.page = [];
+(function () {
+    disqusjs.page = [];
 
-window.disqus_config = function () {
-    this.page.url = disqusjs.config.url;
-    this.page.identifier = disqusjs.config.identifier;
-};
+    window.disqus_config = function () {
+        this.page.url = disqusjs.config.url;
+        this.page.identifier = disqusjs.config.identifier;
+    };
 
-var xhr = new XMLHttpRequest();
+    var xhr = new XMLHttpRequest();
 
-setLS = (key, value) => {
-    try {
-        localStorage.setItem(key, value)
-    } catch (o) {
-        console.log(o), console.log("Failed to set localStorage item")
+    let setLS = (key, value) => {
+        try {
+            localStorage.setItem(key, value)
+        } catch (o) {
+            console.log(o), console.log("Failed to set localStorage item")
+        }
+    },
+
+        getLS = (key) => {
+            return localStorage.getItem(key);
+        }
+
+    /*
+     * Name: Date.Format()
+     *
+     * Usage:
+     * Month - M | MM
+     * Date - d | dd
+     * Hour - h | hh
+     * Minute - m | mm
+     * Second - s | ss
+     * Season - q | qq
+     * Year - y | yy | yyyy
+     * ms - S
+     *
+     * Example: (new Date()).Format("yyyy-MM-dd hh:mm:ss.S")
+     */
+
+    Date.prototype.Format = function (fmt) {
+        var o = {
+            "M+": this.getMonth() + 1, // Minth
+            "d+": this.getDate(), // Date
+            "h+": this.getHours(), // Hour
+            "m+": this.getMinutes(), // Minute
+            "s+": this.getSeconds(), // Second
+            "q+": Math.floor((this.getMonth() + 3) / 3), // Season
+            "S": this.getMilliseconds() // ms
+        };
+        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        for (var k in o)
+            if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        return fmt;
     }
-}
 
-getLS = (key) => {
-    return localStorage.getItem(key);
-}
+    /*
+     * Name: loadDisqus()
+     * Descriptin: load disqus as it should be.
+     */
 
-/*
- * Name: Date.Format()
- *
- * Usage:
- * Month - M | MM
- * Date - d | dd
- * Hour - h | hh
- * Minute - m | mm
- * Second - s | ss
- * Season - q | qq
- * Year - y | yy | yyyy
- * ms - S
- *
- * Example: (new Date()).Format("yyyy-MM-dd hh:mm:ss.S")
- */
+    let loadDisqus = () => {
+        var d = document;
+        d.getElementById('dsqjs-load-disqus').classList.remove('dsqjs-hide');
+        d.getElementById('dsqjs-force-dsqjs').addEventListener('click', forceDsqjs);
+        var s = d.createElement('script');
+        s.src = 'https://' + disqusjs.config.shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', + new Date());
+        (d.head || d.body).appendChild(s);
+    }
 
-Date.prototype.Format = function (fmt) {
-    var o = {
-        "M+": this.getMonth() + 1, // Minth
-        "d+": this.getDate(), // Date
-        "h+": this.getHours(), // Hour
-        "m+": this.getMinutes(), // Minute
-        "s+": this.getSeconds(), // Second
-        "q+": Math.floor((this.getMonth() + 3) / 3), // Season
-        "S": this.getMilliseconds() // ms
-    };
-    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
-    for (var k in o)
-        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
-    return fmt;
-}
+    /*
+     * Name: checkDisqus()
+     * Description: Check disqus is avaliable for visitor or not
+     * How it works: check favicons under 2 domains can be loaded or not.
+     */
 
-/*
- * Name: loadDisqus()
- * Descriptin: load disqus as it should be.
- */
-
-loadDisqus = () => {
-    var d = document;
-    d.getElementById('dsqjs-load-disqus').classList.remove('dsqjs-hide');
-    d.getElementById('dsqjs-force-dsqjs').addEventListener('click', forceDsqjs);
-    var s = d.createElement('script');
-    s.src = 'https://' + disqusjs.config.shortname + '.disqus.com/embed.js';
-    s.setAttribute('data-timestamp', + new Date());
-    (d.head || d.body).appendChild(s);
-}
-
-/*
- * Name: checkDisqus()
- * Description: Check disqus is avaliable for visitor or not
- * How it works: check favicons under 2 domains can be loaded or not.
- */
-
-checkDisqus = () => {
-    var img = new Image;
-    let check1 = setTimeout(() => {
-        img.onerror = img.onload = null;
-        setLS('disqusjs_mode', 'dsqjs');
-    }, 2000);
-
-    img.onerror = () => {
-        clearTimeout(check1);
-        setLS('disqusjs_mode', 'dsqjs');
-        main();
-    };
-    img.onload = () => {
-        clearTimeout(check1);
-        let check2 = setTimeout(() => {
+    let checkDisqus = () => {
+        var img = new Image;
+        let check1 = setTimeout(() => {
             img.onerror = img.onload = null;
             setLS('disqusjs_mode', 'dsqjs');
         }, 2000);
 
         img.onerror = () => {
-            clearTimeout(check2);
+            clearTimeout(check1);
             setLS('disqusjs_mode', 'dsqjs');
             main();
         };
-
         img.onload = () => {
-            clearTimeout(check2);
-            setLS('disqusjs_mode', 'disqus');
-            main();
-        };
+            clearTimeout(check1);
+            let check2 = setTimeout(() => {
+                img.onerror = img.onload = null;
+                setLS('disqusjs_mode', 'dsqjs');
+            }, 2000);
 
-        img.src = 'https://' + disqusjs.config.shortname + '.disqus.com/favicon.ico?' + +(new Date);
-    };
-
-    img.src = 'https://disqus.com/favicon.ico?' + +(new Date);
-}
-
-/*
- * Name: forceDsqjs() forceDisqus()
- */
-
-forceDsqjs = () => {
-    setLS('disqusjs_mode', 'dsqjs');
-    main();
-}
-
-forceDisqus = () => {
-    setLS('disqusjs_mode', 'disqus');
-    main();
-}
-
-/*
- * Name: loadError()
- * Description: When dsqjs mode load error
- */
-
-loadError = () => {
-    document.getElementById('dsqjs-load-error').classList.remove('dsqjs-hide');
-    document.getElementById('dsqjs-loading-dsqjs').classList.add('dsqjs-hide');
-    document.getElementById('dsqjs-reload').addEventListener('click', getThreadInfo);
-}
-
-/*
- * Name: getThreadInfo()
- * Description: Disqus API only support get thread list by ID, not identifter. So get Thread ID before get thread list.
- * API Docs: https://disqus.com/api/docs/threads/list/
- * API URI: /3.0/threads/list.json?forum=[disqus_shortname]&thread=ident:[identifier]&api_key=[apikey]
-*/
-
-getThreadInfo = () => {
-    document.getElementById('dsqjs-loading-dsqjs').classList.remove('dsqjs-hide');
-    document.getElementById('dsqjs-force-disqus').addEventListener('click', forceDisqus);
-    document.getElementById('dsqjs-reload-disqus').addEventListener('click', checkDisqus);
-    let url = disqusjs.config.api + '3.0/threads/list.json?forum=' + disqusjs.config.shortname + '&thread=ident:' + disqusjs.config.identifier + '&api_key=' + disqusjs.config.apikey;
-    xhr.open('GET', url, true);
-    xhr.timeout = 4000;
-    xhr.send();
-    xhr.onload = function () {
-        if (this.status == 200 || this.status == 304) {
-            var response = JSON.parse(this.responseText).response[0];
-            disqusjs.page = {
-                id: response.id,
-                title: response.title,
-                isClosed: response.isClosed,
-                length: response.posts
+            img.onerror = () => {
+                clearTimeout(check2);
+                setLS('disqusjs_mode', 'dsqjs');
+                main();
             };
-            getComment();
-        }
-    };
-    xhr.ontimeout = (e) => {
-        loadError();
-    };
-    xhr.onerror = (e) => {
-        loadError();
-    };
-}
 
-/*
- * Name: getComment()
- * Description: get the comment content
- * API URI: /3.0/posts/list.json?forum=[shortname]&thread=[thread id]&api_key=[apikey]
- */
+            img.onload = () => {
+                clearTimeout(check2);
+                setLS('disqusjs_mode', 'disqus');
+                main();
+            };
 
-getComment = () => {
-    let url = disqusjs.config.api + '3.0/posts/list.json?forum=' + disqusjs.config.shortname + '&thread=' + disqusjs.page.id + '&api_key=' + disqusjs.config.apikey;
-    xhr.open('GET', url, true);
-    xhr.timeout = 4000;
-    xhr.send();
-    xhr.onload = function () {
-        if (this.status == 200 || this.status == 304) {
-            var res = JSON.parse(this.responseText);
-            if (res.code === 0 && res.response.length > 0) {
-                getCommentList(res.response);
-            } else if (res.code === 0 && res.response.length === 0) {
-                // Have no comments.
-                document.getElementById('dsqjs-no-comment').classList.remove('dsqjs-hide');
-            }
-
-        }
-    };
-    xhr.ontimeout = (e) => {
-        // Have error when get comments.
-        loadError();
-    };
-    xhr.onerror = (e) => {
-        // Have error when get comments.
-        loadError();
-    };
-}
-
-/*
- * Name: getCommentList(data)
- * Description: Render JSON to comment list components
- */
-
-getCommentList = (data) => {
-    var topLevelComments = [];
-    var childComments = [];
-
-    data.forEach(comment => {
-        (comment.parent ? childComments : topLevelComments)['push'](comment)
-    })
-
-    var commentLists = topLevelComments.map(comment => {
-        return {
-            comment,
-            author: comment.author.name,
-            isPrimary: comment.author.username === disqusjs.config.admin,
-            children: getChildren(+comment.id)
+            img.src = 'https://' + disqusjs.config.shortname + '.disqus.com/favicon.ico?' + +(new Date);
         };
-    });
 
-    function getChildren(id) {
-        if (childComments.length === 0) return null;
-
-        var list = [];
-        for (let comment of childComments) {
-            if (comment.parent === id) {
-                list.unshift({
-                    comment,
-                    author: comment.author.name,
-                    isPrimary: comment.author.username === disqusjs.config.admin,
-                    children: getChildren(+comment.id)
-                });
-            }
-        }
-
-        if (list.length) {
-            return list;
-        } else {
-            return null;
-        }
+        img.src = 'https://disqus.com/favicon.ico?' + +(new Date);
     }
 
-    renderComment(commentLists)
-}
-
-renderComment = (data) => {
     /*
-    <div class="dsqjs-item-container">
-        <div class="dsqjs-avater">
-            <%- avatarEl %>
-        </div>
-        <div class="dsqjs-body">
-            <header class="dsqjs-header">
-                <span class="dsqjs-author"><%- authorEl %></span>
-                <span class="dsqjs-bullet"></span>
-                <span class="dsqjs-meta"><time><%- (new Date(createdAt)).Format("yyyy-MM-dd hh:mm:ss") %></time></span>
-            </header>
-            <div class="dsqjs-content"><%- message %></div>
-        </div>
-    </div>
+     * Name: forceDsqjs() forceDisqus()
+     */
+
+    let forceDsqjs = () => {
+        setLS('disqusjs_mode', 'dsqjs');
+        main();
+    }
+
+    let forceDisqus = () => {
+        setLS('disqusjs_mode', 'disqus');
+        main();
+    }
+
+    /*
+     * Name: loadError()
+     * Description: When dsqjs mode load error
+     */
+
+    let loadError = () => {
+        document.getElementById('dsqjs-load-error').classList.remove('dsqjs-hide');
+        document.getElementById('dsqjs-loading-dsqjs').classList.add('dsqjs-hide');
+        document.getElementById('dsqjs-reload').addEventListener('click', getThreadInfo);
+    }
+
+    /*
+     * Name: getThreadInfo()
+     * Description: Disqus API only support get thread list by ID, not identifter. So get Thread ID before get thread list.
+     * API Docs: https://disqus.com/api/docs/threads/list/
+     * API URI: /3.0/threads/list.json?forum=[disqus_shortname]&thread=ident:[identifier]&api_key=[apikey]
     */
-    var commentBodyTpl = `<div class="dsqjs-item-container"><div class="dsqjs-avater"><%- avatarEl %></div><div class="dsqjs-body"><header class="dsqjs-header"><span class="dsqjs-author"><%- authorEl %></span><span class="dsqjs-bullet"></span><span class="dsqjs-meta"><time><%- (new Date(createdAt)).Format("yyyy-MM-dd hh:mm:ss") %></time></span></header><div class="dsqjs-content"><%- message %></div></div></div>`
 
-    data.map(s => {
-        childrenComments = (s) => {
-            var nesting = s.nesting
+    let getThreadInfo = () => {
+        document.getElementById('dsqjs-loading-dsqjs').classList.remove('dsqjs-hide');
+        document.getElementById('dsqjs-force-disqus').addEventListener('click', forceDisqus);
+        document.getElementById('dsqjs-reload-disqus').addEventListener('click', checkDisqus);
+        let url = disqusjs.config.api + '3.0/threads/list.json?forum=' + disqusjs.config.shortname + '&thread=ident:' + disqusjs.config.identifier + '&api_key=' + disqusjs.config.apikey;
+        xhr.open('GET', url, true);
+        xhr.timeout = 4000;
+        xhr.send();
+        xhr.onload = function () {
+            if (this.status == 200 || this.status == 304) {
+                var response = JSON.parse(this.responseText).response[0];
+                disqusjs.page = {
+                    id: response.id,
+                    title: response.title,
+                    isClosed: response.isClosed,
+                    length: response.posts
+                };
+                getComment();
+            }
+        };
+        xhr.ontimeout = (e) => {
+            loadError();
+        };
+        xhr.onerror = (e) => {
+            loadError();
+        };
+    }
 
-            var children = (s.children || []);
+    /*
+     * Name: getComment()
+     * Description: get the comment content
+     * API URI: /3.0/posts/list.json?forum=[shortname]&thread=[thread id]&api_key=[apikey]
+     */
 
-            if (typeof children === 'null') {
-                return;
+    let getComment = () => {
+        let url = disqusjs.config.api + '3.0/posts/list.json?forum=' + disqusjs.config.shortname + '&thread=' + disqusjs.page.id + '&api_key=' + disqusjs.config.apikey;
+        xhr.open('GET', url, true);
+        xhr.timeout = 4000;
+        xhr.send();
+        xhr.onload = function () {
+            if (this.status == 200 || this.status == 304) {
+                var res = JSON.parse(this.responseText);
+                if (res.code === 0 && res.response.length > 0) {
+                    getCommentList(res.response);
+                } else if (res.code === 0 && res.response.length === 0) {
+                    // Have no comments.
+                    document.getElementById('dsqjs-no-comment').classList.remove('dsqjs-hide');
+                }
+
+            }
+        };
+        xhr.ontimeout = (e) => {
+            // Have error when get comments.
+            loadError();
+        };
+        xhr.onerror = (e) => {
+            // Have error when get comments.
+            loadError();
+        };
+    }
+
+    /*
+     * Name: getCommentList(data)
+     * Description: Render JSON to comment list components
+     */
+
+    let getCommentList = (data) => {
+        var topLevelComments = [];
+        var childComments = [];
+
+        data.forEach(comment => {
+            (comment.parent ? childComments : topLevelComments)['push'](comment)
+        })
+
+        var commentLists = topLevelComments.map(comment => {
+            return {
+                comment,
+                author: comment.author.name,
+                isPrimary: comment.author.username === disqusjs.config.admin,
+                children: getChildren(+comment.id)
+            };
+        });
+
+        function getChildren(id) {
+            if (childComments.length === 0) return null;
+
+            var list = [];
+            for (let comment of childComments) {
+                if (comment.parent === id) {
+                    list.unshift({
+                        comment,
+                        author: comment.author.name,
+                        isPrimary: comment.author.username === disqusjs.config.admin,
+                        children: getChildren(+comment.id)
+                    });
+                }
             }
 
-            if (nesting < 4) {
-                var html = '<ul class="dsqjs-list dsqjs-children">';
+            if (list.length) {
+                return list;
             } else {
-                var html = '<ul class="dsqjs-list">';
+                return null;
             }
+        }
 
-            children.map(s => {
+        renderComment(commentLists)
+    }
 
-                let comment = s.comment
+    let renderComment = (data) => {
+        /*
+        <div class="dsqjs-item-container">
+            <div class="dsqjs-avater">
+                <%- avatarEl %>
+            </div>
+            <div class="dsqjs-body">
+                <header class="dsqjs-header">
+                    <span class="dsqjs-author"><%- authorEl %></span>
+                    <span class="dsqjs-bullet"></span>
+                    <span class="dsqjs-meta"><time><%- (new Date(createdAt)).Format("yyyy-MM-dd hh:mm:ss") %></time></span>
+                </header>
+                <div class="dsqjs-content"><%- message %></div>
+            </div>
+        </div>
+        */
+        var commentBodyTpl = `<div class="dsqjs-item-container"><div class="dsqjs-avater"><%- avatarEl %></div><div class="dsqjs-body"><header class="dsqjs-header"><span class="dsqjs-author"><%- authorEl %></span><span class="dsqjs-bullet"></span><span class="dsqjs-meta"><time><%- (new Date(createdAt)).Format("yyyy-MM-dd hh:mm:ss") %></time></span></header><div class="dsqjs-content"><%- message %></div></div></div>`
 
-                if (comment.author.profileUrl) {
-                    /*
-                    <a href="${comment.author.profileUrl}" target="_blank" rel="nofollow noopener noreferrer">
-                        <img src="${comment.author.avatar.cache}">
-                    </a>
-                    */
-                    comment.avatarEl = `<a href="${comment.author.profileUrl}" target="_blank" rel="nofollow noopener noreferrer"><img src="${comment.author.avatar.cache}"></a>`;
-                    comment.authorEl = `<a href="${comment.author.profileUrl}">${comment.author.name}</a>`
+        data.map(s => {
+            let childrenComments = (s) => {
+                var nesting = s.nesting
+
+                var children = (s.children || []);
+
+                if (typeof children === 'null') {
+                    return;
+                }
+
+                if (nesting < 4) {
+                    var html = '<ul class="dsqjs-list dsqjs-children">';
                 } else {
-                    comment.avatarEl = `<img src="${comment.author.avatar.cache}">`;
-                    comment.authorEl = `${comment.author.name}`
+                    var html = '<ul class="dsqjs-list">';
                 }
 
-                if (comment.author.name === disqusjs.config.admin) {
-                    comment.authorEl += `<span class="dsqjs-admin-badge">${disqusjs.config.adminLabel}</span>`
+                children.map(s => {
+
+                    let comment = s.comment
+
+                    if (comment.author.profileUrl) {
+                        /*
+                        <a href="${comment.author.profileUrl}" target="_blank" rel="nofollow noopener noreferrer">
+                            <img src="${comment.author.avatar.cache}">
+                        </a>
+                        */
+                        comment.avatarEl = `<a href="${comment.author.profileUrl}" target="_blank" rel="nofollow noopener noreferrer"><img src="${comment.author.avatar.cache}"></a>`;
+                        comment.authorEl = `<a href="${comment.author.profileUrl}">${comment.author.name}</a>`
+                    } else {
+                        comment.avatarEl = `<img src="${comment.author.avatar.cache}">`;
+                        comment.authorEl = `${comment.author.name}`
+                    }
+
+                    if (comment.author.name === disqusjs.config.admin) {
+                        comment.authorEl += `<span class="dsqjs-admin-badge">${disqusjs.config.adminLabel}</span>`
+                    }
+
+                    s.nesting = nesting + 1
+
+                    html += `<li class="dsqjs-item" id="comment-${comment.id}">`
+
+                    html += baidu.template(commentBodyTpl, comment)
+
+                    html += `${childrenComments(s)}</li>`
+                })
+
+                html += '</ul>';
+
+                if (html.length !== 0) {
+                    return html;
+                } else {
+                    return;
                 }
+            };
 
-                s.nesting = nesting + 1
+            let comment = s.comment;
 
-                html += `<li class="dsqjs-item" id="comment-${comment.id}">`
-
-                html += baidu.template(commentBodyTpl, comment)
-
-                html += `${childrenComments(s)}</li>`
-            })
-
-            html += '</ul>';
-
-            if (html.length !== 0) {
-                return html;
+            if (comment.author.profileUrl) {
+                comment.avatarEl = `<a href="${comment.author.profileUrl}" target="_blank" rel="nofollow noopener noreferrer"><img src="${comment.author.avatar.cache}"></a>`;
+                comment.authorEl = `<a href="${comment.author.profileUrl}">${comment.author.name}</a>`
             } else {
-                return;
+                comment.avatarEl = `<img src="${comment.author.avatar.cache}">`;
+                comment.authorEl = `${comment.author.name}`
             }
-        };
 
-        let comment = s.comment;
+            if (comment.author.name === disqusjs.config.admin) {
+                comment.authorEl += `<span class="dsqjs-admin-badge">${disqusjs.config.adminLabel}</span>`
+            }
 
-        if (comment.author.profileUrl) {
-            comment.avatarEl = `<a href="${comment.author.profileUrl}" target="_blank" rel="nofollow noopener noreferrer"><img src="${comment.author.avatar.cache}"></a>`;
-            comment.authorEl = `<a href="${comment.author.profileUrl}">${comment.author.name}</a>`
-        } else {
-            comment.avatarEl = `<img src="${comment.author.avatar.cache}">`;
-            comment.authorEl = `${comment.author.name}`
-        }
+            if (s.children) {
+                s.nesting = 1
+            }
 
-        if (comment.author.name === disqusjs.config.admin) {
-            comment.authorEl += `<span class="dsqjs-admin-badge">${disqusjs.config.adminLabel}</span>`
-        }
+            let html = `<li class="dsqjs-item" id="comment-${comment.id}">`
 
-        if (s.children) {
-            s.nesting = 1
-        }
+            html += baidu.template(commentBodyTpl, comment)
 
-        let html = `<li class="dsqjs-item" id="comment-${comment.id}">`
+            html += `${childrenComments(s)}</li>`;
 
-        html += baidu.template(commentBodyTpl, comment)
-
-        html += `${childrenComments(s)}</li>`;
-
-        document.getElementById('dsqjs-list').insertAdjacentHTML('beforeend', html);
-    })
-}
-
-main = () => {
-    // Add dsqjs container element to #disqus_thread
-
-    /*
-        <div id="dsqjs">
-            <section class="dsqjs-action"></section>
-            <header></header>
-            <section class="dsqjs-info">
-                <p id="dsqjs-load-disqus" class="dsqjs-message dsqjs-hide">评论完整模式加载中...如果长时间无法加载，请针对 disq.us | disquscdn.com | disqus.com 启用代理，或使用<a href="#" id="dsqjs-force-dsqjs">评论基础模式</a></p>
-                <p id="dsqjs-loading-dsqjs" class="dsqjs-message dsqjs-hide">你可能无法访问 Disqus，已启用评论基础模式。如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并<a href="#" id="dsqjs-reload-disqus">尝试使用完整 Disqus 模式</a> | <a href="#" id="dsqjs-force-disqus">强制完整 Disqus 模式</a>。</p>
-                <p id="dsqjs-load-error" class="dsqjs-message dsqjs-hide">评论基础模式出现错误，是否<a href="#" id="dsqjs-reload">重载</a>？</p>
-                <p id="dsqjs-no-comment" class="dsqjs-no-comment dsqjs-hide">这里冷冷清清的，一条评论都没有</p>
-            </section>
-            <section class="dsqjs-container" id="dsqjs-container"><ul id="dsqjs-list" class="dsqjs-list"></ul></section>
-        </div>
-    */
-    var disqusjsBaseTpl = `<div id="dsqjs"><section class="dsqjs-action"></section><header></header><section class="dsqjs-info"><p id="dsqjs-load-disqus" class="dsqjs-message dsqjs-hide">评论完整模式加载中...如果长时间无法加载，请针对 disq.us | disquscdn.com | disqus.com 启用代理，或使用<a href="#" id="dsqjs-force-dsqjs">评论基础模式</a></p><p id="dsqjs-loading-dsqjs" class="dsqjs-message dsqjs-hide">你可能无法访问 Disqus，已启用评论基础模式。如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并<a href="#" id="dsqjs-reload-disqus">尝试使用完整 Disqus 模式</a> | <a href="#" id="dsqjs-force-disqus">强制完整 Disqus 模式</a>。</p><p id="dsqjs-load-error" class="dsqjs-message dsqjs-hide">评论基础模式出现错误，是否<a href="#" id="dsqjs-reload">重载</a>？</p><p id="dsqjs-no-comment" class="dsqjs-no-comment dsqjs-hide">这里冷冷清清的，一条评论都没有</p></section><section class="dsqjs-container" id="dsqjs-container"><ul id="dsqjs-list" class="dsqjs-list"></ul></section></div>`;
-    document.getElementById('disqus_thread').innerHTML = disqusjsBaseTpl;
-
-    disqusjs.mode = getLS('disqusjs_mode');
-    if (disqusjs.mode === 'disqus') {
-        loadDisqus();
-    } else if (disqusjs.mode === 'dsqjs') {
-        getThreadInfo();
-    } else {
-        // Run checkDisqus() when no localStorage item
-        // disqusjs.mode will be set in checkDisqus()
-        checkDisqus();
+            document.getElementById('dsqjs-list').insertAdjacentHTML('beforeend', html);
+        })
     }
 
-}
+    let main = () => {
+        // Add dsqjs container element to #disqus_thread
 
-main();
+        /*
+            <div id="dsqjs">
+                <section class="dsqjs-action"></section>
+                <header></header>
+                <section class="dsqjs-info">
+                    <p id="dsqjs-load-disqus" class="dsqjs-message dsqjs-hide">评论完整模式加载中...如果长时间无法加载，请针对 disq.us | disquscdn.com | disqus.com 启用代理，或使用<a href="#" id="dsqjs-force-dsqjs">评论基础模式</a></p>
+                    <p id="dsqjs-loading-dsqjs" class="dsqjs-message dsqjs-hide">你可能无法访问 Disqus，已启用评论基础模式。如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并<a href="#" id="dsqjs-reload-disqus">尝试使用完整 Disqus 模式</a> | <a href="#" id="dsqjs-force-disqus">强制完整 Disqus 模式</a>。</p>
+                    <p id="dsqjs-load-error" class="dsqjs-message dsqjs-hide">评论基础模式出现错误，是否<a href="#" id="dsqjs-reload">重载</a>？</p>
+                    <p id="dsqjs-no-comment" class="dsqjs-no-comment dsqjs-hide">这里冷冷清清的，一条评论都没有</p>
+                </section>
+                <section class="dsqjs-container" id="dsqjs-container"><ul id="dsqjs-list" class="dsqjs-list"></ul></section>
+            </div>
+        */
+        var disqusjsBaseTpl = `<div id="dsqjs"><section class="dsqjs-action"></section><header></header><section class="dsqjs-info"><p id="dsqjs-load-disqus" class="dsqjs-message dsqjs-hide">评论完整模式加载中...如果长时间无法加载，请针对 disq.us | disquscdn.com | disqus.com 启用代理，或使用<a href="#" id="dsqjs-force-dsqjs">评论基础模式</a></p><p id="dsqjs-loading-dsqjs" class="dsqjs-message dsqjs-hide">你可能无法访问 Disqus，已启用评论基础模式。如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并<a href="#" id="dsqjs-reload-disqus">尝试使用完整 Disqus 模式</a> | <a href="#" id="dsqjs-force-disqus">强制完整 Disqus 模式</a>。</p><p id="dsqjs-load-error" class="dsqjs-message dsqjs-hide">评论基础模式出现错误，是否<a href="#" id="dsqjs-reload">重载</a>？</p><p id="dsqjs-no-comment" class="dsqjs-no-comment dsqjs-hide">这里冷冷清清的，一条评论都没有</p></section><section class="dsqjs-container" id="dsqjs-container"><ul id="dsqjs-list" class="dsqjs-list"></ul></section></div>`;
+        document.getElementById('disqus_thread').innerHTML = disqusjsBaseTpl;
+
+        disqusjs.mode = getLS('disqusjs_mode');
+        if (disqusjs.mode === 'disqus') {
+            loadDisqus();
+        } else if (disqusjs.mode === 'dsqjs') {
+            getThreadInfo();
+        } else {
+            // Run checkDisqus() when no localStorage item
+            // disqusjs.mode will be set in checkDisqus()
+            checkDisqus();
+        }
+
+    }
+
+    main();
+
+})();
