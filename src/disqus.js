@@ -230,7 +230,7 @@
  * The variable used in DisqusJS
  *
  * DisqusJS Mode
- * disqusjs.mode = proxy | direct - Set which mode to use, should store and get in localStorage
+ * disqusjs.mode = dsqjs | disqus - Set which mode to use, should store and get in localStorage
  *
  * DisqusJS Config
  * disqusjs.config.shortname - The disqus shortname
@@ -248,7 +248,12 @@
  */
 
 disqusjs.page = [];
-disqusjs.mode = 'proxy';
+
+window.disqus_config = function () {
+    this.page.url = disqusjs.config.url;
+    this.page.identifier = disqusjs.config.identifier;
+};
+
 var xhr = new XMLHttpRequest();
 
 setLS = (key, value) => {
@@ -296,30 +301,14 @@ Date.prototype.Format = function (fmt) {
 }
 
 /*
- * Name: getMode()
- * Description: get mode from localstorage
- */
-
-function getMode() {
-    let s = getLS('disqusjs_mode');
-    if (!s) {
-        // Run checkDisqus() when no localStorage item
-        // disqusjs.mode will be set in checkDisqus()
-        checkDisqus();
-    } else {
-        disqusjs.mode = s;
-    }
-}
-
-/*
  * Name: loadDisqus()
  * Descriptin: load disqus as it should be.
  */
 
-function loadDisqus() {
+loadDisqus = () => {
     var d = document;
     var s = d.createElement('script');
-    s.src = '//' + disqusjs.config.shortname + '.disqus.com/embed.js';
+    s.src = 'https://' + disqusjs.config.shortname + '.disqus.com/embed.js';
     s.setAttribute('data-timestamp', + new Date());
     (d.head || d.body).appendChild(s);
 }
@@ -328,43 +317,59 @@ function loadDisqus() {
  * Name: checkDisqus()
  * Description: Check disqus is avaliable for visitor or not
  * How it works: check favicons under 2 domains can be loaded or not.
-*/
-function checkDisqus() {
+ */
+
+checkDisqus = () => {
     let domain = ['disqus.com', disqusjs.config.shortname + '.disqus.com'],
         test = 0,
         success = 0;
+
     setmode = () => {
         if (success = test) {
-            disqusjs.mode = 'direct',
-                setLS('disqusjs_mode', 'direct');
+            setLS('disqusjs_mode', 'disqus');
         } else {
-            disqusjs.mode = 'proxy',
-                setLS('disqusjs_mode', 'proxy');
+            setLS('disqusjs_mode', 'dsqjs');
         }
     };
-    check = (domain) => {
-        var img = new Image;
-        var checker = setTimeout(() => {
-            img.onerror = img.onload = null,
-                test++ ,
-                setmode();
-        }, 3000);
+
+    var img = new Image;
+    let check1 = setTimeout(() => {
+        img.onerror = img.onload = null;
+        test = test + 1;
+        console.log(img.src + ' timeout')
+        setmode();
+    }, 2000);
+
+    img.onerror = () => {
+        clearTimeout(check1);
+        setLS('disqusjs_mode', 'dsqjs');
+        main();
+    };
+    img.onload = () => {
+        clearTimeout(check1);
+        let check2 = setTimeout(() => {
+            img.onerror = img.onload = null;
+            test = test + 1;
+            console.log(img.src + ' timeout')
+            setmode();
+        }, 2000);
+
         img.onerror = () => {
-            clearTimeout(checker),
-                test++ ,
-                setmode();
+            clearTimeout(check2);
+            setLS('disqusjs_mode', 'dsqjs');
+            main();
         };
+
         img.onload = () => {
-            clearTimeout(checker),
-                success++ ,
-                test++ ,
-                setmode();
+            clearTimeout(check2);
+            setLS('disqusjs_mode', 'disqus');
+            main();
         };
-        img.src = 'https://' + domain + '/favicon.ico?' + +(new Date);
+
+        img.src = 'https://' + disqusjs.config.shortname + '.disqus.com/favicon.ico?' + +(new Date);
     };
-    for (let i of domain) {
-        check(i);
-    };
+
+    img.src = 'https://disqus.com/favicon.ico?' + +(new Date);
 }
 
 /*
@@ -374,38 +379,7 @@ function checkDisqus() {
  * API URI: /3.0/threads/list.json?forum=[disqus_shortname]&thread=ident:[identifier]&api_key=[apikey]
 */
 
-function getThreadInfo() {
-
-    /*
-     * Name: getComment()
-     * Description: get the comment content
-     * API URI: /3.0/posts/list.json?forum=[shortname]&thread=[thread id]&api_key=[apikey]
-     */
-
-    getComment = () => {
-        let url = disqusjs.config.api + '3.0/posts/list.json?forum=' + disqusjs.config.shortname + '&thread=' + disqusjs.page.id + '&api_key=' + disqusjs.config.apikey;
-        xhr.open('GET', url, true);
-        xhr.timeout = 4000;
-        xhr.send();
-        xhr.onload = function () {
-            if (this.status == 200 || this.status == 304) {
-                var res = JSON.parse(this.responseText);
-                if (res.code === 0) {
-                    getCommentList(res.response);
-                } else {
-                    // Have error when get comments.
-                }
-
-            }
-        };
-        xhr.ontimeout = (e) => {
-            console.log(e)
-        };
-        xhr.onerror = (e) => {
-            console.log(e)
-        };
-    }
-
+getThreadInfo = () => {
     let url = disqusjs.config.api + '3.0/threads/list.json?forum=' + disqusjs.config.shortname + '&thread=ident:' + disqusjs.config.identifier + '&api_key=' + disqusjs.config.apikey;
     xhr.open('GET', url, true);
     xhr.timeout = 4000;
@@ -431,11 +405,41 @@ function getThreadInfo() {
 }
 
 /*
+ * Name: getComment()
+ * Description: get the comment content
+ * API URI: /3.0/posts/list.json?forum=[shortname]&thread=[thread id]&api_key=[apikey]
+ */
+
+getComment = () => {
+    let url = disqusjs.config.api + '3.0/posts/list.json?forum=' + disqusjs.config.shortname + '&thread=' + disqusjs.page.id + '&api_key=' + disqusjs.config.apikey;
+    xhr.open('GET', url, true);
+    xhr.timeout = 4000;
+    xhr.send();
+    xhr.onload = function () {
+        if (this.status == 200 || this.status == 304) {
+            var res = JSON.parse(this.responseText);
+            if (res.code === 0) {
+                getCommentList(res.response);
+            } else {
+                // Have error when get comments.
+            }
+
+        }
+    };
+    xhr.ontimeout = (e) => {
+        console.log(e)
+    };
+    xhr.onerror = (e) => {
+        console.log(e)
+    };
+}
+
+/*
  * Name: getCommentList(data)
  * Description: Render JSON to comment list components
  */
 
-function getCommentList(data) {
+getCommentList = (data) => {
     var topLevelComments = [];
     var childComments = [];
 
@@ -477,7 +481,7 @@ function getCommentList(data) {
     renderComment(commentLists)
 }
 
-function renderComment(data) {
+renderComment = (data) => {
     var disqusjsBaseTpl = `
     <div id="dsqjs">
         <section class="dsqjs-action"></section>
@@ -513,7 +517,6 @@ function renderComment(data) {
                 return;
             }
 
-            console.log(nesting < 4)
             if (nesting < 4) {
                 var html = '<ul class="dsqjs-list dsqjs-children">';
             } else {
@@ -542,8 +545,7 @@ function renderComment(data) {
 
                 html += baidu.template(commentBodyTpl, comment)
 
-                html += `${childrenComments(s)}
-                </li>`
+                html += `${childrenComments(s)}</li>`
             })
 
             html += '</ul>';
@@ -577,12 +579,24 @@ function renderComment(data) {
 
         html += baidu.template(commentBodyTpl, comment)
 
-        html += `${childrenComments(s)}
-        </li>`;
+        html += `${childrenComments(s)}</li>`;
 
         document.getElementById('dsqjs-list').insertAdjacentHTML('beforeend', html);
     })
 }
 
+main = () => {
+    disqusjs.mode = getLS('disqusjs_mode');
+    if (disqusjs.mode === 'disqus') {
+        loadDisqus();
+    } else if (disqusjs.mode === 'dsqjs') {
+        getThreadInfo();
+    } else {
+        // Run checkDisqus() when no localStorage item
+        // disqusjs.mode will be set in checkDisqus()
+        checkDisqus();
+    }
 
-getThreadInfo();
+}
+
+main();
