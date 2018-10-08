@@ -307,6 +307,8 @@ Date.prototype.Format = function (fmt) {
 
 loadDisqus = () => {
     var d = document;
+    d.getElementById('dsqjs-load-disqus').classList.remove('dsqjs-hide');
+    d.getElementById('dsqjs-force-dsqjs').addEventListener('click', forceDsqjs);
     var s = d.createElement('script');
     s.src = 'https://' + disqusjs.config.shortname + '.disqus.com/embed.js';
     s.setAttribute('data-timestamp', + new Date());
@@ -320,24 +322,10 @@ loadDisqus = () => {
  */
 
 checkDisqus = () => {
-    let domain = ['disqus.com', disqusjs.config.shortname + '.disqus.com'],
-        test = 0,
-        success = 0;
-
-    setmode = () => {
-        if (success = test) {
-            setLS('disqusjs_mode', 'disqus');
-        } else {
-            setLS('disqusjs_mode', 'dsqjs');
-        }
-    };
-
     var img = new Image;
     let check1 = setTimeout(() => {
         img.onerror = img.onload = null;
-        test = test + 1;
-        console.log(img.src + ' timeout')
-        setmode();
+        setLS('disqusjs_mode', 'dsqjs');
     }, 2000);
 
     img.onerror = () => {
@@ -349,9 +337,7 @@ checkDisqus = () => {
         clearTimeout(check1);
         let check2 = setTimeout(() => {
             img.onerror = img.onload = null;
-            test = test + 1;
-            console.log(img.src + ' timeout')
-            setmode();
+            setLS('disqusjs_mode', 'dsqjs');
         }, 2000);
 
         img.onerror = () => {
@@ -373,6 +359,31 @@ checkDisqus = () => {
 }
 
 /*
+ * Name: forceDsqjs() forceDisqus()
+ */
+
+forceDsqjs = () => {
+    setLS('disqusjs_mode', 'dsqjs');
+    main();
+}
+
+forceDisqus = () => {
+    setLS('disqusjs_mode', 'disqus');
+    main();
+}
+
+/*
+ * Name: loadError()
+ * Description: When dsqjs mode load error
+ */
+
+loadError = () => {
+    document.getElementById('dsqjs-load-error').classList.remove('dsqjs-hide');
+    document.getElementById('dsqjs-loading-dsqjs').classList.add('dsqjs-hide');
+    document.getElementById('dsqjs-reload').addEventListener('click', getThreadInfo);
+}
+
+/*
  * Name: getThreadInfo()
  * Description: Disqus API only support get thread list by ID, not identifter. So get Thread ID before get thread list.
  * API Docs: https://disqus.com/api/docs/threads/list/
@@ -380,6 +391,8 @@ checkDisqus = () => {
 */
 
 getThreadInfo = () => {
+    document.getElementById('dsqjs-loading-dsqjs').classList.remove('dsqjs-hide');
+    document.getElementById('dsqjs-force-disqus').addEventListener('click', forceDisqus);
     let url = disqusjs.config.api + '3.0/threads/list.json?forum=' + disqusjs.config.shortname + '&thread=ident:' + disqusjs.config.identifier + '&api_key=' + disqusjs.config.apikey;
     xhr.open('GET', url, true);
     xhr.timeout = 4000;
@@ -397,10 +410,10 @@ getThreadInfo = () => {
         }
     };
     xhr.ontimeout = (e) => {
-        console.log(e)
+        loadError();
     };
     xhr.onerror = (e) => {
-        console.log(e)
+        loadError();
     };
 }
 
@@ -482,15 +495,6 @@ getCommentList = (data) => {
 }
 
 renderComment = (data) => {
-    var disqusjsBaseTpl = `
-    <div id="dsqjs">
-        <section class="dsqjs-action"></section>
-        <header></header>
-        <section class="dsqjs-container"><ul id="dsqjs-list" class="dsqjs-list"></ul></section>
-    </div>
-    `;
-    document.getElementById('disqus_thread').innerHTML = disqusjsBaseTpl;
-
     var commentBodyTpl = `
     <div class="dsqjs-item-container">
         <div class="dsqjs-avater">
@@ -586,6 +590,21 @@ renderComment = (data) => {
 }
 
 main = () => {
+    // Add dsqjs container element to #disqus_thread
+    var disqusjsBaseTpl = `
+        <div id="dsqjs">
+            <section class="dsqjs-action"></section>
+            <header></header>
+            <section class="dsqjs-info">
+                <p id="dsqjs-load-disqus" class="dsqjs-load-error dsqjs-hide">评论完整模式加载中...如果长时间无法加载，请针对 disq.us | disquscdn.com | disqus.com 启用代理，或使用<a href="#" id="dsqjs-force-dsqjs">评论基础模式</a></p>
+                <p id="dsqjs-loading-dsqjs" class="dsqjs-load-error dsqjs-hide">你可能无法访问 Disqus，已启用评论基础模式。如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并<a href="#" id="dsqjs-force-disqus">切换到完整 Disqus 模式</a>。</p>
+                <p id="dsqjs-load-error" class="dsqjs-load-error dsqjs-hide">评论基础模式出现错误，是否<a href="#" id="dsqjs-reload">重载</a>？</p>
+            </section>
+            <section class="dsqjs-container" id="dsqjs-container"><ul id="dsqjs-list" class="dsqjs-list"></ul></section>
+        </div>
+        `;
+    document.getElementById('disqus_thread').innerHTML = disqusjsBaseTpl;
+
     disqusjs.mode = getLS('disqusjs_mode');
     if (disqusjs.mode === 'disqus') {
         loadDisqus();

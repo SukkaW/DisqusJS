@@ -10,6 +10,10 @@
     padding: 0;
 }
 
+#dsqjs .dsqjs-container {
+    margin: 20px 0 0;
+}
+
 #dsqjs ul.dsqjs-list {
     list-style: none;
     list-style-type: none;
@@ -97,4 +101,19 @@
 #dsqjs .dsqjs-children .dsqjs-avater img {
     width: 38px;
     height: 38px;
+}
+
+#dsqjs .dsqjs-load-error {
+    text-align: center;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+#dsqjs .dsqjs-load-error a {
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
+.dsqjs-hide {
+    display: none !important;
 }
