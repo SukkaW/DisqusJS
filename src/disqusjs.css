@@ -5,6 +5,11 @@
  * License: GPL-3.0
  */
 
+#dsqjs > * {
+    margin: 0;
+    padding: 0;
+}
+
 #dsqjs .dsqjs-container * {
     margin: 0;
     padding: 0;

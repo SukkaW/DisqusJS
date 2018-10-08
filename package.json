@@ -1,6 +1,6 @@
 {
   "name": "disqusjs",
-  "version": "0.1.0",
+  "version": "0.1.0-alpha-4",
   "description": "Show comments list from Disqus API",
   "main": "dist/disqus.js",
   "scripts": {
