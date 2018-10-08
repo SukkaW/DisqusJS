@@ -30,7 +30,8 @@ gulp.task('minify-js', () => {
         .pipe(uglify({
             output: {
                 comments: /^!/
-            }
+            },
+            keep_fnames: true
         }))
         .pipe(gulp.dest('dist'));
 });
