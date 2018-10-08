@@ -495,7 +495,7 @@ getCommentList = (data) => {
 }
 
 renderComment = (data) => {
-    var commentBodyTpl = `
+    /*
     <div class="dsqjs-item-container">
         <div class="dsqjs-avater">
             <%- avatarEl %>
@@ -509,7 +509,8 @@ renderComment = (data) => {
             <div class="dsqjs-content"><%- message %></div>
         </div>
     </div>
-    `
+    */
+    var commentBodyTpl = `<div class="dsqjs-item-container"><div class="dsqjs-avater"><%- avatarEl %></div><div class="dsqjs-body"><header class="dsqjs-header"><span class="dsqjs-author"><%- authorEl %></span><span class="dsqjs-bullet"></span><span class="dsqjs-meta"><time><%- (new Date(createdAt)).Format("yyyy-MM-dd hh:mm:ss") %></time></span></header><div class="dsqjs-content"><%- message %></div></div></div>`
 
     data.map(s => {
         childrenComments = (s) => {
@@ -532,11 +533,12 @@ renderComment = (data) => {
                 let comment = s.comment
 
                 if (comment.author.profileUrl) {
-                    comment.avatarEl = `
+                    /*
                     <a href="${comment.author.profileUrl}" target="_blank" rel="nofollow noopener noreferrer">
                         <img src="${comment.author.avatar.cache}">
                     </a>
-                    `;
+                    */
+                    comment.avatarEl = `<a href="${comment.author.profileUrl}" target="_blank" rel="nofollow noopener noreferrer"><img src="${comment.author.avatar.cache}"></a>`;
                     comment.authorEl = `<a href="${comment.author.profileUrl}">${comment.author.name}</a>`
                 } else {
                     comment.avatarEl = `<img src="${comment.author.avatar.cache}">`;
@@ -564,11 +566,7 @@ renderComment = (data) => {
         let comment = s.comment;
 
         if (comment.author.profileUrl) {
-            comment.avatarEl = `
-            <a href="${comment.author.profileUrl}" target="_blank" rel="nofollow noopener noreferrer">
-                <img src="${comment.author.avatar.cache}">
-            </a>
-            `;
+            comment.avatarEl = `<a href="${comment.author.profileUrl}" target="_blank" rel="nofollow noopener noreferrer"><img src="${comment.author.avatar.cache}"></a>`;
             comment.authorEl = `<a href="${comment.author.profileUrl}">${comment.author.name}</a>`
         } else {
             comment.avatarEl = `<img src="${comment.author.avatar.cache}">`;
@@ -591,7 +589,8 @@ renderComment = (data) => {
 
 main = () => {
     // Add dsqjs container element to #disqus_thread
-    var disqusjsBaseTpl = `
+
+    /*
         <div id="dsqjs">
             <section class="dsqjs-action"></section>
             <header></header>
@@ -602,7 +601,8 @@ main = () => {
             </section>
             <section class="dsqjs-container" id="dsqjs-container"><ul id="dsqjs-list" class="dsqjs-list"></ul></section>
         </div>
-        `;
+    */
+    var disqusjsBaseTpl = `<div id="dsqjs"><section class="dsqjs-action"></section><header></header><section class="dsqjs-info"><p id="dsqjs-load-disqus" class="dsqjs-load-error dsqjs-hide">评论完整模式加载中...如果长时间无法加载，请针对 disq.us | disquscdn.com | disqus.com 启用代理，或使用<a href="#" id="dsqjs-force-dsqjs">评论基础模式</a></p><p id="dsqjs-loading-dsqjs" class="dsqjs-load-error dsqjs-hide">你可能无法访问 Disqus，已启用评论基础模式。如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并<a href="#" id="dsqjs-force-disqus">切换到完整 Disqus 模式</a>。</p><p id="dsqjs-load-error" class="dsqjs-load-error dsqjs-hide">评论基础模式出现错误，是否<a href="#" id="dsqjs-reload">重载</a>？</p></section><section class="dsqjs-container" id="dsqjs-container"><ul id="dsqjs-list" class="dsqjs-list"></ul></section></div>`;
     document.getElementById('disqus_thread').innerHTML = disqusjsBaseTpl;
 
     disqusjs.mode = getLS('disqusjs_mode');
