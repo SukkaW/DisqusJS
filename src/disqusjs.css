@@ -5,7 +5,7 @@
  * License: GPL-3.0
  */
 
-#dsqjs > * {
+#dsqjs>* {
     margin: 0;
     padding: 0;
 }
@@ -145,4 +145,19 @@
 
 .dsqjs-hide {
     display: none !important;
+}
+
+#dsqjs .dsqjs-footer {
+    width: 100%;
+    font-weight: 700;
+    font-size: 14px;
+    color: #555;
+    opacity: .9;
+}
+
+#dsqjs .dsqjs-footer .dsqjs-footer-right {
+    text-align: right;
+    float: right;
+    line-height: 1.5;
+    padding-right: 6px;
 }

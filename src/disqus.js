@@ -614,10 +614,17 @@
                     <p id="dsqjs-load-error" class="dsqjs-message dsqjs-hide">评论基础模式出现错误，是否<a href="#disqus_thread" id="dsqjs-reload">重载</a>？</p>
                     <p id="dsqjs-no-comment" class="dsqjs-no-comment dsqjs-hide">这里冷冷清清的，一条评论都没有</p>
                 </section>
-                <section class="dsqjs-container" id="dsqjs-container"><ul id="dsqjs-list" class="dsqjs-list"></ul></section>
+                <section class="dsqjs-container" id="dsqjs-container">
+                    <ul id="dsqjs-list" class="dsqjs-list"></ul>
+                    <div class="dsqjs-footer">
+                        <div class="dsqjs-footer-right">
+                            Powered by <a href="https://disqus.com" rel="nofollow noopener noreferrer" target="_blank">DISQUS</a> & <a href="https://github.com/SukkaW/DisqusJS">DisqusJS</a>
+                        </div>
+                    </div>
+                </section>
             </div>
         */
-        var disqusjsBaseTpl = `<div id="dsqjs"><section class="dsqjs-action"></section><header></header><section class="dsqjs-info"><p id="dsqjs-load-disqus" class="dsqjs-message dsqjs-hide">评论完整模式加载中...如果长时间无法加载，请针对 disq.us | disquscdn.com | disqus.com 启用代理，或使用<a href="#disqus_thread" id="dsqjs-force-dsqjs">评论基础模式</a></p><p id="dsqjs-loading-dsqjs" class="dsqjs-message dsqjs-hide">你可能无法访问 Disqus，已启用评论基础模式。如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并<a href="#disqus_thread" id="dsqjs-reload-disqus">尝试使用完整 Disqus 模式</a> | <a href="#disqus_thread" id="dsqjs-force-disqus">强制完整 Disqus 模式</a>。</p><p id="dsqjs-load-error" class="dsqjs-message dsqjs-hide">评论基础模式出现错误，是否<a href="#disqus_thread" id="dsqjs-reload">重载</a>？</p><p id="dsqjs-no-comment" class="dsqjs-no-comment dsqjs-hide">这里冷冷清清的，一条评论都没有</p></section><section class="dsqjs-container" id="dsqjs-container"><ul id="dsqjs-list" class="dsqjs-list"></ul></section></div>`;
+        var disqusjsBaseTpl = `<div id="dsqjs"><section class="dsqjs-action"></section><header></header><section class="dsqjs-info"><p id="dsqjs-load-disqus" class="dsqjs-message dsqjs-hide">评论完整模式加载中...如果长时间无法加载，请针对 disq.us | disquscdn.com | disqus.com 启用代理，或使用<a href="#disqus_thread" id="dsqjs-force-dsqjs">评论基础模式</a></p><p id="dsqjs-loading-dsqjs" class="dsqjs-message dsqjs-hide">你可能无法访问 Disqus，已启用评论基础模式。如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并<a href="#disqus_thread" id="dsqjs-reload-disqus">尝试使用完整 Disqus 模式</a> | <a href="#disqus_thread" id="dsqjs-force-disqus">强制完整 Disqus 模式</a>。</p><p id="dsqjs-load-error" class="dsqjs-message dsqjs-hide">评论基础模式出现错误，是否<a href="#disqus_thread" id="dsqjs-reload">重载</a>？</p><p id="dsqjs-no-comment" class="dsqjs-no-comment dsqjs-hide">这里冷冷清清的，一条评论都没有</p></section><section class="dsqjs-container" id="dsqjs-container"><ul id="dsqjs-list" class="dsqjs-list"></ul><div class="dsqjs-footer"><div class="dsqjs-footer-right">Powered by <a href="https://disqus.com" rel="nofollow noopener noreferrer" target="_blank">DISQUS</a> & <a href="https://github.com/SukkaW/DisqusJS">DisqusJS</a></div></div></section></div>`;
         document.getElementById('disqus_thread').innerHTML = disqusjsBaseTpl;
 
         disqusjs.mode = getLS('disqusjs_mode');
