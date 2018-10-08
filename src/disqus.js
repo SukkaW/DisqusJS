@@ -239,6 +239,7 @@
  * disqusjs.config,api - Where to get data
  * disqusjs.config.apikey - The apikey used to request Disqus API
  * disqusjs.config.admin - The disqus forum admin username
+ * disqusjs.config.adminLabel - The disqus moderator badge text
  *
  * DisqusJS Info
  * disqusjs.page.id = The thread id, used at next API call
@@ -549,6 +550,10 @@ renderComment = (data) => {
                     comment.authorEl = `${comment.author.name}`
                 }
 
+                if (comment.author.name === disqusjs.config.admin) {
+                    comment.authorEl += `<span class="dsqjs-admin-badge">${disqusjs.config.adminLabel}</span>`
+                }
+
                 s.nesting = nesting + 1
 
                 html += `<li class="dsqjs-item" id="comment-${comment.id}">`
@@ -575,6 +580,10 @@ renderComment = (data) => {
         } else {
             comment.avatarEl = `<img src="${comment.author.avatar.cache}">`;
             comment.authorEl = `${comment.author.name}`
+        }
+
+        if (comment.author.name === disqusjs.config.admin) {
+            comment.authorEl += `<span class="dsqjs-admin-badge">${disqusjs.config.adminLabel}</span>`
         }
 
         if (s.children) {
