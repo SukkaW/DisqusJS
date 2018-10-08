@@ -220,7 +220,7 @@
 // Import baiduTemplate finished
 
 /*!
- * DisqusJS | v0.1.0
+ * DisqusJS | v0.1.1
  * Author: SukkaW
  * Link: https://github.com/SukkaW/DisqusJS
  * License: GPL-3.0
