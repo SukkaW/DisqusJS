@@ -103,13 +103,22 @@
     height: 38px;
 }
 
-#dsqjs .dsqjs-load-error {
+#dsqjs .dsqjs-message {
     text-align: center;
     margin-top: 4px;
     margin-bottom: 4px;
+    font-size: 14px;
 }
 
-#dsqjs .dsqjs-load-error a {
+#dsqjs .dsqjs-no-comment {
+    text-align: center;
+    margin-top: 8px;
+    margin-bottom: 4px;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+#dsqjs .dsqjs-message a {
     margin-left: 2px;
     margin-right: 2px;
 }
