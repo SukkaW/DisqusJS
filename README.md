@@ -8,6 +8,7 @@
 [![npm license](https://img.shields.io/npm/l/disqusjs.svg?style=flat-square)](https://github.com/SukkaW/suka.css/blob/master/LICENSE)
 [![Size](https://badge-size.herokuapp.com/SukkaW/DisqusJS/master/dist/disqus.js?compression=gzip&style=flat-square)](https://github.com/SukkaW/suka.css/tree/master/dist)
 [![Travis](https://img.shields.io/travis/SukkaW/DisqusJS.svg?style=flat-square)](https://travis-ci.org/SukkaW/DisqusJS)
+[![Codacy Badge](https://img.shields.io/codacy/grade/20babb75dd6047c2828f231e7254bb5b.svg?style=flat-square)](https://app.codacy.com/app/SukkaW/DisqusJS)
 [![Dependency Status](https://img.shields.io/david/SukkaW/DisqusJS.svg?style=flat-square)](https://david-dm.org/SukkaW/DisqusJS)
 [![jsDelivr Hits](https://data.jsdelivr.com/v1/package/npm/disqusjs/badge)](https://www.jsdelivr.com/package/npm/disqusjs)
 
@@ -19,15 +20,20 @@
 
 - [x] 展示评论列表
 - [x] 自动判断访客的 DISQUS 可用性选择不同模式
-- [ ] 展示评论中的媒体内容
+- [ ] 展示评论中的媒体内容（WIP）
 - [ ] 自动初始化新页面（使用 `disqusjs.config.identifier`）
 - [ ] 提交新评论（匿名）（WIP）
+
+## Demo
+
+- https://suka.js.org/DisqusJS/
+- https://blog.skk.moe
 
 ## 使用
 
 ### 安装
 
-首先下载 [经过编译和压缩的 DisqusJS 相关文件](https://github.com/SukkaW/DisqusJS/tree/master/dist)，在你的站点需要安装  DisqusJS 的页面的 `</head>` 之前引入 DisqusJS 的 css、在 `</body>` 之前引入 Disqus 的 JS：
+首先下载 [经过编译和压缩的 DisqusJS 相关文件](https://github.com/SukkaW/DisqusJS/tree/master/dist)，在你需要安装 DisqusJS 的页面的 `</head>` 之前引入 DisqusJS 的 css、在 `</body>` 之前引入 Disqus 的 JS：
 
 ```html
 <link rel="stylesheet" href="disqusjs.css">
@@ -43,6 +49,7 @@
 <!-- Unpkg -->
 <link rel="stylesheet" href="https://unpkg.com/disqusjs@0.1.4/dist/disqusjs.css">
 <script src="https://unpkg.com/disqusjs@0.1.4/dist/disqus.js"></script>
+
 <!-- jsDelivr -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/disqusjs@0.1.4/dist/disqusjs.css">
 <script src="https://cdn.jsdelivr.net/npm/disqusjs@0.1.4/dist/disqus.js"></script>
@@ -145,8 +152,9 @@ disqusjs.config {}
 
 ## 注意
 
-- ~~DisqusJS 尚不支持初始化一个新页面，在新创建了页面以后需要先使用原版 Disqus 访问一次该页面完成初始化。~~DisqusJS 如果检测到当前页面没有初始化、会提示是否切换到 Disqus 完整模式进行初始化。
+- ~~DisqusJS 尚不支持初始化一个新页面，在新创建了页面以后需要先使用原版 Disqus 访问一次该页面完成初始化。~~ DisqusJS 如果检测到当前页面没有初始化、会提示是否切换到 Disqus 完整模式进行初始化。
 - DisqusJS 仅在当前域名首次访问时检测 Disqus 可用性并选择模式，并把结果持久化在 localStorage 中，之后访问都会沿用之前的模式。
+- 一个 Disqus Application 的 Rate Limit 是每小时 1000 次；DisqusJS 一次正常加载会产生 2 次请求。未来可能会开放填入多个 API Key，支持调用多个 Application，绕过 Rate Limit。
 
 ## 调试、进阶使用 & 开发相关
 
