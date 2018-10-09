@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Demo Page | DisqusJS</title>
+    <meta http-equiv="x-dns-prefetch-control " content="on">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge, chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+    <link href="https://cdn.jsdelivr.net/npm/skx@0.0.1/favicon/favicon-32x32.png" rel="icon" type="image/png" sizes="32x32">
+    <link href="https://cdn.jsdelivr.net/npm/skx@0.0.1/favicon/favicon-16x16.png" rel="icon" type="image/png" sizes="16x16">
+    <link href="https://cdn.jsdelivr.net/npm/skx@0.0.1" rel="shortcut icon" type="image/ico">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/disqusjs@0.1.4/dist/disqusjs.css">
+    <style>
+        #disqus_thread {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 10px
+        }
+
+        .dsqjs-demo-descr {
+            max-width: 600px;
+            padding: 20px;
+            margin: 20px auto 0;
+            text-align: center
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dsqjs-demo-descr">
+        <h1>DisqusJS Demo</h1>
+        <p>Disqus 替代方案 - 使用 Disqus API 渲染评论列表</p>
+        <p>
+            <a href="https://github.com/SukkaW/DisqusJS" target="_blank" rel="noopenner">GitHub</a>
+        </p>
+    </div>
+    <div id="disqus_thread">
+        <div id="dsqjs">
+            <section class="dsqjs-action"></section>
+            <header></header>
+            <section class="dsqjs-info">
+                <p id="dsqjs-load-disqus" class="dsqjs-message dsqjs-hide">评论完整模式加载中...如果长时间无法加载，请针对 disq.us |
+                    disquscdn.com | disqus.com 启用代理，或使用<a href="#disqus_thread" id="dsqjs-force-dsqjs">评论基础模式</a></p>
+                <p id="dsqjs-loading-dsqjs" class="dsqjs-message dsqjs-hide">你可能无法访问 Disqus，已启用评论基础模式。如需完整体验请针对
+                    disq.us | disquscdn.com | disqus.com 启用代理并<a href="#disqus_thread" id="dsqjs-reload-disqus">尝试使用完整
+                        Disqus 模式</a> | <a href="#disqus_thread" id="dsqjs-force-disqus">强制完整 Disqus 模式</a>。</p>
+                <p id="dsqjs-load-error" class="dsqjs-message">评论基础模式出现错误，是否<a href="#disqus_thread" id="dsqjs-reload">重载</a>？</p>
+                <p id="dsqjs-no-comment" class="dsqjs-no-comment dsqjs-hide">这里冷冷清清的，一条评论都没有</p>
+            </section>
+            <section class="dsqjs-container" id="dsqjs-container">
+                <ul id="dsqjs-list" class="dsqjs-list"></ul>
+                <div class="dsqjs-footer">
+                    <div class="dsqjs-footer-right">Powered by <a href="https://disqus.com" rel="nofollow noopener noreferrer"
+                            target="_blank">DISQUS</a> & <a href="https://github.com/SukkaW/DisqusJS">DisqusJS</a></div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+    <script>
+        var disqusjs = [];
+        disqusjs.config = {
+            shortname: 'sukas-blog',
+            identifier: "https://suka.js.org/DisqusJS/",
+            url: "https://suka.js.org/DisqusJS/",
+            api: "https://cors-anywhere.herokuapp.com/disqus.com/api/",
+            apikey: 'G2amHmorq3wJVjaviRo3YNWPgsKkAm7IolUWQKLeyQNd7lb3GtgWNnh6RgFFIwO9',
+            admin: 'SukkaW',
+            adminLabel: '苏卡卡~'
+        };
+    </script>
+    <script>
+        console.log()
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/disqusjs@0.1.4/dist/disqus.js"></script>
+</body>
+
+</html>
