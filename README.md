@@ -154,7 +154,7 @@ disqusjs.config {}
 - DisqusJS 检测访客的 Disqus 可用性是通过检测 `disqus.com/favicon.ico` 和 `${disqusjs.config.shortname}.disqus.com/favicon.ico` 是否能正常加载，如果有一个加载出错或超时（2s）就判定 Disqus 不可用。
 - 你应该已经注意到 DisqusJS 在页面注册了全局变量 `window.disqusjs`，你可以直接在控制台输入 `console.log(disqusjs)` 查看。关于里面每个子串的含义全部标注在 [DisqusJS 源文件](https://github.com/SukkaW/DisqusJS/blob/master/src/disqus.js) 的注释之中。
 - Disqus 自己的 config 保存在全局变量 `window.disqus_config` 中，你可能好奇为什么没有引入。实际上由于 `disqus_config` 和 `disqusjs.config` 中有很多重复的配置，所以 DisqusJS 直接将 `disqusjs.config` 中相关配置项赋给了 `disqus_config`，所以用户只需要配置 `disqusjs.config` 即可。
-- ES6 模板字符串不支持复用，所以引入了 [baiduTemplate](https://baidufe.github.io/BaiduTemplate/) 用来渲染评论条目。baiduTemplate 是一个超轻量级的浏览器端 EJS 模板实现。以后 DisqusJS 可能会通过复用函数的方法实现 ES6 模板字符串复用，届时就可以剥离掉 baiduTemplate 了。
+- ~~ES6 模板字符串不支持复用，所以引入了 [baiduTemplate](https://baidufe.github.io/BaiduTemplate/) 用来渲染评论条目。baiduTemplate 是一个超轻量级的浏览器端 EJS 模板实现。以后 DisqusJS 可能会通过复用函数的方法实现 ES6 模板字符串复用，届时就可以剥离掉 baiduTemplate 了。~~ 已经剥离 baiduTemplate。
 - Disqus API 中有一个 createComment 的 API 用于创建新的评论，但是调用时会有一些坑。
 - DisqusJS 并没有使用 Webpack 将 `disqusjs.css` 和 `disqus.js` 打包在一起，这样大家就可以开发自己的 DisqusJS 主题并引入。所有 DisqusJS 创建的 HTML 元素都在 `<div id="dsqjs"></div>` 之中、几乎所有的元素都有自己的类名并都以 `dsqjs-` 为前缀，防止污染。
 
