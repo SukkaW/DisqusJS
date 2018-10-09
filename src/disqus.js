@@ -470,7 +470,7 @@
             return {
                 comment,
                 author: comment.author.name,
-                isPrimary: comment.author.username === disqusjs.config.admin,
+                isPrimary: comment.author.username === disqusjs.config.admin.toLowerCase(),
                 children: getChildren(+comment.id)
             };
         });
@@ -484,7 +484,7 @@
                     list.unshift({
                         comment,
                         author: comment.author.name,
-                        isPrimary: comment.author.username === disqusjs.config.admin,
+                        isPrimary: comment.author.username === disqusjs.config.admin.toLowerCase(),
                         children: getChildren(+comment.id)
                     });
                 }
@@ -535,7 +535,6 @@
                 }
 
                 children.map(s => {
-
                     let comment = s.comment
 
                     if (comment.author.profileUrl) {
@@ -551,7 +550,7 @@
                         comment.authorEl = `${comment.author.name}`
                     }
 
-                    if (comment.author.name === disqusjs.config.admin) {
+                    if (s.isPrimary) {
                         comment.authorEl += `<span class="dsqjs-admin-badge">${disqusjs.config.adminLabel}</span>`
                     }
 
@@ -583,7 +582,7 @@
                 comment.authorEl = `${comment.author.name}`
             }
 
-            if (comment.author.name === disqusjs.config.admin) {
+            if (s.isPrimary) {
                 comment.authorEl += `<span class="dsqjs-admin-badge">${disqusjs.config.adminLabel}</span>`
             }
 
