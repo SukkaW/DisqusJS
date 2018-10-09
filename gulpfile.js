@@ -3,6 +3,16 @@ let uglify = require('gulp-uglify');
 let babel = require('gulp-babel');
 let autoprefixer = require('gulp-autoprefixer');
 let cleanCSS = require('gulp-clean-css');
+let header = require('gulp-header');
+let pkg = require('./package.json');
+
+var jsBanner = ['/*!',
+    ' * DisqusJS | v<%= pkg.version %>',
+    ' * Author: SukkaW',
+    ' * Link: https://github.com/SukkaW/DisqusJS',
+    ' * License: <%= pkg.license %>',
+    ' */'
+    ].join('\n');
 
 var configs = {
     browsers: [
@@ -28,11 +38,9 @@ gulp.task('minify-js', () => {
             ]
         }))
         .pipe(uglify({
-            output: {
-                comments: /^!/
-            },
             keep_fnames: false
         }))
+        .pipe(header(jsBanner, { pkg: pkg }))
         .pipe(gulp.dest('dist'));
 });
 
