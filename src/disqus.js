@@ -173,6 +173,7 @@
 
     let getThreadInfo = () => {
         document.getElementById('dsqjs-loading-dsqjs').classList.remove('dsqjs-hide');
+        document.getElementById('dsqjs-load-error').classList.add('dsqjs-hide');
         document.getElementById('dsqjs-force-disqus').addEventListener('click', forceDisqus);
         document.getElementById('dsqjs-reload-disqus').addEventListener('click', checkDisqus);
         let url = disqusjs.config.api + '3.0/threads/list.json?forum=' + disqusjs.config.shortname + '&thread=ident:' + disqusjs.config.identifier + '&api_key=' + disqusjs.config.apikey;
