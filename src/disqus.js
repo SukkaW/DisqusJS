@@ -1,5 +1,5 @@
-/*!
- * DisqusJS | v0.1.1
+/*
+ * DisqusJS | v0.1.4
  * Author: SukkaW
  * Link: https://github.com/SukkaW/DisqusJS
  * License: GPL-3.0
@@ -15,7 +15,7 @@
  * disqusjs.config.shortname - The disqus shortname
  * disqusjs.config.identifier - The identifier of the page
  * disqusjs.config.url - The url of the page
- * disqusjs.config,api - Where to get data
+ * disqusjs.config.api - Where to get data
  * disqusjs.config.apikey - The apikey used to request Disqus API
  * disqusjs.config.admin - The disqus forum admin username
  * disqusjs.config.adminLabel - The disqus moderator badge text
