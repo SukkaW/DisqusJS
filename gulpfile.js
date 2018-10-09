@@ -12,7 +12,16 @@ var jsBanner = ['/*!',
     ' * Link: https://github.com/SukkaW/DisqusJS',
     ' * License: <%= pkg.license %>',
     ' */'
-    ].join('\n');
+].join('\n');
+
+var cssBanner = ['/*!',
+    ' * DisqusJS - Default Theme | v<%= pkg.version %>',
+    ' * Author: SukkaW',
+    ' * Link: https://github.com/SukkaW/DisqusJS',
+    ' * License: <%= pkg.license %>',
+    ' */'
+].join('\n');
+
 
 var configs = {
     browsers: [
@@ -48,6 +57,7 @@ gulp.task('minify-css', () => {
     return gulp.src('src/**/*.css')
         .pipe(autoprefixer(configs.browsers))
         .pipe(cleanCSS(configs.cleanCSS))
+        .pipe(header(cssBanner, { pkg: pkg }))
         .pipe(gulp.dest('dist'));
 });
 
