@@ -53,7 +53,7 @@
             return `${date.getUTCFullYear().toString()}/${(date.getUTCMonth() + 1).toString()}/${date.getUTCDate()} ${date.getUTCHours()}:${date.getUTCMinutes()}:${date.getUTCSeconds()}`
             //yyyy-MM-dd hh:mm:ss
 
-        }
+        };
 
     /*
      * Name: loadDisqus()
@@ -107,10 +107,10 @@
                 main();
             };
 
-            img.src = 'https://' + disqusjs.config.shortname + '.disqus.com/favicon.ico?' + +(new Date);
+            img.src = `https://${disqusjs.config.shortname}.disqus.com/favicon.ico?${+(new Date)}`;
         };
 
-        img.src = 'https://disqus.com/favicon.ico?' + +(new Date);
+        img.src = `https://disqus.com/favicon.ico?${+(new Date)}`;
     }
 
     /*
@@ -139,7 +139,7 @@
         document.getElementById('dsqjs-load-error').classList.add('dsqjs-hide');
         document.getElementById('dsqjs-force-disqus').addEventListener('click', forceDisqus);
         document.getElementById('dsqjs-reload-disqus').addEventListener('click', checkDisqus);
-        let url = disqusjs.config.api + '3.0/threads/list.json?forum=' + disqusjs.config.shortname + '&thread=ident:' + disqusjs.config.identifier + '&api_key=' + disqusjs.config.apikey;
+        let url = `${disqusjs.config.api}3.0/threads/list.json?forum=${disqusjs.config.shortname}&thread=ident:${disqusjs.config.identifier}&api_key=${disqusjs.config.apikey}`;
         xhr.open('GET', url, true);
         xhr.timeout = 4000;
         xhr.send();
@@ -178,7 +178,7 @@
      */
 
     let getComment = () => {
-        let url = disqusjs.config.api + '3.0/posts/list.json?forum=' + disqusjs.config.shortname + '&thread=' + disqusjs.page.id + '&api_key=' + disqusjs.config.apikey;
+        let url = `${disqusjs.config.api}3.0/posts/list.json?forum=${disqusjs.config.shortname}&thread=${disqusjs.page.id}&api_key=${disqusjs.config.apikey}`;
         xhr.open('GET', url, true);
         xhr.timeout = 4000;
         xhr.send();
@@ -216,7 +216,7 @@
         var childComments = [];
 
         data.forEach(comment => {
-            (comment.parent ? childComments : topLevelComments)['push'](comment)
+            (comment.parent ? childComments : topLevelComments)['push'](comment);
         })
 
         var commentLists = topLevelComments.map(comment => {
@@ -250,7 +250,7 @@
             }
         }
 
-        renderComment(commentLists)
+        renderComment(commentLists);
     }
 
     let renderComment = (data) => {
@@ -270,9 +270,9 @@
                 </div>
             </div>
             */
-            let commentItemTpl = `<div class="dsqjs-item-container"><div class="dsqjs-avater">${s.avatarEl}</div><div class="dsqjs-body"><header class="dsqjs-header"><span class="dsqjs-author">${s.authorEl}</span><span class="dsqjs-bullet"></span><span class="dsqjs-meta"><time>${dateFormat(new Date(s.createdAt))}</time></span></header><div class="dsqjs-content">${s.message}</div></div></div>`
+            let commentItemTpl = `<div class="dsqjs-item-container"><div class="dsqjs-avater">${s.avatarEl}</div><div class="dsqjs-body"><header class="dsqjs-header"><span class="dsqjs-author">${s.authorEl}</span><span class="dsqjs-bullet"></span><span class="dsqjs-meta"><time>${dateFormat(new Date(s.createdAt))}</time></span></header><div class="dsqjs-content">${s.message}</div></div></div>`;
 
-            return commentItemTpl
+            return commentItemTpl;
         }
 
 
@@ -282,7 +282,7 @@
 
                 var children = (s.children || []);
 
-                if (typeof children === 'null') {
+                if (!children) {
                     return;
                 }
 
@@ -293,7 +293,7 @@
                 }
 
                 children.map(s => {
-                    let comment = s.comment
+                    let comment = s.comment;
 
                     if (comment.author.profileUrl) {
                         /*
