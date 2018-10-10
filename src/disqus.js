@@ -41,13 +41,13 @@
         try {
             localStorage.setItem(key, value)
         } catch (o) {
-            console.log(o), console.log("Failed to set localStorage item")
+            console.log(o + " Failed to set localStorage item");
         }
     },
 
         getLS = (key) => {
             return localStorage.getItem(key);
-        }
+        };
 
     /*
      * Name: Date.Format()
@@ -75,9 +75,13 @@
             "q+": Math.floor((this.getMonth() + 3) / 3), // Season
             "S": this.getMilliseconds() // ms
         };
-        if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+        if (/(y+)/.test(fmt)) {
+            fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length))
+        };
         for (var k in o)
-            if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+            if (new RegExp("(" + k + ")").test(fmt)) {
+                fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+            }
         return fmt;
     }
 
@@ -154,17 +158,6 @@
     }
 
     /*
-     * Name: loadError()
-     * Description: When dsqjs mode load error
-     */
-
-    let loadError = () => {
-        document.getElementById('dsqjs-load-error').classList.remove('dsqjs-hide');
-        document.getElementById('dsqjs-loading-dsqjs').classList.add('dsqjs-hide');
-        document.getElementById('dsqjs-reload').addEventListener('click', getThreadInfo);
-    }
-
-    /*
      * Name: getThreadInfo()
      * Description: Disqus API only support get thread list by ID, not identifter. So get Thread ID before get thread list.
      * API Docs: https://disqus.com/api/docs/threads/list/
@@ -181,9 +174,8 @@
         xhr.timeout = 4000;
         xhr.send();
         xhr.onload = function () {
-            if (this.status == 200 || this.status == 304) {
+            if (this.status === 200 || this.status === 304) {
                 let res = JSON.parse(this.responseText).response;
-                console.log(res.length)
                 if (res.length === 1) {
                     var response = res[0];
                     disqusjs.page = {
@@ -197,6 +189,8 @@
                     document.getElementById('dsqjs-thread-not-init').classList.remove('dsqjs-hide');
                     document.getElementById('dsqjs-init-thread').addEventListener('click', forceDisqus);
                 }
+            } else {
+                loadError();
             }
         };
         xhr.ontimeout = (e) => {
@@ -229,7 +223,7 @@
         xhr.timeout = 4000;
         xhr.send();
         xhr.onload = function () {
-            if (this.status == 200 || this.status == 304) {
+            if (this.status === 200 || this.status === 304) {
                 var res = JSON.parse(this.responseText);
                 if (res.code === 0 && res.response.length > 0) {
                     getCommentList(res.response);
@@ -238,6 +232,8 @@
                     document.getElementById('dsqjs-no-comment').classList.remove('dsqjs-hide');
                 }
 
+            } else {
+                loadError();
             }
         };
         xhr.ontimeout = (e) => {
@@ -400,6 +396,17 @@
 
             document.getElementById('dsqjs-list').insertAdjacentHTML('beforeend', html);
         })
+    }
+
+    /*
+     * Name: loadError()
+     * Description: When dsqjs mode load error
+     */
+
+    let loadError = () => {
+        document.getElementById('dsqjs-load-error').classList.remove('dsqjs-hide');
+        document.getElementById('dsqjs-loading-dsqjs').classList.add('dsqjs-hide');
+        document.getElementById('dsqjs-reload').addEventListener('click', getThreadInfo);
     }
 
     let main = () => {
