@@ -136,6 +136,23 @@
 #dsqjs .dsqjs-message a {
     margin-left: 2px;
     margin-right: 2px;
+    cursor: pointer;
+}
+
+#dsqjs .dsqjs-load-more {
+    font-size: 14px;
+    font-weight: 400;
+    display: block;
+    text-align: center;
+    padding: 11px 14px;
+    margin: 0 0 24px;
+    background: #687a86;
+    color: #fff;
+    cursor: pointer;
+}
+
+#dsqjs .dsqjs-load-more:hover {
+    opacity: .8;
 }
 
 .dsqjs-hide {
@@ -152,7 +169,6 @@
 
 #dsqjs .dsqjs-footer .dsqjs-footer-right {
     text-align: right;
-    float: right;
     line-height: 1.5;
     padding-right: 6px;
 }
