@@ -5,23 +5,18 @@
  * License: GPL-3.0
  */
 
-#dsqjs>* {
+#dsqjs * {
     margin: 0;
     padding: 0;
 }
 
-#dsqjs .dsqjs-container * {
-    margin: 0;
-    padding: 0;
+#dsqjs ul {
+    list-style: none;
+    list-style-type: none;
 }
 
 #dsqjs .dsqjs-container {
     margin: 20px 0 0;
-}
-
-#dsqjs ul.dsqjs-list {
-    list-style: none;
-    list-style-type: none;
 }
 
 #dsqjs .dsqjs-item-container {
