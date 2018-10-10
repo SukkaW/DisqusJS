@@ -39,7 +39,7 @@
 
     let setLS = (key, value) => {
         try {
-            localStorage.setItem(key, value)
+            localStorage.setItem(key, value);
         } catch (o) {
             console.log(o + " Failed to set localStorage item");
         }
@@ -47,43 +47,13 @@
 
         getLS = (key) => {
             return localStorage.getItem(key);
-        };
+        },
 
-    /*
-     * Name: Date.Format()
-     *
-     * Usage:
-     * Month - M | MM
-     * Date - d | dd
-     * Hour - h | hh
-     * Minute - m | mm
-     * Second - s | ss
-     * Season - q | qq
-     * Year - y | yy | yyyy
-     * ms - S
-     *
-     * Example: (new Date()).Format("yyyy-MM-dd hh:mm:ss.S")
-     */
+        dateFormat = (date) => {
+            return `${date.getUTCFullYear().toString()}/${(date.getUTCMonth() + 1).toString()}/${date.getUTCDate()} ${date.getUTCHours()}:${date.getUTCMinutes()}:${date.getUTCSeconds()}`
+            //yyyy-MM-dd hh:mm:ss
 
-    Date.prototype.Format = function (fmt) {
-        var o = {
-            "M+": this.getMonth() + 1, // Minth
-            "d+": this.getDate(), // Date
-            "h+": this.getHours(), // Hour
-            "m+": this.getMinutes(), // Minute
-            "s+": this.getSeconds(), // Second
-            "q+": Math.floor((this.getMonth() + 3) / 3), // Season
-            "S": this.getMilliseconds() // ms
-        };
-        if (/(y+)/.test(fmt)) {
-            fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length))
-        };
-        for (var k in o)
-            if (new RegExp("(" + k + ")").test(fmt)) {
-                fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
-            }
-        return fmt;
-    }
+        }
 
     /*
      * Name: loadDisqus()
@@ -202,16 +172,6 @@
     }
 
     /*
-     * Name: initThread()
-     * Description: init the thread when it is not
-     * API URI: /3.0/posts/list.json?forum=[shortname]&thread=[thread id]&api_key=[apikey]
-     */
-
-    /* let initThread = () => {
-
-    } */
-
-    /*
      * Name: getComment()
      * Description: get the comment content
      * API URI: /3.0/posts/list.json?forum=[shortname]&thread=[thread id]&api_key=[apikey]
@@ -304,13 +264,13 @@
                     <header class="dsqjs-header">
                         <span class="dsqjs-author">${s.authorEl}</span>
                         <span class="dsqjs-bullet"></span>
-                        <span class="dsqjs-meta"><time>${(new Date(s.createdAt)).Format("yyyy-MM-dd hh:mm:ss")}</time></span>
+                        <span class="dsqjs-meta"><time>${dateFormat(new Date(s.createdAt))}</time></span>
                     </header>
                     <div class="dsqjs-content">${s.message}</div>
                 </div>
             </div>
             */
-            let commentItemTpl = `<div class="dsqjs-item-container"><div class="dsqjs-avater">${s.avatarEl}</div><div class="dsqjs-body"><header class="dsqjs-header"><span class="dsqjs-author">${s.authorEl}</span><span class="dsqjs-bullet"></span><span class="dsqjs-meta"><time>${(new Date(s.createdAt)).Format("yyyy-MM-dd hh:mm:ss")}</time></span></header><div class="dsqjs-content">${s.message}</div></div></div>`
+            let commentItemTpl = `<div class="dsqjs-item-container"><div class="dsqjs-avater">${s.avatarEl}</div><div class="dsqjs-body"><header class="dsqjs-header"><span class="dsqjs-author">${s.authorEl}</span><span class="dsqjs-bullet"></span><span class="dsqjs-meta"><time>${dateFormat(new Date(s.createdAt))}</time></span></header><div class="dsqjs-content">${s.message}</div></div></div>`
 
             return commentItemTpl
         }
