@@ -229,7 +229,7 @@
 
         function getChildren(id) {
             if (childComments.length === 0) {
-                return null
+                return null;
             };
 
             var list = [];
@@ -255,6 +255,31 @@
     }
 
     let renderComment = (data) => {
+        let processData = (s) => {
+            if (s.comment.author.profileUrl) {
+                /*
+                <a href="${comment.author.profileUrl}" target="_blank" rel="nofollow noopener noreferrer">
+                    <img src="${comment.author.avatar.cache}">
+                </a>
+                */
+                s.comment.avatarEl = `<a href="${s.comment.author.profileUrl}" target="_blank" rel="nofollow noopener noreferrer"><img src="${s.comment.author.avatar.cache}"></a>`;
+                s.comment.authorEl = `<a href="${s.comment.author.profileUrl}">${s.comment.author.name}</a>`;
+            } else {
+                s.comment.avatarEl = `<img src="${s.comment.author.avatar.cache}">`;
+                s.comment.authorEl = `${s.comment.author.name}`;
+            }
+
+            if (s.isPrimary) {
+                s.comment.authorEl += `<span class="dsqjs-admin-badge">${disqusjs.config.adminLabel}</span>`;
+            }
+
+            if (s.children) {
+                s.nesting = 1;
+            }
+
+            return s;
+        }
+
         let renderCommentItem = (s) => {
             /*
             <div class="dsqjs-item-container">
@@ -279,47 +304,27 @@
 
         data.map((s) => {
             let childrenComments = (s) => {
-                var nesting = s.nesting
-
-                var children = (s.children || []);
+                var nesting = s.nesting,
+                    children = (s.children || []);
 
                 if (!children) {
                     return;
                 }
 
-                if (nesting < 4) {
-                    var html = '<ul class="dsqjs-list dsqjs-children">';
-                } else {
-                    var html = '<ul class="dsqjs-list">';
-                }
-
-                children.map((s) => {
-                    let comment = s.comment;
-
-                    if (comment.author.profileUrl) {
-                        /*
-                        <a href="${comment.author.profileUrl}" target="_blank" rel="nofollow noopener noreferrer">
-                            <img src="${comment.author.avatar.cache}">
-                        </a>
-                        */
-                        comment.avatarEl = `<a href="${comment.author.profileUrl}" target="_blank" rel="nofollow noopener noreferrer"><img src="${comment.author.avatar.cache}"></a>`;
-                        comment.authorEl = `<a href="${comment.author.profileUrl}">${comment.author.name}</a>`;
+                let html = (() => {
+                    if (nesting < 4) {
+                        return '<ul class="dsqjs-list dsqjs-children">';
                     } else {
-                        comment.avatarEl = `<img src="${comment.author.avatar.cache}">`;
-                        comment.authorEl = `${comment.author.name}`;
+                        return '<ul class="dsqjs-list">';
                     }
+                })();
 
-                    if (s.isPrimary) {
-                        comment.authorEl += `<span class="dsqjs-admin-badge">${disqusjs.config.adminLabel}</span>`;
-                    }
+                html += children.map((s) => {
+                    s = processData(s);
 
                     s.nesting = nesting + 1;
 
-                    html += `<li class="dsqjs-item" id="comment-${comment.id}">`;
-
-                    html += renderCommentItem(comment);
-
-                    html += `${childrenComments(s)}</li>`;
+                    return `<li class="dsqjs-item" id="comment-${s.comment.id}">${renderCommentItem(s.comment)}${childrenComments(s)}</li>`;
                 })
 
                 html += '</ul>';
@@ -331,29 +336,9 @@
                 }
             };
 
-            let comment = s.comment;
+            s = processData(s);
 
-            if (comment.author.profileUrl) {
-                comment.avatarEl = `<a href="${comment.author.profileUrl}" target="_blank" rel="nofollow noopener noreferrer"><img src="${comment.author.avatar.cache}"></a>`;
-                comment.authorEl = `<a href="${comment.author.profileUrl}">${comment.author.name}</a>`;
-            } else {
-                comment.avatarEl = `<img src="${comment.author.avatar.cache}">`;
-                comment.authorEl = `${comment.author.name}`;
-            }
-
-            if (s.isPrimary) {
-                comment.authorEl += `<span class="dsqjs-admin-badge">${disqusjs.config.adminLabel}</span>`;
-            }
-
-            if (s.children) {
-                s.nesting = 1;
-            }
-
-            let html = `<li class="dsqjs-item" id="comment-${comment.id}">`;
-
-            html += renderCommentItem(comment);
-
-            html += `${childrenComments(s)}</li>`;
+            let html = `<li class="dsqjs-item" id="comment-${s.comment.id}">${renderCommentItem(s.comment)}${childrenComments(s)}</li>`;
 
             document.getElementById('dsqjs-list').insertAdjacentHTML('beforeend', html);
         })
