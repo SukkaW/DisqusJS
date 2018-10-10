@@ -41,7 +41,7 @@
         try {
             localStorage.setItem(key, value);
         } catch (o) {
-            console.log(o + " Failed to set localStorage item");
+            console.log("Failed to set localStorage item");
         }
     },
 
@@ -50,9 +50,8 @@
         },
 
         dateFormat = (date) => {
-            return `${date.getUTCFullYear().toString()}/${(date.getUTCMonth() + 1).toString()}/${date.getUTCDate()} ${date.getUTCHours()}:${date.getUTCMinutes()}:${date.getUTCSeconds()}`
+            return `${date.getUTCFullYear().toString()}/${(date.getUTCMonth() + 1).toString()}/${date.getUTCDate()} ${date.getUTCHours()}:${date.getUTCMinutes()}:${date.getUTCSeconds()}`;
             //yyyy-MM-dd hh:mm:ss
-
         };
 
     /*
@@ -68,7 +67,7 @@
         s.src = 'https://' + disqusjs.config.shortname + '.disqus.com/embed.js';
         s.setAttribute('data-timestamp', + new Date());
         (d.head || d.body).appendChild(s);
-    }
+    };
 
     /*
      * Name: checkDisqus()
@@ -215,11 +214,11 @@
         var topLevelComments = [];
         var childComments = [];
 
-        data.forEach(comment => {
+        data.forEach((comment) => {
             (comment.parent ? childComments : topLevelComments)['push'](comment);
-        })
+        });
 
-        var commentLists = topLevelComments.map(comment => {
+        var commentLists = topLevelComments.map((comment) => {
             return {
                 comment,
                 author: comment.author.name,
@@ -229,7 +228,9 @@
         });
 
         function getChildren(id) {
-            if (childComments.length === 0) return null;
+            if (childComments.length === 0) {
+                return null
+            };
 
             var list = [];
             for (let comment of childComments) {
@@ -276,7 +277,7 @@
         }
 
 
-        data.map(s => {
+        data.map((s) => {
             let childrenComments = (s) => {
                 var nesting = s.nesting
 
@@ -292,7 +293,7 @@
                     var html = '<ul class="dsqjs-list">';
                 }
 
-                children.map(s => {
+                children.map((s) => {
                     let comment = s.comment;
 
                     if (comment.author.profileUrl) {
@@ -302,23 +303,23 @@
                         </a>
                         */
                         comment.avatarEl = `<a href="${comment.author.profileUrl}" target="_blank" rel="nofollow noopener noreferrer"><img src="${comment.author.avatar.cache}"></a>`;
-                        comment.authorEl = `<a href="${comment.author.profileUrl}">${comment.author.name}</a>`
+                        comment.authorEl = `<a href="${comment.author.profileUrl}">${comment.author.name}</a>`;
                     } else {
                         comment.avatarEl = `<img src="${comment.author.avatar.cache}">`;
-                        comment.authorEl = `${comment.author.name}`
+                        comment.authorEl = `${comment.author.name}`;
                     }
 
                     if (s.isPrimary) {
-                        comment.authorEl += `<span class="dsqjs-admin-badge">${disqusjs.config.adminLabel}</span>`
+                        comment.authorEl += `<span class="dsqjs-admin-badge">${disqusjs.config.adminLabel}</span>`;
                     }
 
-                    s.nesting = nesting + 1
+                    s.nesting = nesting + 1;
 
-                    html += `<li class="dsqjs-item" id="comment-${comment.id}">`
+                    html += `<li class="dsqjs-item" id="comment-${comment.id}">`;
 
-                    html += renderCommentItem(comment)
+                    html += renderCommentItem(comment);
 
-                    html += `${childrenComments(s)}</li>`
+                    html += `${childrenComments(s)}</li>`;
                 })
 
                 html += '</ul>';
@@ -334,23 +335,23 @@
 
             if (comment.author.profileUrl) {
                 comment.avatarEl = `<a href="${comment.author.profileUrl}" target="_blank" rel="nofollow noopener noreferrer"><img src="${comment.author.avatar.cache}"></a>`;
-                comment.authorEl = `<a href="${comment.author.profileUrl}">${comment.author.name}</a>`
+                comment.authorEl = `<a href="${comment.author.profileUrl}">${comment.author.name}</a>`;
             } else {
                 comment.avatarEl = `<img src="${comment.author.avatar.cache}">`;
-                comment.authorEl = `${comment.author.name}`
+                comment.authorEl = `${comment.author.name}`;
             }
 
             if (s.isPrimary) {
-                comment.authorEl += `<span class="dsqjs-admin-badge">${disqusjs.config.adminLabel}</span>`
+                comment.authorEl += `<span class="dsqjs-admin-badge">${disqusjs.config.adminLabel}</span>`;
             }
 
             if (s.children) {
-                s.nesting = 1
+                s.nesting = 1;
             }
 
-            let html = `<li class="dsqjs-item" id="comment-${comment.id}">`
+            let html = `<li class="dsqjs-item" id="comment-${comment.id}">`;
 
-            html += renderCommentItem(comment)
+            html += renderCommentItem(comment);
 
             html += `${childrenComments(s)}</li>`;
 
