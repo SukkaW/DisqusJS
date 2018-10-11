@@ -45,29 +45,29 @@
         loadError();
     };
 
-    let setLS = (key, value) => {
+    function setLS(key, value) {
         try {
             localStorage.setItem(key, value);
         } catch (o) {
             console.log("Failed to set localStorage item");
         }
-    },
+    }
 
-        getLS = (key) => {
-            return localStorage.getItem(key);
-        },
+    function getLS(key) {
+        return localStorage.getItem(key);
+    }
 
-        dateFormat = (date) => {
-            return `${date.getUTCFullYear().toString()}/${(date.getUTCMonth() + 1).toString()}/${date.getUTCDate()} ${date.getUTCHours()}:${date.getUTCMinutes()}:${date.getUTCSeconds()}`;
-            //yyyy-MM-dd hh:mm:ss
-        };
+    function dateFormat(date) {
+        return `${date.getUTCFullYear().toString()}/${(date.getUTCMonth() + 1).toString()}/${date.getUTCDate()} ${date.getUTCHours()}:${date.getUTCMinutes()}:${date.getUTCSeconds()}`;
+        //yyyy-MM-dd hh:mm:ss
+    }
 
     /*
      * Name: loadDisqus()
      * Descriptin: load disqus as it should be.
      */
 
-    let loadDisqus = () => {
+    function loadDisqus() {
         var d = document;
         d.getElementById('dsqjs-load-disqus').classList.remove('dsqjs-hide');
         d.getElementById('dsqjs-force-dsqjs').addEventListener('click', forceDsqjs);
@@ -75,7 +75,7 @@
         s.src = 'https://' + disqusjs.config.shortname + '.disqus.com/embed.js';
         s.setAttribute('data-timestamp', + new Date());
         (d.head || d.body).appendChild(s);
-    };
+    }
 
     /*
      * Name: checkDisqus()
@@ -83,7 +83,7 @@
      * How it works: check favicons under 2 domains can be loaded or not.
      */
 
-    let checkDisqus = () => {
+    function checkDisqus() {
         var img = new Image;
         let check1 = setTimeout(() => {
             img.onerror = img.onload = null;
@@ -118,20 +118,20 @@
         };
 
         img.src = `https://disqus.com/favicon.ico?${+(new Date)}`;
-    }
+    };
 
     /*
      * Name: forceDsqjs() forceDisqus()
      */
 
-    let forceDsqjs = () => {
+    function forceDsqjs() {
         setLS('disqusjs_mode', 'dsqjs');
         main();
-    },
-        forceDisqus = () => {
-            setLS('disqusjs_mode', 'disqus');
-            main();
-        }
+    }
+    function forceDisqus() {
+        setLS('disqusjs_mode', 'disqus');
+        main();
+    }
 
     /*
      * Name: getThreadInfo()
@@ -140,7 +140,7 @@
      * API URI: /3.0/threads/list.json?forum=[disqus_shortname]&thread=ident:[identifier]&api_key=[apikey]
     */
 
-    let getThreadInfo = () => {
+    function getThreadInfo() {
         document.getElementById('dsqjs-loading-dsqjs').classList.remove('dsqjs-hide');
         document.getElementById('dsqjs-load-error').classList.add('dsqjs-hide');
         document.getElementById('dsqjs-force-disqus').addEventListener('click', forceDisqus);
@@ -177,7 +177,7 @@
      * API URI: /3.0/posts/list.json?forum=[shortname]&thread=[thread id]&api_key=[apikey]
      */
 
-    let getComment = (cursor) => {
+    function getComment(cursor) {
         if (!cursor) {
             cursor = '';
         } else {
@@ -201,7 +201,7 @@
                 if (res.cursor.hasNext) {
                     // load more comment
                     document.getElementById('dsqjs-load-more').classList.remove('dsqjs-hide');
-                    document.getElementById('dsqjs-load-more').addEventListener('click', () => {getComment(res.cursor.next)});
+                    document.getElementById('dsqjs-load-more').addEventListener('click', () => { getComment(res.cursor.next); });
                 } else {
                     document.getElementById('dsqjs-load-more').classList.add('dsqjs-hide');
                 }
@@ -217,7 +217,7 @@
      * Description: Render JSON to comment list components
      */
 
-    let getCommentList = (data) => {
+    function getCommentList(data) {
         var topLevelComments = [];
         var childComments = [];
 
@@ -237,7 +237,7 @@
         function getChildren(id) {
             if (childComments.length === 0) {
                 return null;
-            };
+            }
 
             var list = [];
             for (let comment of childComments) {
@@ -261,8 +261,8 @@
         renderComment(commentLists);
     }
 
-    let renderComment = (data) => {
-        let processData = (s) => {
+    function renderComment(data) {
+        function processData(s) {
             if (s.comment.author.profileUrl) {
                 /*
                 <a href="${comment.author.profileUrl}" target="_blank" rel="nofollow noopener noreferrer">
@@ -284,12 +284,10 @@
                 s.nesting = 1;
             }
 
-            console.log(s);
-
             return s;
         }
 
-        let renderCommentItem = (s) => {
+        function renderCommentItem(s) {
             /*
             <div class="dsqjs-item-container">
                 <div class="dsqjs-avater">
@@ -312,7 +310,7 @@
 
 
         data.map((s) => {
-            let childrenComments = (s) => {
+            function childrenComments(s) {
                 var nesting = s.nesting,
                     children = (s.children || []);
 
@@ -334,7 +332,7 @@
                     s.nesting = nesting + 1;
 
                     return `<li class="dsqjs-item" id="comment-${s.comment.id}">${renderCommentItem(s.comment)}${childrenComments(s)}</li>`;
-                })
+                });
 
                 html += '</ul>';
 
@@ -358,13 +356,13 @@
      * Description: When dsqjs mode load error
      */
 
-    let loadError = () => {
+    function loadError() {
         document.getElementById('dsqjs-load-error').classList.remove('dsqjs-hide');
         document.getElementById('dsqjs-loading-dsqjs').classList.add('dsqjs-hide');
         document.getElementById('dsqjs-reload').addEventListener('click', getThreadInfo);
     }
 
-    let main = () => {
+    function main() {
         // Add dsqjs container element to #disqus_thread
 
         /*
