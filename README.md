@@ -45,12 +45,12 @@
 
 ```html
 <!-- Unpkg -->
-<link rel="stylesheet" href="https://unpkg.com/disqusjs@0.2.1/dist/disqusjs.css">
-<script src="https://unpkg.com/disqusjs@0.2.1/dist/disqus.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/disqusjs@0.2.2/dist/disqusjs.css">
+<script src="https://unpkg.com/disqusjs@0.2.2/dist/disqus.js"></script>
 
 <!-- jsDelivr -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/disqusjs@0.2.1/dist/disqusjs.css">
-<script src="https://cdn.jsdelivr.net/npm/disqusjs@0.2.1/dist/disqus.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/disqusjs@0.2.2/dist/disqusjs.css">
+<script src="https://cdn.jsdelivr.net/npm/disqusjs@0.2.2/dist/disqus.js"></script>
 ```
 
 在需要显示评论的地方插入下述代码：
