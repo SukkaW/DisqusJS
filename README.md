@@ -18,11 +18,9 @@
 
 ## 功能
 
-- [x] 展示评论列表
-- [x] 自动判断访客的 DISQUS 可用性选择不同模式
-- [ ] 展示评论中的媒体内容（WIP）
-- [ ] 自动初始化新页面（使用 `disqusjs.config.identifier`）
-- [ ] 提交新评论（匿名）（WIP）
+- 展示评论列表
+- 自动判断访客的 DISQUS 可用性选择不同模式
+
 
 ## Demo
 
@@ -115,7 +113,7 @@ disqusjs.config {}
 
 **api**
 
-- DisqusJS 请求的 API Endpoint，通常情况下你应该配置一个 Disqus API 的反代并填入反代的地址，或者直接使用 `https://disqus.com/api/`
+- DisqusJS 请求的 API Endpoint，通常情况下你应该配置一个 Disqus API 的反代并填入反代的地址。你也可以直接使用 DISQUS 官方 API 的 Endpoint `https://disqus.com/api/` 或者使用我搭建的公共 Disqus API 反代：`https://disqus.skk.moe/disqus/`
 - {String}
 - **必填**，无默认值
 
@@ -155,6 +153,8 @@ disqusjs.config {}
 - ~~DisqusJS 尚不支持初始化一个新页面，在新创建了页面以后需要先使用原版 Disqus 访问一次该页面完成初始化。~~ DisqusJS 如果检测到当前页面没有初始化、会提示是否切换到 Disqus 完整模式进行初始化。
 - DisqusJS 仅在当前域名首次访问时检测 Disqus 可用性并选择模式，并把结果持久化在 localStorage 中，之后访问都会沿用之前的模式。
 - 一个 Disqus Application 的 Rate Limit 是每小时 1000 次；DisqusJS 一次正常加载会产生 2 次请求。未来可能会开放填入多个 API Key，支持调用多个 Application，绕过 Rate Limit。
+- 我搭建了一个 Disqus API 反代的服务 `https://disqus.skk.moe/disqus/` 可供没有能力搭建反代的用户使用，不保证 SLA。
+- Disqus API 不支持通过 AJAX 方式调用创建评论或者初始化页面，所以自动初始化页面和创建匿名评论在不搭配专门的后端程序的话不能实现。
 
 ## 调试、进阶使用 & 开发相关
 
