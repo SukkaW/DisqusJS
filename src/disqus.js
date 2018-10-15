@@ -117,6 +117,7 @@
         let check1 = setTimeout(() => {
             img.onerror = img.onload = null;
             setLS('disqusjs_mode', 'dsqjs');
+            main();
         }, 2000);
 
         img.onerror = () => {
@@ -129,6 +130,7 @@
             let check2 = setTimeout(() => {
                 img.onerror = img.onload = null;
                 setLS('disqusjs_mode', 'dsqjs');
+                main();
             }, 2000);
 
             img.onerror = () => {
