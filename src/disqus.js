@@ -1,5 +1,5 @@
 /*
- * DisqusJS | v0.2.2
+ * DisqusJS | v0.2.4
  * Author: SukkaW
  * Link: https://github.com/SukkaW/DisqusJS
  * License: GPL-3.0
@@ -461,9 +461,5 @@
 
     }
 
-    // 等页面 onload 事件触发了再执行 main()
-    window.onload = () => {
-        main();
-    }
-
+    main();
 })();
