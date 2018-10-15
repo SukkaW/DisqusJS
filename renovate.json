@@ -1,0 +1,22 @@
+{
+    "assignees": [
+        "SukkaW"
+    ],
+    "extends": [
+        "config:base"
+    ],
+    "vulnerabilityAlerts": {
+        "labels": [
+            "security"
+        ],
+        "assignees": [
+            "SukkaW"
+        ]
+    },
+    "reviewers": [
+        "SukkaW"
+    ],
+    "commitMessageAction": "update",
+    "semanticCommits": true,
+    "semanticCommitType": "chore"
+}

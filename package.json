@@ -1,0 +1,37 @@
+{
+  "name": "disqusjs",
+  "version": "0.2.4",
+  "description": "Alternative DISQUS - Render comments components from Disqus API",
+  "main": "dist/disqus.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SukkaW/DisqusJS.git"
+  },
+  "keywords": [
+    "Disqus",
+    "DisqusJS",
+    "SukkaW",
+    "API",
+    "XHR",
+    "JSON"
+  ],
+  "author": "Sukka",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/SukkaW/DisqusJS/issues"
+  },
+  "homepage": "https://github.com/SukkaW/DisqusJS#readme",
+  "dependencies": {
+    "@babel/core": "^7.1.2",
+    "@babel/preset-env": "^7.1.0",
+    "gulp": "4",
+    "gulp-autoprefixer": "^6.0.0",
+    "gulp-babel": "^8.0.0",
+    "gulp-clean-css": "^3.10.0",
+    "gulp-header": "^2.0.5",
+    "gulp-uglify": "^3.0.1"
+  }
+}
