@@ -148,6 +148,17 @@ disqusjs.config {}
 - noavatar 默认头像的图片 URL（对应 对应 Disqus Admin - Settings - General - Default Commenter Avatar）
 - newcomment 是否允许添加新评论（目前增加评论功能尚未实现）
 
+### 配合 pjax 使用
+
+绑定 pjax 事件如下：
+
+```js
+$(document).on('pjax:end', function () {
+    window.DISQUS = null;
+    window.disqusjs.load();
+});
+```
+
 ## 注意
 
 - ~~DisqusJS 尚不支持初始化一个新页面，在新创建了页面以后需要先使用原版 Disqus 访问一次该页面完成初始化。~~ DisqusJS 如果检测到当前页面没有初始化、会提示是否切换到 Disqus 完整模式进行初始化。

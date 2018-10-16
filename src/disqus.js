@@ -463,4 +463,7 @@
     }
   
     main();
+
+    window.disqusjs = window.disqusjs || {};
+    window.disqusjs.load = main;
 })();
