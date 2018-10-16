@@ -20,7 +20,10 @@
  * disqusjs.page.lenfth - How many comment in this thread
  */
 
-const DisqusJS = () => {
+function DisqusJS(config) {
+    let disqusjs = [];
+    disqusjs.config = config
+
     // 定义 disqusjs.page，之后会填充 thread id、title 等数据
     disqusjs.page = [];
 
@@ -128,5 +131,47 @@ const DisqusJS = () => {
         s.src = 'https://' + disqusjs.config.shortname + '.disqus.com/embed.js';
         s.setAttribute('data-timestamp', + new Date());
         (d.head || d.body).appendChild(s);
+    }
+
+    function checkDisqus() {
+        let domain = ['disqus.com', `${disqusjs.config.shortname}.disqus.com`],
+            test = 0,
+            success = 0;
+
+        let checker = () => {
+            if ((domain.length === test) && (test === success)) {
+                setLS('dsqjs_mode', 'disqus')
+            } else if (domain.length === test) {
+                setLS('dsqjs_mode', 'dsqjs')
+            }
+        }
+
+        for (let i of domain) {
+            ((i) => {
+                let img = new Image;
+                let timeout = setTimeout(() => {
+                    img.onerror = img.onload = null;
+                    test++;
+                    checker()
+                }, 2000);
+
+                img.onerror = () => {
+                    clearTimeout(timeout);
+                    test++;
+                    checker()
+                }
+
+                img.onload = () => {
+                    clearTimeout(timeout);
+                    test++;
+                    success++;
+                    checker()
+                }
+
+                img.src = `https://${i}/favicon.ico?${+(new Date)}`
+
+            })(i);
+
+        }
     }
 }
