@@ -55,20 +55,16 @@ function DisqusJS(config) {
             () => {}
         })
      */
-    const get = ({
-        url = '/',
-        timeout = '4000',
-        async = true
-    }, success, error) => {
+    const get = (url, success, error) => {
         let xhr = new XMLHttpRequest()
-        xhr.open('GET', encodeURI(url), async);
+        xhr.open('GET', encodeURI(url), true);
         xhr.onreadystatechange = () => {
             if (xhr.readyState == 4 && xhr.status == 200) {
                 let res = JSON.parse(xhr.responseText)
                 success(res)
             }
         };
-        xhr.timeout = timeout;
+        xhr.timeout = 4000;
         xhr.ontimeout = (e) => {
             error(e);
         };
@@ -125,6 +121,9 @@ function DisqusJS(config) {
         return `${y}-${m}-${d} ${h}:${minute}:${second}`;
     }
 
+    /*
+     * loadDisqus() - 加载 Disqus
+     */
     function loadDisqus() {
         let d = document;
         let s = d.createElement('script');
@@ -174,4 +173,33 @@ function DisqusJS(config) {
 
         }
     }
+
+    function loadDsqjs() {
+        (() => {
+            let url = `${disqusjs.config.api}3.0/threads/list.json?forum=${disqusjs.config.shortname}&thread=ident:${disqusjs.config.identifier}&api_key=${disqusjs.config.apikey}`;
+            /*
+             * Description: Disqus API only support get thread list by ID, not identifter. So get Thread ID before get thread list.
+             * API Docs: https://disqus.com/api/docs/threads/list/
+             * API URI: /3.0/threads/list.json?forum=[disqus_shortname]&thread=ident:[identifier]&api_key=[apikey]
+             */
+            get(url, (res) => {
+                if (res.response.length === 1) {
+                    var resp = res.response[0];
+                    disqusjs.page = {
+                        id: resp.id,
+                        title: resp.title,
+                        isClosed: resp.isClosed,
+                        length: resp.posts
+                    };
+                    // 获取评论列表
+                } else {
+                    // 当前页面可能还未初始化（创建 thread）
+                }
+            }, (e) => {
+                console.log(e);
+            })
+        })()
+    }
+
+    loadDsqjs()
 }
