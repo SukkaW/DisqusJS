@@ -409,7 +409,7 @@
         document.getElementById('dsqjs-loading-dsqjs').classList.add('dsqjs-hide');
         document.getElementById('dsqjs-reload').addEventListener('click', getThreadInfo);
     }
-  
+
     function main() {
         if (window.disqusjs && document.getElementById('disqus_thread')) {
             // 定义 disqusjs.page，之后会填充 thread id、title 等数据
@@ -461,7 +461,7 @@
             }
         }
     }
-  
+
     main();
 
     window.disqusjs = window.disqusjs || {};
