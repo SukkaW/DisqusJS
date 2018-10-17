@@ -199,6 +199,20 @@ function DisqusJS(config) {
                 console.log(e);
             })
         })()
+
+        function getComment(cursor) {
+            if (!cursor) {
+                cursor = '';
+            } else {
+                cursor = `&cursor=${cursor}`;
+            }
+            /*
+             * Description: get the comment content
+             * API URI: /3.0/posts/list.json?forum=[shortname]&thread=[thread id]&api_key=[apikey]
+             */
+            let url = `${disqusjs.config.api}3.0/posts/list.json?forum=${disqusjs.config.shortname}&thread=${disqusjs.page.id}${cursor}&api_key=${disqusjs.config.apikey}`;
+            console.log(url)
+        }
     }
 
     loadDsqjs()
