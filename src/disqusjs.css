@@ -1,0 +1,125 @@
+#dsqjs * {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+#dsqjs a {
+    text-decoration: none;
+    color: #076dd0;
+}
+
+#dsqjs .dsqjs-bullet {
+    line-height: 1.4;
+    margin: 0 4px;
+}
+
+#dsqjs .dsqjs-bullet::after {
+    color: #c2c6cc;
+    content: "·";
+    font-weight: 700
+}
+
+#dsqjs .dsqjs-clearfix:after,
+#dsqjs .dsqjs-clearfix:before {
+    display: table;
+    content: "";
+    line-height: 0;
+    clear: both;
+}
+
+#dsqjs .dsqjs-nav {
+    position: relative;
+    margin: 0 0 20px;
+    border-bottom: 2px solid #e7e9ee;
+}
+
+#dsqjs ol,
+#dsqjs ul {
+    list-style: none;
+    list-style-type: none;
+}
+
+#dsqjs .dsqjs-nav-tab {
+    float: left;
+    text-transform: capitalize;
+    font-size: 15px;
+    padding: 12px 0;
+    color: #656c7a;
+    display: block;
+    margin: 0 15px 0 0;
+    font-weight: 700;
+    line-height: 1;
+    position: relative;
+    transition: all .2s ease-in-out;
+}
+
+#dsqjs .dsqjs-nav-tab:last-child {
+    margin: 0;
+}
+
+#dsqjs .dsqjs-tab-active {
+    color: #2a2e2e;
+}
+
+#dsqjs .dsqjs-tab-active>span:after {
+    content: " ";
+    display: block;
+    height: 2px;
+    background-color: #076dd0 !important;
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+}
+
+#dsqjs .dsqjs-post-list .dsqjs-post-avatar {
+    float: left;
+    margin-right: 12px;
+    position: relative;
+    background: #dbdfe4;
+    padding: 0;
+    display: block;
+    border-radius: 4px;
+}
+
+#dsqjs .dsqjs-post-list .dsqjs-post-avatar img {
+    width: 42px;
+    height: 42px;
+    display: block;
+    border-radius: 4px;
+}
+
+#dsqjs .dsqjs-post-list .dsqjs-post-body {
+    overflow: hidden;
+}
+
+#dsqjs .dsqjs-post-list .dsqjs-post-header {
+    line-height: 1;
+    font-size: 14px;
+    padding-right: 16px;
+    margin-bottom: 3px;
+}
+
+#dsqjs .dsqjs-post-list .dsqjs-post-header .dsqjs-post-author {
+    color: #656c7a;
+    font-weight: 700;
+}
+
+#dsqjs .dsqjs-post-list .dsqjs-post-header .dsqjs-meta {
+    display: inline-block;
+    font-size: 12px;
+    color: #656c7a;
+}
+
+#dsqjs .dsqjs-post-body p {
+    font-size: 15px;
+    line-height: 1.5;
+    word-wrap: break-word;
+}
+
+#dsqjs .dsqjs-post-body p:last-child {
+    margin: 0;
+}
