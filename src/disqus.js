@@ -2,22 +2,22 @@
  * The variable used in DisqusJS
  *
  * DisqusJS Mode
- * disqusjs.mode = dsqjs | disqus - Set which mode to use, should store and get in localStorage
+ * @param {string} disqusjs.mode = dsqjs | disqus - Set which mode to use, should store and get in localStorage
  *
  * DisqusJS Config
- * disqusjs.config.shortname - The disqus shortname
- * disqusjs.config.identifier - The identifier of the page
- * disqusjs.config.url - The url of the page
- * disqusjs.config.api - Where to get data
- * disqusjs.config.apikey - The apikey used to request Disqus API
- * disqusjs.config.admin - The disqus forum admin username
- * disqusjs.config.adminLabel - The disqus moderator badge text
+ * @param {string} disqusjs.config.shortname - The disqus shortname
+ * @param {string} disqusjs.config.identifier - The identifier of the page
+ * @param {string} disqusjs.config.url - The url of the page
+ * @param {string} disqusjs.config.api - Where to get data
+ * @param {string} disqusjs.config.apikey - The apikey used to request Disqus API
+ * @param {string} disqusjs.config.admin - The disqus forum admin username
+ * @param {string} disqusjs.config.adminLabel - The disqus moderator badge text
  *
  * DisqusJS Info
- * disqusjs.page.id = The thread id, used at next API call
- * disqusjs.page.title - The thread title
- * disqusjs.page.isClosed - Whether the comment is closed
- * disqusjs.page.lenfth - How many comment in this thread
+ * @param {string} disqusjs.page.id = The thread id, used at next API call
+ * @param {string} disqusjs.page.title - The thread title
+ * @param {boolean} disqusjs.page.isClosed - Whether the comment is closed
+ * @param {number} disqusjs.page.lenfth - How many comment in this thread
  */
 
 function DisqusJS(config) {
@@ -178,42 +178,130 @@ function DisqusJS(config) {
         (() => {
             let url = `${disqusjs.config.api}3.0/threads/list.json?forum=${disqusjs.config.shortname}&thread=ident:${disqusjs.config.identifier}&api_key=${disqusjs.config.apikey}`;
             /*
-             * Description: Disqus API only support get thread list by ID, not identifter. So get Thread ID before get thread list.
+             * Disqus API 只支持通过 Thread ID 获取评论列表，所以必须先通过 identifier 获取当前页面 Thread ID
+             *
              * API Docs: https://disqus.com/api/docs/threads/list/
              * API URI: /3.0/threads/list.json?forum=[disqus_shortname]&thread=ident:[identifier]&api_key=[apikey]
              */
             get(url, (res) => {
-                if (res.response.length === 1) {
+                console.log(res);
+                // 如果只返回一条则找到了对应 thread，否则是当前 identifier 不能找到唯一的 thread
+                // 如果 thread 不唯一则需要进行初始化
+                if (res.code === 0 && res.response.length === 1) {
                     var resp = res.response[0];
                     disqusjs.page = {
-                        id: resp.id,
-                        title: resp.title,
-                        isClosed: resp.isClosed,
-                        length: resp.posts
+                        id: resp.id, // Thread ID
+                        title: resp.title, // Thread Title (默认是页面标题)
+                        isClosed: resp.isClosed, // 评论是否关闭
+                        length: resp.posts // 评论数目
                     };
                     // 获取评论列表
-                } else {
+                    getComment()
+                } else if (res.code === 0 && res.response.length !== 1) {
                     // 当前页面可能还未初始化（创建 thread）
+                } else {
+                    // 评论列表加载错误
                 }
             }, (e) => {
+                // 评论列表加载错误
                 console.log(e);
             })
         })()
 
-        function getComment(cursor) {
+        /*
+         * getComment(cursor) - 获取评论列表
+         *
+         * @param {string} cursor - 传入 cursor 用于加载更多评论
+         */
+        let getComment = (cursor) => {
+            // 处理传入的 cursor
             if (!cursor) {
                 cursor = '';
             } else {
                 cursor = `&cursor=${cursor}`;
             }
             /*
-             * Description: get the comment content
+             * 获取评论列表
+             *
+             * API Docs: https://disqus.com/api/docs/posts/list/
              * API URI: /3.0/posts/list.json?forum=[shortname]&thread=[thread id]&api_key=[apikey]
              */
             let url = `${disqusjs.config.api}3.0/posts/list.json?forum=${disqusjs.config.shortname}&thread=${disqusjs.page.id}${cursor}&api_key=${disqusjs.config.apikey}`;
-            console.log(url)
+            get(url, (res) => {
+                if (res.code === 0 && res.response.length > 0) {
+                    // 已获得评论列表
+                    renderComment(res.response)
+                } else if (res.code === 0 && res.response.length === 0) {
+                    // 当前没有评论
+                } else {
+                    // 评论列表加载错误
+                }
+            }, (e) => {
+                // 评论列表加载错误
+                console.log(e);
+            })
+        }
+
+        /*
+         * parseCommentData(data) - 解析评论列表
+         *
+         * @param {Object} data - 评论列表 JSON
+         * @return {Object} - 解析后的评论列表数据
+         */
+        let parseCommentData = (data) => {
+            var topLevelComments = [],
+                childComments = [];
+
+            let getChildren = (id) => {
+                if (childComments.length === 0) {
+                    return null;
+                }
+
+                var list = [];
+                for (let comment of childComments) {
+                    if (comment.parent === id) {
+                        list.unshift({
+                            comment,
+                            author: comment.author.name,
+                            isPrimary: comment.author.username === disqusjs.config.admin.toLowerCase(),
+                            children: getChildren(+comment.id)
+                        });
+                    }
+                }
+
+                if (list.length) {
+                    return list;
+                } else {
+                    return null;
+                }
+            }
+
+            data.forEach((comment) => {
+                (comment.parent ? childComments : topLevelComments)['push'](comment);
+            });
+
+            var commentLists = topLevelComments.map((comment) => {
+                return {
+                    comment,
+                    author: comment.author.name,
+                    isPrimary: comment.author.username === disqusjs.config.admin.toLowerCase(),
+                    children: getChildren(+comment.id)
+                };
+            });
+
+            return commentLists;
+        }
+
+        /*
+         * parseCommentData(data) - 渲染评论列表
+         *
+         * @param {Object} data - 从 getComment() 获取到的 JSON
+         */
+        let renderComment = (data) => {
+            data = parseCommentData(data);
+            console.log(data)
         }
     }
 
-    loadDsqjs()
+
 }
