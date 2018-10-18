@@ -1,6 +1,6 @@
 let gulp = require('gulp');
 let uglify = require('gulp-uglify');
-let babel = require('gulp-babel');
+let buble = require('gulp-buble');
 let autoprefixer = require('gulp-autoprefixer');
 let cleanCSS = require('gulp-clean-css');
 let header = require('gulp-header');
@@ -39,12 +39,8 @@ var configs = {
 
 gulp.task('minify-js', () => {
     return gulp.src('src/**/*.js')
-        .pipe(babel({
-            "presets": [
-                ["@babel/env", {
-                    "targets": configs.browsers
-                }]
-            ]
+        .pipe(buble({
+            transforms: { dangerousForOf: true }
         }))
         .pipe(uglify({
             keep_fnames: false
