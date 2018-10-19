@@ -6,6 +6,7 @@
  *
  * DisqusJS Config
  * @param {string} disqusjs.config.shortname - The disqus shortname
+ * @param {string} disqusjs.config.siteName - The Forum Name
  * @param {string} disqusjs.config.identifier - The identifier of the page
  * @param {string} disqusjs.config.url - The url of the page
  * @param {string} disqusjs.config.api - Where to get data
@@ -15,9 +16,8 @@
  *
  * DisqusJS Info
  * @param {string} disqusjs.page.id = The thread id, used at next API call
- * @param {string} disqusjs.page.title - The thread title
  * @param {boolean} disqusjs.page.isClosed - Whether the comment is closed
- * @param {number} disqusjs.page.lenfth - How many comment in this thread
+ * @param {number} disqusjs.page.length - How many comment in the thread
  */
 
 function DisqusJS(config) {
@@ -496,8 +496,12 @@ function DisqusJS(config) {
     }
 
     var disqusjs = [];
+
+    // 将传入的 config 参数赋给 disqusjs.config
     disqusjs.config = config
-    disqusjs.config.api = (disqusjs.config.api ? disqusjs.config.api : 'https://disqus.skk.moe/disqus/')
+    disqusjs.config.api = (disqusjs.config.api || 'https://disqus.skk.moe/disqus/')
+    disqusjs.config.identifier = (disqusjs.config.identifier || document.location.origin + document.location.pathname + document.location.search)
+    disqusjs.config.url = (disqusjs.config.url || document.location.origin + document.location.pathname + document.location.search)
 
     // 定义 disqusjs.page，之后会填充 thread id、title 等数据
     disqusjs.page = [];
@@ -509,6 +513,7 @@ function DisqusJS(config) {
         this.page.url = disqusjs.config.url;
         this.page.identifier = disqusjs.config.identifier;
     };
+
 
     disqusjs.mode = getLS('dsqjs_mode');
 
