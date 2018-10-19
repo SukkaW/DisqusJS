@@ -337,7 +337,7 @@ function DisqusJS(config) {
                             comment,
                             author: comment.author.name,
                             // 如果不设置 admin 会返回 undefined，所以需要嘴一个判断
-                            isPrimary: (disqusjs.config.admin ? (comment.author.username === disqusjs.config.admin.toLowerCase()) : false),
+                            isPrimary: (disqusjs.config.admin ? (comment.author.username === disqusjs.config.admin) : false),
                             children: getChildren(+comment.id)
                         });
                     }
@@ -359,7 +359,7 @@ function DisqusJS(config) {
                 return {
                     comment,
                     author: comment.author.name,
-                    isPrimary: (disqusjs.config.admin ? (comment.author.username === disqusjs.config.admin.toLowerCase()) : false),
+                    isPrimary: (disqusjs.config.admin ? (comment.author.username === disqusjs.config.admin) : false),
                     children: getChildren(+comment.id)
                 };
             });
