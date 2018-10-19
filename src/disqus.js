@@ -21,20 +21,6 @@
  */
 
 function DisqusJS(config) {
-    let disqusjs = [];
-    disqusjs.config = config
-
-    // 定义 disqusjs.page，之后会填充 thread id、title 等数据
-    disqusjs.page = [];
-
-    /*
-     * window.disqus_config - 从 disqusjs.config 获取 Disqus 所需的配置
-     */
-    window.disqus_config = function () {
-        this.page.url = disqusjs.config.url;
-        this.page.identifier = disqusjs.config.identifier;
-    };
-
     /*
      * get - 封装 XHR GET
      *
@@ -125,6 +111,11 @@ function DisqusJS(config) {
     function loadDisqus() {
         let d = document;
         let s = d.createElement('script');
+
+        // 显示提示信息
+        d.getElementById('disqus_thread').innerHTML = '<div id="dsqjs"><section><div id="dsqjs-msg">评论完整模式加载中...如果长时间无法加载，请针对 disq.us | disquscdn.com | disqus.com 启用代理，或使用 <a id="dsqjs-force-dsqjs" class="dsqjs-msg-btn">评论基础模式</a></div></section><footer><p class="dsqjs-footer">Powered by <a class="dsqjs-disqus-logo" href="https://disqus.com" rel="nofollow noopener noreferrer" target="_blank"></a>&nbsp;&amp;&nbsp;<a href="https://github.com/SukkaW/DisqusJS" target="_blank">DisqusJS</a></p></footer>'
+        d.getElementById('dsqjs-force-dsqjs').addEventListener('click', forceDsqjs);
+
         s.src = 'https://' + disqusjs.config.shortname + '.disqus.com/embed.js';
         s.setAttribute('data-timestamp', + new Date());
         (d.head || d.body).appendChild(s);
@@ -138,8 +129,10 @@ function DisqusJS(config) {
         let checker = () => {
             if ((domain.length === test) && (test === success)) {
                 setLS('dsqjs_mode', 'disqus')
+                loadDisqus()
             } else if (domain.length === test) {
                 setLS('dsqjs_mode', 'dsqjs')
+                loadDsqjs()
             }
         }
 
@@ -208,6 +201,8 @@ function DisqusJS(config) {
             d.getElementById('disqus_thread').innerHTML = `<div id="dsqjs"><section><div id="dsqjs-msg"></div></section><header class="dsqjs-header dsqjs-hide" id="dsqjs-header"><nav class="dsqjs-nav dsqjs-clearfix"><ul><li class="dsqjs-nav-tab dsqjs-tab-active"><span><span id="dsqjs-comment-num"></span> Comments</span></li><li class="dsqjs-nav-tab"><span id="dsqjs-site-name"></span></li></ul></nav></header><section class="dsqjs-post-container"><ul class="dsqjs-post-list" id="dsqjs-post-container"></ul><a id="dsqjs-load-more" class="dsqjs-load-more dsqjs-hide">加载更多评论</a></section><footer><p class="dsqjs-footer">Powered by <a class="dsqjs-disqus-logo" href="https://disqus.com" rel="nofollow noopener noreferrer" target="_blank"></a>&nbsp;&amp;&nbsp;<a href="https://github.com/SukkaW/DisqusJS" target="_blank">DisqusJS</a></p></footer></div>`;
             // 加载中信息
             d.getElementById('dsqjs-msg').innerHTML = `评论基础模式加载中。如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并 <a id="dsqjs-reload-disqus" class="dsqjs-msg-btn">尝试完整 Disqus 模式</a> | <a id="dsqjs-force-disqus" class="dsqjs-msg-btn">强制完整 Disqus 模式</a>。`
+            d.getElementById('dsqjs-reload-disqus').addEventListener('click', checkDisqus);
+            d.getElementById('dsqjs-force-disqus').addEventListener('click', forceDisqus);
 
             let url = `${disqusjs.config.api}3.0/threads/list.json?forum=${disqusjs.config.shortname}&thread=ident:${disqusjs.config.identifier}&api_key=${disqusjs.config.apikey}`;
 
@@ -218,6 +213,7 @@ function DisqusJS(config) {
              * API URI: /3.0/threads/list.json?forum=[disqus_shortname]&thread=ident:[identifier]&api_key=[apikey]
              */
             get(url, (res) => {
+                var d = document;
                 // 如果只返回一条则找到了对应 thread，否则是当前 identifier 不能找到唯一的 thread
                 // 如果 thread 不唯一则需要进行初始化
                 if (res.code === 0 && res.response.length === 1) {
@@ -230,19 +226,21 @@ function DisqusJS(config) {
                     };
 
                     // 填充站点名称和评论数目
-                    let d = document;
                     d.getElementById('dsqjs-comment-num').innerHTML = disqusjs.page.length
                     d.getElementById('dsqjs-site-name').innerHTML = disqusjs.config.siteName
                     // 获取评论列表
                     getComment()
                 } else if (res.code === 0 && res.response.length !== 1) {
                     // 当前页面可能还未初始化（创建 thread）
+                    d.getElementById('dsqjs-msg').innerHTML = `该 Thread 并没有初始化，是否 <a id="dsqjs-force-disqus" class="dsqjs-msg-btn">切换到完整 Disqus 模式</a> 进行初始化？`
+                    d.getElementById('dsqjs-force-disqus').addEventListener('click', forceDisqus);
                 } else {
                     // 评论列表加载错误
+                    loadError()
                 }
             }, (e) => {
                 // 评论列表加载错误
-                console.log(e);
+                loadError()
             })
         })()
 
@@ -274,19 +272,26 @@ function DisqusJS(config) {
                     if (res.cursor.hasNext) {
                         // 显示 加载更多评论 按钮
                         $loadMoreBtn.classList.remove('dsqjs-hide');
-                        $loadMoreBtn.addEventListener('click', () => { getComment(res.cursor.next); });
+                        $loadMoreBtn.addEventListener('click', () => {
+                            getComment(res.cursor.next)
+                        });
                     } else {
                         // 没有更多评论了，注意确保按钮隐藏
                         $loadMoreBtn.classList.add('dsqjs-hide');
                     }
                 } else if (res.code === 0 && res.response.length === 0) {
                     // 当前没有评论
+                    let d = document;
+                    d.getElementById('dsqjs-msg').innerHTML = '你可能无法访问 Disqus，已启用评论基础模式。如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并 <a id="dsqjs-reload-disqus" class="dsqjs-msg-btn">尝试完整 Disqus 模式</a> | <a id="dsqjs-force-disqus" class="dsqjs-msg-btn">强制完整 Disqus 模式</a>。'
+                    d.getElementById('dsqjs-header').classList.remove('dsqjs-hide')
+                    d.getElementById('dsqjs-post-container').innerHTML = '<div class="dsqjs-no-comment">这里冷冷清清的，一条评论都没有</div>'
                 } else {
                     // 评论列表加载错误
+                    loadError()
                 }
             }, (e) => {
                 // 评论列表加载错误
-                console.log(e);
+                loadError()
             })
         }
 
@@ -453,8 +458,58 @@ function DisqusJS(config) {
             d.getElementById('dsqjs-header').classList.remove('dsqjs-hide')
             d.getElementById('dsqjs-msg').innerHTML = '你可能无法访问 Disqus，已启用评论基础模式。如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并 <a id="dsqjs-reload-disqus" class="dsqjs-msg-btn">尝试完整 Disqus 模式</a> | <a id="dsqjs-force-disqus" class="dsqjs-msg-btn">强制完整 Disqus 模式</a>。'
             d.getElementById('dsqjs-post-container').insertAdjacentHTML('beforeend', html);
+            d.getElementById('dsqjs-reload-disqus').addEventListener('click', checkDisqus);
+            d.getElementById('dsqjs-force-disqus').addEventListener('click', forceDisqus);
         }
     }
 
-    loadDsqjs()
+    /*
+     * loadError() - 评论基础模式加载出现错误
+     */
+    function loadError() {
+        let d = document;
+        d.getElementById('dsqjs-msg').innerHTML = '评论基础模式加载失败，是否 <a id="dsqjs-reload-dsqjs" class="dsqjs-msg-btn">重载</a> 或 <a id="dsqjs-reload-disqus" class="dsqjs-msg-btn">尝试完整 Disqus 模式</a> ？'
+        d.getElementById('dsqjs-reload-dsqjs').addEventListener('click', loadDsqjs);
+        d.getElementById('dsqjs-reload-disqus').addEventListener('click', checkDisqus);
+    }
+
+
+    /*
+     * forceDsqjs() - 强制使用 DisqusJS
+     * forceDisqus() - 强制使用 Disqus
+     */
+    function forceDsqjs() {
+        setLS('dsqjs_mode', 'dsqjs')
+        loadDsqjs()
+    }
+
+    function forceDisqus() {
+        setLS('dsqjs_mode', 'disqus')
+        loadDisqus()
+    }
+
+    var disqusjs = [];
+    disqusjs.config = config
+
+    // 定义 disqusjs.page，之后会填充 thread id、title 等数据
+    disqusjs.page = [];
+
+    /*
+     * window.disqus_config - 从 disqusjs.config 获取 Disqus 所需的配置
+     */
+    window.disqus_config = function () {
+        this.page.url = disqusjs.config.url;
+        this.page.identifier = disqusjs.config.identifier;
+    };
+
+    disqusjs.mode = getLS('dsqjs_mode');
+
+    if (disqusjs.mode === 'disqus') {
+        loadDisqus();
+    } else if (disqusjs.mode === 'dsqjs') {
+        loadDsqjs();
+    } else {
+        // 没有在 localStorage 中找到 disqusjs_mode 相关内容，开始检查访客的 Disqus 可用性
+        // checkDisqus();
+    }
 }

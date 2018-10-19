@@ -57,6 +57,16 @@
     list-style-type: none;
 }
 
+#dsqjs .dsqjs-no-comment {
+    text-align: center;
+    font-size: 16px;
+    line-height: 1.5;
+    word-wrap: break-word;
+    overflow: hidden;
+    color: #2a2e2e;
+    margin-bottom: 6px;
+}
+
 #dsqjs .dsqjs-nav-tab {
     float: left;
     text-transform: capitalize;
@@ -112,10 +122,6 @@
     border-radius: 4px;
 }
 
-#dsqjs .dsqjs-post-list .dsqjs-post-body {
-    overflow: hidden;
-}
-
 #dsqjs .dsqjs-post-list .dsqjs-post-header {
     line-height: 1;
     font-size: 14px;
@@ -152,6 +158,8 @@
     font-size: 15px;
     line-height: 1.5;
     word-wrap: break-word;
+    overflow: hidden;
+    color: #2a2e2e
 }
 
 #dsqjs .dsqjs-post-body code,
