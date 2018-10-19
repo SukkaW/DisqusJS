@@ -11,11 +11,19 @@
     color: #076dd0;
 }
 
+#dsqjs .dsqjs-hide {
+    display: none !important
+}
+
 #dsqjs #dsqjs-msg {
     text-align: center;
     margin-top: 4px;
     margin-bottom: 4px;
     font-size: 14px;
+}
+
+#dsqjs #dsqjs-msg .dsqjs-msg-btn {
+    cursor: pointer;
 }
 
 #dsqjs .dsqjs-bullet {
@@ -208,10 +216,27 @@
     height: 38px;
 }
 
+#dsqjs .dsqjs-load-more {
+    font-size: 14px;
+    font-weight: 400;
+    display: block;
+    text-align: center;
+    padding: 11px 14px;
+    margin: 0 0 24px;
+    background: #687a86;
+    color: #fff;
+    cursor: pointer;
+}
+
+#dsqjs .dsqjs-load-more:hover {
+    opacity: .8;
+}
+
 #dsqjs footer {
     text-align: right;
     line-height: 1.5;
     padding-right: 4px;
+    padding-top: 12px;
     font-weight: 700;
     font-size: 16px;
     color: #555;
