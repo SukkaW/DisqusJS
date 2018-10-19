@@ -317,8 +317,8 @@ function DisqusJS(config) {
         /*
          * parseCommentData(data) - 解析评论列表
          *
-         * @param {Object} data - 评论列表 JSON
-         * @return {Object} - 解析后的评论列表数据
+         * @param {Array} data - 评论列表 JSON
+         * @return {Array} - 解析后的评论列表数据
          */
         let parseCommentData = (data) => {
             var topLevelComments = [],
@@ -370,13 +370,13 @@ function DisqusJS(config) {
         /*
          * renderCommentData(data) - 渲染评论列表
          *
-         * @param {Object} data - 从 getComment() 获取到的 JSON
+         * @param {Array} data - 从 getComment() 获取到的 JSON
          */
         let renderComment = (data) => {
             /*
              * processData(data) - 处理评论列表
              *
-             * @param {Object} data - 解析后的评论列表 JSON
+             * @param {Array} data - 解析后的评论列表 JSON
              */
             let processData = (data) => {
                 // 处理 Disqus Profile URL
@@ -408,6 +408,27 @@ function DisqusJS(config) {
                 return data;
             }
 
+            /*
+             * removeDisqUs(msg) - 将 comment 中的短链接 disq.us 去除
+             * @param {string} msg - 评论信息
+             * @return {string} msg - 经过处理的评论信息
+             */
+            let removeDisqUs = (msg) => {
+                // aMatcher - 只处理 Disqus 短链接
+                var aMatcher = new RegExp(/<a.+?href=\"https:\/\/disq.us(.+?)\".*>/gi),
+                    hrefMatcher = new RegExp(/href=\"(?<href>[^\"]*)\"/gi)
+                let link = (msg.match(aMatcher) || [])
+                link.map((link) => {
+                    // (.*) 是贪婪处理，会一致匹配到最后，可以用于匹配最后一次
+                    link = link.match(hrefMatcher)[0].replace(/href=\"https:\/\/disq.us\/url\?url=/g, '').replace(/(.*)"/, '$1');
+                    link = decodeURIComponent(link).replace(/(.*):(.*)/, '$1')
+                    msg = msg.replace(aMatcher, `<a href="${link}" rel="nofollow noopener noreferrer">${link}</a>`)
+                })
+
+                // 在最后添加 target="_blank" 可以生效到全局链接（包括 Disqus CDN 直链）
+                return msg.replace(/href=/g, 'target="_blank" href=')
+            }
+
             let renderPostItem = (s) => {
                 /*
                     <div class="dsqjs-post-item dsqjs-clearfix">
@@ -426,7 +447,7 @@ function DisqusJS(config) {
                         </div>
                     </div>
                 */
-                let html = `<div class="dsqjs-post-item dsqjs-clearfix"><div class="dsqjs-post-avatar">${s.avatarEl}</div><div class="dsqjs-post-body"><div class="dsqjs-post-header">${s.authorEl}<span class="dsqjs-bullet"></span><span class="dsqjs-meta"><time>${dateFormat(s.createdAt)}</time></span></div><div class="dsqjs-post-content">${s.message}</div></div></div>`
+                let html = `<div class="dsqjs-post-item dsqjs-clearfix"><div class="dsqjs-post-avatar">${s.avatarEl}</div><div class="dsqjs-post-body"><div class="dsqjs-post-header">${s.authorEl}<span class="dsqjs-bullet"></span><span class="dsqjs-meta"><time>${dateFormat(s.createdAt)}</time></span></div><div class="dsqjs-post-content">${removeDisqUs(s.message)}</div></div></div>`
 
                 return html;
             }
