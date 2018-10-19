@@ -11,6 +11,13 @@
     color: #076dd0;
 }
 
+#dsqjs #dsqjs-msg {
+    text-align: center;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    font-size: 14px;
+}
+
 #dsqjs .dsqjs-bullet {
     line-height: 1.4;
     margin: 0 2px;
