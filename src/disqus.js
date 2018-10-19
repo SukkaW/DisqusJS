@@ -93,13 +93,14 @@ function DisqusJS(config) {
      * @return {string} - 格式化后的日期
      */
     const dateFormat = (date) => {
+        date = new Date(date + 28800000);
         let y = date.getFullYear();
-        let m = date.getMonth() + 1;
-        m = m < 10 ? (`0${m}`) : m;
+        let m = date.getUTCMonth() + 1;
+        if (m < 10) m = `0${m}`;
         let d = date.getDate();
-        d = d < 10 ? (`0${d}`) : d;
-        let h = date.getHours() + 8;
-        h = h < 10 ? (`0${h}`) : h;
+        if (d < 10) d = `0${d}`;
+        let h = date.getHours();
+        if (h < 10) h = `0${h}`;
         let minute = date.getMinutes();
         minute = minute < 10 ? (`0${minute}`) : minute;
         return `${y}-${m}-${d} ${h}:${minute}`;
@@ -409,7 +410,7 @@ function DisqusJS(config) {
                         </div>
                     </div>
                 */
-                let html = `<div class="dsqjs-post-item dsqjs-clearfix"><div class="dsqjs-post-avatar">${s.avatarEl}</div><div class="dsqjs-post-body"><div class="dsqjs-post-header">${s.authorEl} <span class="dsqjs-bullet"></span> <span class="dsqjs-meta"><time>${dateFormat(new Date(s.createdAt))}</time></span></div><div class="dsqjs-post-content">${s.message}</div></div></div>`
+                let html = `<div class="dsqjs-post-item dsqjs-clearfix"><div class="dsqjs-post-avatar">${s.avatarEl}</div><div class="dsqjs-post-body"><div class="dsqjs-post-header">${s.authorEl} <span class="dsqjs-bullet"></span> <span class="dsqjs-meta"><time>${dateFormat(Date.parse(new Date(s.createdAt)))}</time></span></div><div class="dsqjs-post-content">${s.message}</div></div></div>`
 
                 return html;
             }
@@ -510,6 +511,6 @@ function DisqusJS(config) {
         loadDsqjs();
     } else {
         // 没有在 localStorage 中找到 disqusjs_mode 相关内容，开始检查访客的 Disqus 可用性
-        // checkDisqus();
+        checkDisqus();
     }
 }
