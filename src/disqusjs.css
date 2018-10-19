@@ -197,12 +197,12 @@
     margin: 0;
 }
 
-#dsqjs .dsqjs-post-list.dsqjs-children li {
+#dsqjs .dsqjs-post-list.dsqjs-children > li {
     margin-left: 30px;
 }
 
 @media (min-width: 768px) {
-    #dsqjs .dsqjs-post-list.dsqjs-children li {
+    #dsqjs .dsqjs-post-list.dsqjs-children > li {
         margin-left: 48px;
     }
     #dsqjs .dsqjs-post-list .dsqjs-post-avatar {
@@ -214,7 +214,7 @@
 }
 
 @media (min-width: 1024px) {
-    #dsqjs .dsqjs-post-list.dsqjs-children li {
+    #dsqjs .dsqjs-post-list.dsqjs-children > li {
         margin-left: 60px;
     }
 }
