@@ -296,84 +296,113 @@ function DisqusJS(config) {
         }
 
         /*
-         * processData(data) - 处理评论列表
-         *
-         * @param {Object} data - 解析后的评论列表 JSON
-         */
-        let processData = (data) => {
-            // 处理 Disqus Profile
-            if (data.comment.author.profileUrl) {
-                /*
-                Avatar Element
-                <a href="${data.comment.author.profileUrl}">
-                    <img src="${data.comment.author.avatar.cache}">
-                </a>
-
-                Author Element
-                <span class="dsqjs-post-author">
-                    <a href="${data.comment.author.profileUrl}" target="_blank" rel="nofollow noopener noreferrer">${data.comment.author.name}</a>
-                </span>
-                */
-                data.comment.avatarEl = `<a href="${data.comment.author.profileUrl}"><img src="${data.comment.author.avatar.cache}"></a>`
-                data.comment.authorEl = `<span class="dsqjs-post-author"><a href="${data.comment.author.profileUrl}" target="_blank" rel="nofollow noopener noreferrer">${data.comment.author.name}</a></span>`
-            } else {
-                data.comment.avatarEl = `<img src="${data.comment.author.avatar.cache}">`
-                data.comment.authorEl = `<span class="dsqjs-post-author">${data.comment.author.name}</span>`
-            }
-
-            // 处理 Admin Label
-            if (data.isPrimary) {
-                data.comment.authorEl += `<span class="dsqjs-admin-badge">${disqusjs.config.adminLabel}</span>`;
-            }
-
-            // 处理评论嵌套级数
-            if (data.children) {
-                // 如果有子评论，设置当前评论前套数为 1
-                data.nesting = 1;
-            }
-
-            return data;
-        }
-
-        let renderPostItem = (s) => {
-            /*
-                <div class="dsqjs-post-item dsqjs-clearfix">
-                    <div class="dsqjs-post-avatar">
-                        ${s.avatarEl}
-                    </div>
-                    <div class="dsqjs-post-body">
-                        <div class="dsqjs-post-header">
-                            ${s.authorEl}
-                            <span class="dsqjs-bullet"></span>
-                            <span class="dsqjs-meta"><time>${dateFormat(new Date(s.createdAt))}</time></span>
-                        </div>
-                        <div class="dsqjs-post-content">
-                            ${s.message}
-                        </div>
-                    </div>
-                </div>
-            */
-           let html = `<div class="dsqjs-post-item dsqjs-clearfix"><div class="dsqjs-post-avatar">${s.avatarEl}</div><div class="dsqjs-post-body"><div class="dsqjs-post-header">${s.authorEl} <span class="dsqjs-bullet"></span> <span class="dsqjs-meta"><time>${dateFormat(new Date(s.createdAt))}</time></span></div><div class="dsqjs-post-content">${s.message}</div></div></div>`
-
-           return html;
-        }
-
-
-
-        /*
          * renderCommentData(data) - 渲染评论列表
          *
          * @param {Object} data - 从 getComment() 获取到的 JSON
          */
         let renderComment = (data) => {
-            var html = '';
+            /*
+             * processData(data) - 处理评论列表
+             *
+             * @param {Object} data - 解析后的评论列表 JSON
+             */
+            let processData = (data) => {
+                // 处理 Disqus Profile
+                if (data.comment.author.profileUrl) {
+                    /*
+                    Avatar Element
+                    <a href="${data.comment.author.profileUrl}">
+                        <img src="${data.comment.author.avatar.cache}">
+                    </a>
+
+                    Author Element
+                    <span class="dsqjs-post-author">
+                        <a href="${data.comment.author.profileUrl}" target="_blank" rel="nofollow noopener noreferrer">${data.comment.author.name}</a>
+                    </span>
+                    */
+                    data.comment.avatarEl = `<a href="${data.comment.author.profileUrl}"><img src="${data.comment.author.avatar.cache}"></a>`
+                    data.comment.authorEl = `<span class="dsqjs-post-author"><a href="${data.comment.author.profileUrl}" target="_blank" rel="nofollow noopener noreferrer">${data.comment.author.name}</a></span>`
+                } else {
+                    data.comment.avatarEl = `<img src="${data.comment.author.avatar.cache}">`
+                    data.comment.authorEl = `<span class="dsqjs-post-author">${data.comment.author.name}</span>`
+                }
+
+                // 处理 Admin Label
+                if (data.isPrimary) {
+                    data.comment.authorEl += `<span class="dsqjs-admin-badge">${disqusjs.config.adminLabel}</span>`;
+                }
+
+                // 处理评论嵌套级数
+                if (data.children) {
+                    // 如果有子评论，设置当前评论前套数为 1
+                    data.nesting = 1;
+                }
+
+                return data;
+            }
+
+            let renderPostItem = (s) => {
+                /*
+                    <div class="dsqjs-post-item dsqjs-clearfix">
+                        <div class="dsqjs-post-avatar">
+                            ${s.avatarEl}
+                        </div>
+                        <div class="dsqjs-post-body">
+                            <div class="dsqjs-post-header">
+                                ${s.authorEl}
+                                <span class="dsqjs-bullet"></span>
+                                <span class="dsqjs-meta"><time>${dateFormat(new Date(s.createdAt))}</time></span>
+                            </div>
+                            <div class="dsqjs-post-content">
+                                ${s.message}
+                            </div>
+                        </div>
+                    </div>
+                */
+                let html = `<div class="dsqjs-post-item dsqjs-clearfix"><div class="dsqjs-post-avatar">${s.avatarEl}</div><div class="dsqjs-post-body"><div class="dsqjs-post-header">${s.authorEl} <span class="dsqjs-bullet"></span> <span class="dsqjs-meta"><time>${dateFormat(new Date(s.createdAt))}</time></span></div><div class="dsqjs-post-content">${s.message}</div></div></div>`
+
+                return html;
+            }
+
+            let childrenComments = (data) => {
+                var nesting = data.nesting,
+                    children = (data.children || []);
+
+                if (!children) {
+                    return;
+                }
+
+                let html = (() => {
+                    // 如果当前评论嵌套数大于 4 则不再右移
+                    if (nesting < 4) {
+                        return '<ul class="dsqjs-post-list dsqjs-children">';
+                    } else {
+                        return '<ul class="dsqjs-post-list">';
+                    }
+                })();
+
+                html += children.map((comment) => {
+                    comment = processData(comment);
+                    comment.nesting = nesting + 1;
+                    return `<li data-id="comment-${comment.comment.id}">${renderPostItem(comment.comment)}${childrenComments(comment)}</li>`;
+                });
+
+                html += '</ul>';
+
+                if (html.length !== 0) {
+                    return html;
+                } else {
+                    return;
+                }
+            }
+
+            let html = ''
 
             data = parseCommentData(data);
-            data.map((comment) => {
+            html += data.map((comment) => {
                 comment = processData(comment);
-                console.log(comment)
-                html += `<li data-id="comment-${comment.comment.id}">${renderPostItem(comment.comment)}${childrenComments(s)}</li>`;
-            })
+                return `<ul class="dsqjs-post-list"><li data-id="comment-${comment.comment.id}">${renderPostItem(comment.comment)}${childrenComments(comment)}</li></ul>`;
+            });
 
             console.log(html)
         }
