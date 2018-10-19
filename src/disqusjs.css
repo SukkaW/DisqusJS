@@ -140,10 +140,41 @@
     color: #656c7a;
 }
 
-#dsqjs .dsqjs-post-body p {
+#dsqjs .dsqjs-post-body {
     font-size: 15px;
     line-height: 1.5;
     word-wrap: break-word;
+}
+
+#dsqjs .dsqjs-post-body code,
+#dsqjs .dsqjs-post-body pre {
+    font-family: "SF Mono", "Segoe UI Mono", Consolas, "Roboto Mono", "Liberation Mono", Menlo, Courier, 'Courier New', monospace !important;
+}
+
+#dsqjs .dsqjs-post-body code {
+    padding: .2em .4em;
+    margin: 0;
+    font-size: 85%;
+    background: #f5f5f5;
+    color: inherit;
+    border-radius: 3px;
+}
+
+#dsqjs .dsqjs-post-body pre {
+    padding: .5em;
+    overflow: auto;
+    font-size: 85%;
+    line-height: 1.45;
+    border-radius: 3px;
+    background: #f5f5f5;
+    margin: .5em 0;
+}
+
+#dsqjs .dsqjs-post-body blockquote {
+    padding: 0 .8em;
+    margin: .5em 0;
+    color: #6a737d;
+    border-left: .25em solid #dfe2e5;
 }
 
 #dsqjs .dsqjs-post-body p:last-child {
