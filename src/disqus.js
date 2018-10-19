@@ -228,7 +228,11 @@ function DisqusJS(config) {
 
                     // 填充站点名称和评论数目
                     d.getElementById('dsqjs-comment-num').innerHTML = disqusjs.page.length
-                    d.getElementById('dsqjs-site-name').innerHTML = disqusjs.config.siteName
+
+                    if (disqusjs.config.siteName) {
+                        d.getElementById('dsqjs-site-name').innerHTML = disqusjs.config.siteName
+                    }
+
                     // 获取评论列表
                     getComment()
                 } else if (res.code === 0 && res.response.length !== 1) {
@@ -317,7 +321,8 @@ function DisqusJS(config) {
                         list.unshift({
                             comment,
                             author: comment.author.name,
-                            isPrimary: comment.author.username === disqusjs.config.admin.toLowerCase(),
+                            // 如果不设置 admin 会返回 undefined，所以需要嘴一个判断
+                            isPrimary: (disqusjs.config.admin ? (comment.author.username === disqusjs.config.admin.toLowerCase()) : false),
                             children: getChildren(+comment.id)
                         });
                     }
@@ -338,7 +343,7 @@ function DisqusJS(config) {
                 return {
                     comment,
                     author: comment.author.name,
-                    isPrimary: comment.author.username === disqusjs.config.admin.toLowerCase(),
+                    isPrimary: (disqusjs.config.admin ? (comment.author.username === disqusjs.config.admin.toLowerCase()) : false),
                     children: getChildren(+comment.id)
                 };
             });
@@ -379,7 +384,8 @@ function DisqusJS(config) {
                 }
 
                 // 处理 Admin Label
-                if (data.isPrimary) {
+                // 需要同时设置 isPrimary 和 adminLabel；admin 已经在 processData() 中做过判断了
+                if (disqusjs.config.adminLabel && data.isPrimary) {
                     data.comment.authorEl += `<span class="dsqjs-admin-badge">${disqusjs.config.adminLabel}</span>`;
                 }
 
@@ -410,7 +416,7 @@ function DisqusJS(config) {
                         </div>
                     </div>
                 */
-                let html = `<div class="dsqjs-post-item dsqjs-clearfix"><div class="dsqjs-post-avatar">${s.avatarEl}</div><div class="dsqjs-post-body"><div class="dsqjs-post-header">${s.authorEl} <span class="dsqjs-bullet"></span> <span class="dsqjs-meta"><time>${dateFormat(Date.parse(new Date(s.createdAt)))}</time></span></div><div class="dsqjs-post-content">${s.message}</div></div></div>`
+                let html = `<div class="dsqjs-post-item dsqjs-clearfix"><div class="dsqjs-post-avatar">${s.avatarEl}</div><div class="dsqjs-post-body"><div class="dsqjs-post-header">${s.authorEl}<span class="dsqjs-bullet"></span><span class="dsqjs-meta"><time>${dateFormat(Date.parse(new Date(s.createdAt)))}</time></span></div><div class="dsqjs-post-content">${s.message}</div></div></div>`
 
                 return html;
             }
@@ -491,6 +497,7 @@ function DisqusJS(config) {
 
     var disqusjs = [];
     disqusjs.config = config
+    disqusjs.config.api = (disqusjs.config.api ? disqusjs.config.api : 'https://disqus.skk.moe/disqus/')
 
     // 定义 disqusjs.page，之后会填充 thread id、title 等数据
     disqusjs.page = [];
