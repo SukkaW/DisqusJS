@@ -58,7 +58,7 @@
 你可以轻松将 DisqusJS 引入你现有的项目：
 
 ```bash
-npm i --save gitalk
+npm i --save disqusjs
 ```
 
 ```
