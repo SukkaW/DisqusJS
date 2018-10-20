@@ -44,13 +44,14 @@ function DisqusJS(config) {
     const get = (url, success, error) => {
         let xhr = new XMLHttpRequest()
         xhr.open('GET', encodeURI(url), true);
-        xhr.onreadystatechange = () => {
-            // 用传统方法代替 XHR2 的 onload 事件
-            if (xhr.readyState == 4 && xhr.status == 200) {
+        xhr.onload = () => {
+            if (xhr.status >= 200 && xhr.status < 300 || xhr.status === 304) {
                 let res = JSON.parse(xhr.responseText)
                 success(res)
+            } else {
+                loadError();
             }
-        };
+        }
         xhr.timeout = 4500;
         xhr.ontimeout = (e) => {
             error(e);
