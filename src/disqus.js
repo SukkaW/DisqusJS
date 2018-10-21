@@ -305,6 +305,8 @@ function DisqusJS(config) {
                     d.getElementById('dsqjs-msg').innerHTML = '你可能无法访问 Disqus，已启用评论基础模式。如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并 <a id="dsqjs-reload-disqus" class="dsqjs-msg-btn">尝试完整 Disqus 模式</a> | <a id="dsqjs-force-disqus" class="dsqjs-msg-btn">强制完整 Disqus 模式</a>。'
                     d.getElementById('dsqjs-header').classList.remove('dsqjs-hide')
                     d.getElementById('dsqjs-post-container').innerHTML = '<div class="dsqjs-no-comment">这里冷冷清清的，一条评论都没有</div>'
+                    d.getElementById('dsqjs-reload-disqus').addEventListener('click', checkDisqus);
+                    d.getElementById('dsqjs-force-disqus').addEventListener('click', forceDisqus);
                 } else {
                     // 评DisqusJS 加载错误
                     loadError()
