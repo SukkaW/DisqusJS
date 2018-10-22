@@ -269,12 +269,27 @@ function DisqusJS(config) {
          * @param {string} cursor - 传入 cursor 用于加载下一页的评论
          */
         let getComment = (cursor) => {
+            var $loadMoreBtn = document.getElementById('dsqjs-load-more');
             // 处理传入的 cursor
             if (!cursor) {
+                // 不存在 cursor，API 中不需要带上 cursor 参数
                 cursor = '';
+                var getCommentError = () => {
+                    // 不存在 cursor，出错时只需要在 #dsq-msg 中显示提示信息
+                    loadError();
+                }
             } else {
+                // 带上 cursor 参数
                 cursor = `&cursor=${cursor}`;
+                var getCommentError = () => {
+                    // 解禁 加载更多评论
+                    $loadMoreBtn.classList.remove('dsqjs-disabled');
+                    // 在按钮上显示提示信息
+                    $loadMoreBtn.innerHTML = '加载更多评论失败，点击重试'
+                }
             }
+            // 在发起请求前禁用 加载更多评论 按钮防止重复调用
+            $loadMoreBtn.classList.add('dsqjs-disabled')
             /*
              * 获取评论列表
              *
@@ -287,11 +302,15 @@ function DisqusJS(config) {
             let url = `${disqusjs.config.api}3.0/posts/list.json?forum=${disqusjs.config.shortname}&thread=${disqusjs.page.id}${cursor}&include=approved&include=deleted&api_key=${disqusjs.config.apikey}`;
             get(url, (res) => {
                 if (res.code === 0 && res.response.length > 0) {
+                    // 解禁 加载更多评论
+                    $loadMoreBtn.classList.remove('dsqjs-disabled');
                     // 已获得评论列表，进行渲染
                     renderComment(res.response)
 
-                    var $loadMoreBtn = document.getElementById('dsqjs-load-more');
+
                     if (res.cursor.hasNext) {
+                        // 确保 加载更多评论按钮 文字正常
+                        $loadMoreBtn.innerHTML = '加载更多评论'
                         // 显示 加载更多评论 按钮
                         $loadMoreBtn.classList.remove('dsqjs-hide');
                         $loadMoreBtn.addEventListener('click', () => {
@@ -312,11 +331,11 @@ function DisqusJS(config) {
                     d.getElementById('dsqjs-force-disqus').addEventListener('click', forceDisqus);
                 } else {
                     // 评DisqusJS 加载错误
-                    loadError()
+                    getCommentError()
                 }
             }, (e) => {
                 // 评论列表加载错误
-                loadError()
+                getCommentError()
             })
         }
 
@@ -531,7 +550,6 @@ function DisqusJS(config) {
         d.getElementById('dsqjs-reload-dsqjs').addEventListener('click', loadDsqjs);
         d.getElementById('dsqjs-reload-disqus').addEventListener('click', checkDisqus);
     }
-
 
     /*
      * forceDsqjs() - 强制使用 DisqusJS
