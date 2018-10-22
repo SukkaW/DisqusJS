@@ -280,8 +280,11 @@ function DisqusJS(config) {
              *
              * API Docs: https://disqus.com/api/docs/posts/list/
              * API URI: /3.0/posts/list.json?forum=[shortname]&thread=[thread id]&api_key=[apikey]
+             *
+             * https://github.com/SukkaW/DisqusJS/issues/6
+             * 可以使用 include=deleted 来获得已被删除评论列表
              */
-            let url = `${disqusjs.config.api}3.0/posts/list.json?forum=${disqusjs.config.shortname}&thread=${disqusjs.page.id}${cursor}&api_key=${disqusjs.config.apikey}`;
+            let url = `${disqusjs.config.api}3.0/posts/list.json?forum=${disqusjs.config.shortname}&thread=${disqusjs.page.id}${cursor}&include=approved&include=deleted&api_key=${disqusjs.config.apikey}`;
             get(url, (res) => {
                 if (res.code === 0 && res.response.length > 0) {
                     // 已获得评论列表，进行渲染
@@ -433,6 +436,14 @@ function DisqusJS(config) {
             }
 
             let renderPostItem = (s) => {
+                console.log(s.isDeleted)
+                if (s.isDeleted) {
+                    var authorEl = ``,
+                        message = `<small>此评论已被删除</small>`;
+                } else {
+                    var authorEl = `${s.authorEl}<span class="dsqjs-bullet"></span>`,
+                        message = s.message;
+                }
                 /*
                     <div class="dsqjs-post-item dsqjs-clearfix">
                         <div class="dsqjs-post-avatar">
@@ -440,17 +451,16 @@ function DisqusJS(config) {
                         </div>
                         <div class="dsqjs-post-body">
                             <div class="dsqjs-post-header">
-                                ${s.authorEl}
-                                <span class="dsqjs-bullet"></span>
+                                ${authorEl}
                                 <span class="dsqjs-meta"><time>${dateFormat(s.createdAt)}</time></span>
                             </div>
                             <div class="dsqjs-post-content">
-                                ${s.message}
+                                ${message}
                             </div>
                         </div>
                     </div>
                 */
-                let html = `<div class="dsqjs-post-item dsqjs-clearfix"><div class="dsqjs-post-avatar">${s.avatarEl}</div><div class="dsqjs-post-body"><div class="dsqjs-post-header">${s.authorEl}<span class="dsqjs-bullet"></span><span class="dsqjs-meta"><time>${dateFormat(s.createdAt)}</time></span></div><div class="dsqjs-post-content">${removeDisqUs(s.message)}</div></div></div>`
+                var html = `<div class="dsqjs-post-item dsqjs-clearfix"><div class="dsqjs-post-avatar">${s.avatarEl}</div><div class="dsqjs-post-body"><div class="dsqjs-post-header">${authorEl}<span class="dsqjs-meta"><time>${dateFormat(s.createdAt)}</time></span></div><div class="dsqjs-post-content">${removeDisqUs(message)}</div></div></div>`
 
                 return html;
             }
