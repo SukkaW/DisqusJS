@@ -501,10 +501,10 @@ function DisqusJS(config) {
                     }
                 })();
 
-                html += children.map((comment) => {
+                children.map((comment) => {
                     comment = processData(comment);
                     comment.nesting = nesting + 1;
-                    return `<li data-id="comment-${comment.comment.id}">${renderPostItem(comment.comment)}${childrenComments(comment)}</li>`;
+                    html += `<li data-id="comment-${comment.comment.id}">${renderPostItem(comment.comment)}${childrenComments(comment)}</li>`;
                 });
 
                 html += '</ul>';
