@@ -455,7 +455,6 @@ function DisqusJS(config) {
             }
 
             let renderPostItem = (s) => {
-                console.log(s.isDeleted)
                 if (s.isDeleted) {
                     var authorEl = ``,
                         message = `<small>此评论已被删除</small>`;
