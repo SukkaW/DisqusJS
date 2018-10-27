@@ -236,7 +236,8 @@ function DisqusJS(config) {
                         id: resp.id,
                         title: resp.title,
                         isClosed: resp.isClosed,
-                        length: resp.posts
+                        length: resp.posts,
+                        comment: []
                     };
 
                     // 填充站点名称和评论数目
@@ -304,8 +305,11 @@ function DisqusJS(config) {
                 if (res.code === 0 && res.response.length > 0) {
                     // 解禁 加载更多评论
                     $loadMoreBtn.classList.remove('dsqjs-disabled');
-                    // 已获得评论列表，进行渲染
-                    renderComment(res.response)
+
+                    // 将获得的评论数据和当前页面已有的评论数据合并
+                    disqusjs.page.comment = disqusjs.page.comment.concat(res.response);
+                    // 用当前页面的所有评论数据进行渲染
+                    renderComment(disqusjs.page.comment)
 
 
                     if (res.cursor.hasNext) {
@@ -533,8 +537,8 @@ function DisqusJS(config) {
             // 增加提示信息
             d.getElementById('dsqjs-msg').innerHTML = '你可能无法访问 Disqus，已启用评论基础模式。如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并 <a id="dsqjs-reload-disqus" class="dsqjs-msg-btn">尝试完整 Disqus 模式</a> | <a id="dsqjs-force-disqus" class="dsqjs-msg-btn">强制完整 Disqus 模式</a>。'
 
-            // 使用 append，当有评论翻页的时候可以无限在尾部添加
-            d.getElementById('dsqjs-post-container').insertAdjacentHTML('beforeend', html);
+            d.getElementById('dsqjs-post-container').innerHTML = html;
+
             d.getElementById('dsqjs-reload-disqus').addEventListener('click', checkDisqus);
             d.getElementById('dsqjs-force-disqus').addEventListener('click', forceDisqus);
         }
