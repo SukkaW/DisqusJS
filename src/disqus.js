@@ -16,6 +16,7 @@
  *
  * DisqusJS Info
  * @param {string} disqusjs.page.id = The thread id, used at next API call
+ * @param {string} disqusjs.page.next = The cursor of next page of list
  * @param {boolean} disqusjs.page.isClosed - Whether the comment is closed
  * @param {number} disqusjs.page.length - How many comment in the thread
  */
@@ -270,6 +271,12 @@ function DisqusJS(config) {
          * @param {string} cursor - 传入 cursor 用于加载下一页的评论
          */
         let getComment = (cursor) => {
+            let getMoreComment = () => {
+                // 执行完以后去除当前监听器避免重复调用
+                $loadMoreBtn.removeEventListener('click', getMoreComment);
+                // 加载下一页评论
+                getComment(disqusjs.page.next);
+            }
             var $loadMoreBtn = document.getElementById('dsqjs-load-more');
             // 处理传入的 cursor
             if (!cursor) {
@@ -313,14 +320,13 @@ function DisqusJS(config) {
 
 
                     if (res.cursor.hasNext) {
+                        // 将 cursor.next 存入 disqusjs 变量中供不能传参的不匿名函数使用
+                        disqusjs.page.next = res.cursor.next;
                         // 确保 加载更多评论按钮 文字正常
                         $loadMoreBtn.innerHTML = '加载更多评论'
                         // 显示 加载更多评论 按钮
                         $loadMoreBtn.classList.remove('dsqjs-hide');
-                        $loadMoreBtn.addEventListener('click', () => {
-                            // 递归调用 getComment，传入 cursor 参数
-                            getComment(res.cursor.next)
-                        });
+                        $loadMoreBtn.addEventListener('click', getMoreComment);
                     } else {
                         // 没有更多评论了，确保按钮隐藏
                         $loadMoreBtn.classList.add('dsqjs-hide');
