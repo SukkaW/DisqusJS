@@ -184,7 +184,7 @@ var dsqjs = new DisqusJS({
 
 ## Author 作者
 
-**DisqusJS** © [Sukka](https://github.com/SukkaW), Released under the [GPL-3.0](https://github.com/SukkaW/suka.css/blob/master/LICENSE) License.<br>
+**DisqusJS** © [Sukka](https://github.com/SukkaW), Released under the [MIT](https://github.com/SukkaW/suka.css/blob/master/LICENSE) License.<br>
 Authored and maintained by Sukka with help from contributors ([list](https://github.com/SukkaW/suka.css/graphs/contributors)).
 
-> [Personal Website](https://skk.moe) · [Blog](https://blog.skk.moe) · GitHub [@SukkaW](https://github.com/SukkaW) · Telegram Channel [@SukkaChannel](https://t.me/SukkaChannel)
+> [Personal Website](https://skk.moe) · [Blog](https://blog.skk.moe) · GitHub [@SukkaW](https://github.com/SukkaW) · Telegram Channel [@SukkaChannel](https://t.me/SukkaChannel) · Twitter [@isukkaw](https://twitter.com/isukkaw) · Keybase [@sukka](https://keybase.io/sukka)
