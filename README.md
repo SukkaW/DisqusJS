@@ -161,6 +161,15 @@ var dsqjs = new DisqusJS({
 - commentPolicyText 站点评论政策 URL（对应 对应 Disqus Admin - Settings - General - Comment Policy Summary）
 - newcomment 是否允许添加新评论（目前增加评论功能尚未实现）
 
+## 谁在使用 DisqusJS？
+
+- Sukka: [Sukka's Blog](https://blog.skk.moe)
+- DIYgod: [Hi, DIYgod](https://fiygod.me) ([source](https://github.com/DIYgod/diygod.me))
+- imlonghao: [Imlonghao](https://imlonghao.com/)
+- Yrom Wang: [Yrom's](https://yrom.net/)
+
+如果你的站点或者个人博客在使用 DisqusJS，来 [把你的网站分享给其他人吧](https://github.com/SukkaW/DisqusJS/issues/11)！
+
 ## 注意
 
 - DisqusJS 如果检测到当前页面没有初始化、会提示是否切换到 Disqus 完整模式进行初始化。
