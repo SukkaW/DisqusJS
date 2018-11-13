@@ -450,13 +450,13 @@ function DisqusJS(config) {
              */
             let removeDisqUs = (msg) => {
                 // aMatcher - 只处理 Disqus 短链接
-                var aMatcher = new RegExp(/<a.+?href=\"https:\/\/disq.us(.+?)\".*>/gi),
+                var aMatcher = new RegExp(/<a.+?href=\"https:\/\/disq\.us(.+?)\".*>(.+)<\/a>/gi),
                     hrefMatcher = new RegExp(/href=\"(.+?)\"/gi)
                 let link = (msg.match(aMatcher) || [])
                 link.map((link) => {
                     // (.*) 是贪婪处理，会一致匹配到最后，可以用于匹配最后一次
                     link = link.match(hrefMatcher)[0].replace(/href=\"https:\/\/disq.us\/url\?url=/g, '').replace(/(.*)"/, '$1');
-                    link = decodeURIComponent(link).replace(/(.*):(.*)/, '$1')
+                    link = decodeURIComponent(link).replace(/(.*):(.*)cuid=(.*)/, '$1')
                     msg = msg.replace(aMatcher, `<a href="${link}" rel="nofollow noopener noreferrer">${link}</a>`)
                 })
 
