@@ -161,6 +161,15 @@ var dsqjs = new DisqusJS({
 - commentPolicyText 站点评论政策 URL（对应 对应 Disqus Admin - Settings - General - Comment Policy Summary）
 - newcomment 是否允许添加新评论（目前增加评论功能尚未实现）
 
+## 谁在使用 DisqusJS？
+
+- Sukka: [Sukka's Blog](https://blog.skk.moe)
+- DIYgod: [Hi, DIYgod](https://fiygod.me) ([source](https://github.com/DIYgod/diygod.me))
+- imlonghao: [Imlonghao](https://imlonghao.com/)
+- Yrom Wang: [Yrom's](https://yrom.net/)
+
+如果你的站点或者个人博客在使用 DisqusJS，来 [把你的网站分享给其他人吧](https://github.com/SukkaW/DisqusJS/issues/11)！
+
 ## 注意
 
 - DisqusJS 如果检测到当前页面没有初始化、会提示是否切换到 Disqus 完整模式进行初始化。
@@ -184,7 +193,7 @@ var dsqjs = new DisqusJS({
 
 ## Author 作者
 
-**DisqusJS** © [Sukka](https://github.com/SukkaW), Released under the [GPL-3.0](https://github.com/SukkaW/suka.css/blob/master/LICENSE) License.<br>
+**DisqusJS** © [Sukka](https://github.com/SukkaW), Released under the [MIT](https://github.com/SukkaW/suka.css/blob/master/LICENSE) License.<br>
 Authored and maintained by Sukka with help from contributors ([list](https://github.com/SukkaW/suka.css/graphs/contributors)).
 
-> [Personal Website](https://skk.moe) · [Blog](https://blog.skk.moe) · GitHub [@SukkaW](https://github.com/SukkaW) · Telegram Channel [@SukkaChannel](https://t.me/SukkaChannel)
+> [Personal Website](https://skk.moe) · [Blog](https://blog.skk.moe) · GitHub [@SukkaW](https://github.com/SukkaW) · Telegram Channel [@SukkaChannel](https://t.me/SukkaChannel) · Twitter [@isukkaw](https://twitter.com/isukkaw) · Keybase [@sukka](https://keybase.io/sukka)
