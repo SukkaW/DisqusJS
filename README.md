@@ -168,7 +168,7 @@ var dsqjs = new DisqusJS({
 - imlonghao: [Imlonghao](https://imlonghao.com/)
 - Yrom Wang: [Yrom's](https://yrom.net/)
 
-如果你的站点或者个人博客在使用 DisqusJS，来 [把你的网站分享给其他人吧](https://github.com/SukkaW/DisqusJS/issues/11)！
+如果你的站点或者个人博客在使用 DisqusJS，来 [把你的网站分享给其他人吧](https://github.com/SukkaW/DisqusJS/issues/12)！
 
 ## 注意
 
