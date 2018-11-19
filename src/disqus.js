@@ -609,3 +609,5 @@ function DisqusJS(config) {
         checkDisqus();
     }
 }
+
+export default DisqusJS;
