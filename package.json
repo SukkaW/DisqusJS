@@ -1,6 +1,6 @@
 {
   "name": "disqusjs",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Alternative DISQUS - Render comments components from Disqus API",
   "main": "dist/disqus.js",
   "scripts": {
