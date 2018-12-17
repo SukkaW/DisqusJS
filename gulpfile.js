@@ -26,7 +26,8 @@ var cssBanner = ['/*!',
 var configs = {
     browsers: [
         'last 2 versions',
-        '> 1%',
+        'since 2015',
+        '> 0.5%',
         'Chrome >= 30',
         'Firefox >= 30',
         'ie >= 9',
