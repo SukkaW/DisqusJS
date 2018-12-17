@@ -450,18 +450,20 @@ function DisqusJS(config) {
              */
             let removeDisqUs = (msg) => {
                 // aMatcher - 只处理 Disqus 短链接
-                var aMatcher = new RegExp(/<a.+?href=\"https:\/\/disq\.us(.+?)\".*>(.+)<\/a>/gi),
+                var aMatcher = new RegExp(/<a(.*?)href="https:\/\/disq\.us(.+?)"(.+?)>(.+?)<\/a>/gi),
                     hrefMatcher = new RegExp(/href=\"(.+?)\"/gi)
-                let link = (msg.match(aMatcher) || [])
-                link.map((link) => {
+                let link = (msg.match(aMatcher) || []);
+                link.map((olink) => {
                     // (.*) 是贪婪处理，会一致匹配到最后，可以用于匹配最后一次
-                    link = link.match(hrefMatcher)[0].replace(/href=\"https:\/\/disq.us\/url\?url=/g, '').replace(/(.*)"/, '$1');
-                    link = decodeURIComponent(link).replace(/(.*):(.*)cuid=(.*)/, '$1')
-                    msg = msg.replace(aMatcher, `<a href="${link}" rel="nofollow noopener noreferrer">${link}</a>`)
+                    let link = olink.match(hrefMatcher)[0].replace(/href=\"https:\/\/disq.us\/url\?url=/g, '').replace(/(.*)"/, '$1');
+                    link = decodeURIComponent(link);
+                    link = link.replace(/(.*):(.*)cuid=(.*)/, '$1')
+                    msg = msg.replace(olink, `<a href="${link}" rel="nofollow noopener noreferrer">${link}</a>`)
                 })
 
                 // 在最后添加 target="_blank" 可以生效到全局链接（包括 Disqus CDN 直链）
-                return msg.replace(/href=/g, 'target="_blank" href=')
+                msg = msg.replace(/href=/g, `target="_blank" href=`)
+                return msg
             }
 
             let renderPostItem = (s) => {
