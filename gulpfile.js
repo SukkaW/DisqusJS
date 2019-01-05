@@ -27,11 +27,11 @@ var configs = {
     browsers: [
         'last 2 versions',
         'since 2015',
-        '> 0.5%',
+        '> 1%',
         'Chrome >= 30',
         'Firefox >= 30',
         'ie >= 9',
-        'Safari >= 8',
+        'Safari >= 9',
     ],
     cleanCSS: {
         compatibility: 'ie9'

@@ -45,12 +45,12 @@
 
 ```html
 <!-- Unpkg -->
-<link rel="stylesheet" href="https://unpkg.com/disqusjs@1.0/dist/disqusjs.css">
-<script src="https://unpkg.com/disqusjs@1.0/dist/disqus.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/disqusjs@1.1/dist/disqusjs.css">
+<script src="https://unpkg.com/disqusjs@1.1/dist/disqus.js"></script>
 
 <!-- jsDelivr -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/disqusjs@1.0/dist/disqusjs.css">
-<script src="https://cdn.jsdelivr.net/npm/disqusjs@1.0/dist/disqus.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/disqusjs@1.1/dist/disqusjs.css">
+<script src="https://cdn.jsdelivr.net/npm/disqusjs@1.1/dist/disqus.js"></script>
 ```
 
 #### 从 NPM 安装
