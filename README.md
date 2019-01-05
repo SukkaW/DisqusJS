@@ -164,7 +164,7 @@ var dsqjs = new DisqusJS({
 ## 谁在使用 DisqusJS？
 
 - Sukka: [Sukka's Blog](https://blog.skk.moe)
-- DIYgod: [Hi, DIYgod](https://fiygod.me) ([source](https://github.com/DIYgod/diygod.me))
+- DIYgod: [Hi, DIYgod](https://diygod.me) ([source](https://github.com/DIYgod/diygod.me))
 - imlonghao: [Imlonghao](https://imlonghao.com/)
 - Yrom Wang: [Yrom's](https://yrom.net/)
 
