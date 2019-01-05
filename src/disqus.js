@@ -130,11 +130,12 @@
             return `${y}-${m}-${d} ${h}:${minute}`;
         }
 
+        const d = document;
+
         /*
          * loadDisqus() - 加载 Disqus
          */
         function loadDisqus() {
-            let d = document;
             let s = d.createElement('script');
 
             // 显示提示信息
@@ -166,31 +167,33 @@
                 // 如果测试域名数量不等于测试次数则说明测试还没有完成，不执行任何操作
             }
 
+            let runcheck = (domain) => {
+                let img = new Image;
+                // 处理加载超时
+                let timeout = setTimeout(() => {
+                    img.onerror = img.onload = null;
+                    test++;
+                    checker()
+                }, 3000);
+
+                img.onerror = () => {
+                    clearTimeout(timeout);
+                    test++;
+                    checker()
+                }
+
+                img.onload = () => {
+                    clearTimeout(timeout);
+                    test++;
+                    success++;
+                    checker()
+                }
+
+                img.src = `https://${domain}/favicon.ico?${+(new Date)}`
+            }
+
             for (let i of domain) {
-                ((i) => {
-                    let img = new Image;
-                    // 处理加载超时
-                    let timeout = setTimeout(() => {
-                        img.onerror = img.onload = null;
-                        test++;
-                        checker()
-                    }, 3000);
-
-                    img.onerror = () => {
-                        clearTimeout(timeout);
-                        test++;
-                        checker()
-                    }
-
-                    img.onload = () => {
-                        clearTimeout(timeout);
-                        test++;
-                        success++;
-                        checker()
-                    }
-
-                    img.src = `https://${i}/favicon.ico?${+(new Date)}`
-                })(i);
+                runcheck(i);
             }
         }
 
@@ -226,7 +229,7 @@
                 </div>
                 */
 
-                let d = document;
+
                 d.getElementById('disqus_thread').innerHTML = `<div id="dsqjs"><section><div id="dsqjs-msg"></div></section><header class="dsqjs-header dsqjs-hide" id="dsqjs-header"><nav class="dsqjs-nav dsqjs-clearfix"><ul><li class="dsqjs-nav-tab dsqjs-tab-active"><span><span id="dsqjs-comment-num"></span> Comments</span></li><li class="dsqjs-nav-tab"><span id="dsqjs-site-name"></span></li></ul></nav></header><section class="dsqjs-post-container"><ul class="dsqjs-post-list" id="dsqjs-post-container"></ul><a id="dsqjs-load-more" class="dsqjs-load-more dsqjs-hide">加载更多评论</a></section><footer><p class="dsqjs-footer">Powered by <a class="dsqjs-disqus-logo" href="https://disqus.com" rel="nofollow noopener noreferrer" target="_blank"></a>&nbsp;&amp;&nbsp;<a href="https://github.com/SukkaW/DisqusJS" target="_blank">DisqusJS</a></p></footer></div>`;
                 // DisqusJS 加载中信息
                 d.getElementById('dsqjs-msg').innerHTML = `评论基础模式加载中。如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并 <a id="dsqjs-reload-disqus" class="dsqjs-msg-btn">尝试完整 Disqus 模式</a> | <a id="dsqjs-force-disqus" class="dsqjs-msg-btn">强制完整 Disqus 模式</a>。`
@@ -243,11 +246,11 @@
                 let url = `${disqusjs.config.api}3.0/threads/list.json?forum=${disqusjs.config.shortname}&thread=ident:${disqusjs.config.identifier}&api_key=${disqusjs.config.apikey}`;
 
                 get(url, (res) => {
-                    var d = document;
+
                     // 如果只返回一条则找到了对应 thread，否则是当前 identifier 不能找到唯一的 thread
                     // 如果 thread 不唯一则需要进行初始化
                     if (res.code === 0 && res.response.length === 1) {
-                        var resp = res.response[0];
+                        let resp = res.response[0];
                         disqusjs.page = {
                             id: resp.id,
                             title: resp.title,
@@ -286,19 +289,21 @@
              * @param {string} cursor - 传入 cursor 用于加载下一页的评论
              */
             let getComment = (cursor) => {
+                let $loadMoreBtn = d.getElementById('dsqjs-load-more');
+
                 let getMoreComment = () => {
                     // 执行完以后去除当前监听器避免重复调用
                     $loadMoreBtn.removeEventListener('click', getMoreComment);
                     // 加载下一页评论
                     getComment(disqusjs.page.next);
                 }
-                var $loadMoreBtn = document.getElementById('dsqjs-load-more');
+
                 // 处理传入的 cursor
                 if (!cursor) {
                     // 不存在 cursor，API 中不需要带上 cursor 参数
                     cursor = '';
                     var getCommentError = () => {
-                        // 不存在 cursor，出错时只需要在 #dsq-msg 中显示提示信息
+                        // 不存在 cursor，出错时只需要在 #dsqjs-msg 中显示提示信息
                         loadError();
                     }
                 } else {
@@ -348,14 +353,13 @@
                         }
                     } else if (res.code === 0 && res.response.length === 0) {
                         // 当前没有评论，显示提示信息
-                        let d = document;
                         d.getElementById('dsqjs-msg').innerHTML = '你可能无法访问 Disqus，已启用评论基础模式。如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并 <a id="dsqjs-reload-disqus" class="dsqjs-msg-btn">尝试完整 Disqus 模式</a> | <a id="dsqjs-force-disqus" class="dsqjs-msg-btn">强制完整 Disqus 模式</a>。'
                         d.getElementById('dsqjs-header').classList.remove('dsqjs-hide')
                         d.getElementById('dsqjs-post-container').innerHTML = '<div class="dsqjs-no-comment">这里冷冷清清的，一条评论都没有</div>'
                         d.getElementById('dsqjs-reload-disqus').addEventListener('click', checkDisqus);
                         d.getElementById('dsqjs-force-disqus').addEventListener('click', forceDisqus);
                     } else {
-                        // 评DisqusJS 加载错误
+                        // DisqusJS 加载错误
                         getCommentError()
                     }
                 }, (e) => {
@@ -371,7 +375,7 @@
              * @return {Array} - 解析后的评论列表数据
              */
             let parseCommentData = (data) => {
-                var topLevelComments = [],
+                let topLevelComments = [],
                     childComments = [];
 
                 let getChildren = (id) => {
@@ -465,7 +469,7 @@
                  */
                 let removeDisqUs = (msg) => {
                     // aMatcher - 只处理 Disqus 短链接
-                    var aMatcher = new RegExp(/<a(.*?)href="https:\/\/disq\.us(.+?)"(.+?)>(.+?)<\/a>/gi),
+                    let aMatcher = new RegExp(/<a(.*?)href="https:\/\/disq\.us(.+?)"(.+?)>(.+?)<\/a>/gi),
                         hrefMatcher = new RegExp(/href=\"(.+?)\"/gi)
                     let link = (msg.match(aMatcher) || []);
                     link.map((olink) => {
@@ -482,12 +486,13 @@
                 }
 
                 let renderPostItem = (s) => {
+                    let authorEl = ``,
+                        message = ``;
                     if (s.isDeleted) {
-                        var authorEl = ``,
-                            message = `<small>此评论已被删除</small>`;
+                        message = `<small>此评论已被删除</small>`;
                     } else {
-                        var authorEl = `${s.authorEl}<span class="dsqjs-bullet"></span>`,
-                            message = s.message;
+                        authorEl = `${s.authorEl}<span class="dsqjs-bullet"></span>`;
+                        message = s.message;
                     }
                     /*
                         <div class="dsqjs-post-item dsqjs-clearfix">
@@ -511,7 +516,7 @@
                 }
 
                 let childrenComments = (data) => {
-                    var nesting = data.nesting,
+                    let nesting = data.nesting,
                         children = (data.children || []);
 
                     if (!children) {
@@ -555,7 +560,7 @@
                     html += `<li data-id="comment-${comment.comment.id}">${renderPostItem(comment.comment)}${childrenComments(comment)}</li>`;
                 });
 
-                let d = document;
+
                 d.getElementById('dsqjs-header').classList.remove('dsqjs-hide')
                 // 增加提示信息
                 d.getElementById('dsqjs-msg').innerHTML = '你可能无法访问 Disqus，已启用评论基础模式。如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并 <a id="dsqjs-reload-disqus" class="dsqjs-msg-btn">尝试完整 Disqus 模式</a> | <a id="dsqjs-force-disqus" class="dsqjs-msg-btn">强制完整 Disqus 模式</a>。'
@@ -571,7 +576,7 @@
          * loadError() - 评论基础模式加载出现错误
          */
         function loadError() {
-            let d = document;
+
             d.getElementById('dsqjs-msg').innerHTML = '评论基础模式加载失败，是否 <a id="dsqjs-reload-dsqjs" class="dsqjs-msg-btn">重载</a> 或 <a id="dsqjs-reload-disqus" class="dsqjs-msg-btn">尝试完整 Disqus 模式</a> ？'
             d.getElementById('dsqjs-reload-dsqjs').addEventListener('click', loadDsqjs);
             d.getElementById('dsqjs-reload-disqus').addEventListener('click', checkDisqus);
@@ -591,16 +596,16 @@
             loadDisqus()
         }
 
-        var disqusjs = [];
+        let disqusjs = [];
 
         // 将传入的 config 参数赋给 disqusjs.config
         disqusjs.config = config
         // 使用 https://disqus.skk.moe/disqus/ 作为备选反代服务器
         disqusjs.config.api = (disqusjs.config.api || 'https://disqus.skk.moe/disqus/')
-        // 使用 document.location.origin + document.location.pathname + document.location.search 为默认 URL 和 identifier
+        // 使用 d.location.origin + d.location.pathname + d.location.search 为默认 URL 和 identifier
         // Google Analytics Measurement Protocol 也使用这个参数作为 URL
-        disqusjs.config.identifier = (disqusjs.config.identifier || document.location.origin + document.location.pathname + document.location.search)
-        disqusjs.config.url = (disqusjs.config.url || document.location.origin + document.location.pathname + document.location.search)
+        disqusjs.config.identifier = (disqusjs.config.identifier || d.location.origin + d.location.pathname + d.location.search)
+        disqusjs.config.url = (disqusjs.config.url || d.location.origin + d.location.pathname + d.location.search)
 
         // 定义 disqusjs.page，之后会填充 thread id、title 等数据
         disqusjs.page = [];
