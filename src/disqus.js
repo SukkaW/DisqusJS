@@ -37,7 +37,11 @@
     }
 }(typeof self !== 'undefined' ? self : this, function () {
     function DisqusJS(config) {
-        /*
+
+        const d = document,
+            $$ = (elementID) => d.getElementById(elementID);
+
+        /**
          * get - 封装 XHR GET
          *
          * @param {string} url
@@ -81,7 +85,7 @@
         // localstorage 操作类
         // 用于持久化某些数据（如 newComment 的评论者的相关信息）
 
-        /*
+        /**
          * setLS(kwy, value) - 设置 localStorage
          *
          * @param {string} key
@@ -94,23 +98,13 @@
             }
         }
 
-        /*
-         * getLS(key) - 从 localStorage 条目
-         *
-         * @param {string} key
-         * @return {string} - 返回条目 value 内容
-         */
-        const getLS = (key) => {
-            return localStorage.getItem(key);
-        }
-
-        /*
-         * dateFormat(date) - 解析 date 为 yyyy-MM-dd hh:mm:ss
+        /**
+         * formatDate(date) - 解析 date 为 yyyy-MM-dd hh:mm:ss
          *
          * @param {string} date - 传入评论创建日期（XML 格式）
          * @return {string} - 格式化后的日期
          */
-        const dateFormat = (date) => {
+        const formatDate = (date) => {
             // 将传入的 date 转化为时间戳
             date = Date.parse(new Date(date));
 
@@ -129,9 +123,6 @@
 
             return `${y}-${m}-${d} ${h}:${minute}`;
         }
-
-        const d = document,
-            $$ = (elementID) => d.getElementById(elementID);
 
         /*
          * loadDisqus() - 加载 Disqus
@@ -159,7 +150,7 @@
             let checker = () => {
                 // 测试域名数量 ==== 测试次数 === 成功次数
                 // 如果 truw 则认定可以 Disqus 可以连通
-                if ((domain.length === test) && (test === success)) {
+                if (domain.length === test === success) {
                     forceDisqus()
                     // 否则认为 Disqus 无法连通
                 } else if (domain.length === test) {
@@ -494,7 +485,7 @@
                             <div class="dsqjs-post-body">
                                 <div class="dsqjs-post-header">
                                     ${authorEl}
-                                    <span class="dsqjs-meta"><time>${dateFormat(s.createdAt)}</time></span>
+                                    <span class="dsqjs-meta"><time>${formatDate(s.createdAt)}</time></span>
                                 </div>
                                 <div class="dsqjs-post-content">
                                     ${message}
@@ -502,7 +493,7 @@
                             </div>
                         </div>
                     */
-                    var html = `<div class="dsqjs-post-item dsqjs-clearfix"><div class="dsqjs-post-avatar">${s.avatarEl}</div><div class="dsqjs-post-body"><div class="dsqjs-post-header">${authorEl}<span class="dsqjs-meta"><time>${dateFormat(s.createdAt)}</time></span></div><div class="dsqjs-post-content">${removeDisqUs(message)}</div></div></div>`
+                    var html = `<div class="dsqjs-post-item dsqjs-clearfix"><div class="dsqjs-post-avatar">${s.avatarEl}</div><div class="dsqjs-post-body"><div class="dsqjs-post-header">${authorEl}<span class="dsqjs-meta"><time>${formatDate(s.createdAt)}</time></span></div><div class="dsqjs-post-content">${removeDisqUs(message)}</div></div></div>`
 
                     return html;
                 }
@@ -611,7 +602,7 @@
         };
 
 
-        disqusjs.mode = getLS('dsqjs_mode');
+        disqusjs.mode = localStorage.getItem('dsqjs_mode');
 
         if (disqusjs.mode === 'disqus') {
             loadDisqus();
