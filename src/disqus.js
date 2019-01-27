@@ -141,6 +141,8 @@
         }
 
         function checkDisqus() {
+            $$('disqus_thread').innerHTML = `<div id="dsqjs"><section><div id="dsqjs-msg">正在检查 Disqus 能否访问...</div></section><footer><p class="dsqjs-footer">Powered by <a class="dsqjs-disqus-logo" href="https://disqus.com" rel="nofollow noopener noreferrer" target="_blank"></a>&nbsp;&amp;&nbsp;<a href="https://github.com/SukkaW/DisqusJS" target="_blank">DisqusJS</a></p></footer></div>`;
+
             // 测试 Disqus 的域名
             // *.disquscdn.com 没有被墙所以不做检查
             let domain = ['disqus.com', `${disqusjs.config.shortname}.disqus.com`],
@@ -150,7 +152,7 @@
             let checker = () => {
                 // 测试域名数量 ==== 测试次数 === 成功次数
                 // 如果 truw 则认定可以 Disqus 可以连通
-                if (domain.length === test === success) {
+                if (domain.length === test && test === success) {
                     forceDisqus()
                     // 否则认为 Disqus 无法连通
                 } else if (domain.length === test) {
