@@ -376,6 +376,16 @@
                 let topLevelComments = [],
                     childComments = [];
 
+                let commentJSON = (comment) => {
+                    return {
+                        comment,
+                        author: comment.author.name,
+                        // 如果不设置 admin 会返回 undefined，所以需要嘴一个判断
+                        isPrimary: (disqusjs.config.admin ? (comment.author.username === disqusjs.config.admin) : false),
+                        children: getChildren(+comment.id)
+                    }
+                }
+
                 let getChildren = (id) => {
                     // 如果没有子评论，就不需要解析子评论了
                     if (childComments.length === 0) {
@@ -385,13 +395,7 @@
                     var list = [];
                     for (let comment of childComments) {
                         if (comment.parent === id) {
-                            list.unshift({
-                                comment,
-                                author: comment.author.name,
-                                // 如果不设置 admin 会返回 undefined，所以需要嘴一个判断
-                                isPrimary: (disqusjs.config.admin ? (comment.author.username === disqusjs.config.admin) : false),
-                                children: getChildren(+comment.id)
-                            });
+                            list.unshift(commentJSON(comment));
                         }
                     }
 
@@ -408,12 +412,7 @@
                 });
 
                 let commentLists = topLevelComments.map((comment) => {
-                    return {
-                        comment,
-                        author: comment.author.name,
-                        isPrimary: (disqusjs.config.admin ? (comment.author.username === disqusjs.config.admin) : false),
-                        children: getChildren(+comment.id)
-                    };
+                    return commentJSON(comment);
                 });
 
                 return commentLists;
