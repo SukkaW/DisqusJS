@@ -133,7 +133,7 @@ var dsqjs = new DisqusJS({
 
 **api** `{string}`
 
-- DisqusJS 请求的 API Endpoint，通常情况下你应该配置一个 Disqus API 的反代并填入反代的地址。你也可以直接使用 DISQUS 官方 API 的 Endpoint `https://disqus.com/api/`，或是使用我搭建的 Disqus API 反代 Endpoint `https://disqus.skk.moe/disqus/`
+- DisqusJS 请求的 API Endpoint，通常情况下你应该配置一个 Disqus API 的反代并填入反代的地址。你也可以直接使用 DISQUS 官方 API 的 Endpoint `https://disqus.com/api/`，或是使用我搭建的 Disqus API 反代 Endpoint `https://disqus.skk.moe/disqus/`。如有必要可以阅读关于搭建反代的 [相关内容](https://github.com/SukkaW/DisqusJS#%E8%B0%83%E8%AF%95%E8%BF%9B%E9%98%B6%E4%BD%BF%E7%94%A8--%E5%BC%80%E5%8F%91%E7%9B%B8%E5%85%B3)
 - **建议**，默认值为 `https://disqus.skk.moe/disqus/`
 
 **apikey** `{string}`
@@ -170,7 +170,7 @@ var dsqjs = new DisqusJS({
 - 所以如果 DisqusJS 检测到当前页面没有初始化、会提示是否切换到 Disqus 完整模式进行初始化。
 - DisqusJS 仅在当前域名首次访问时检测 Disqus 可用性并选择模式，并把结果持久化在 localStorage 中，之后访问都会沿用之前的模式。
 - 一个 Disqus Application 的 Rate Limit 是每小时 1000 次；DisqusJS 一次正常加载会产生 2 次请求。未来可能会开放填入多个 API Key，支持调用多个 Application，绕过 Rate Limit。
-- 我搭建了一个 Disqus API 反代的服务 `https://disqus.skk.moe/disqus/` 供没有能力搭建反代的用户使用，不保证 SLA、缓存 TTL 1 小时以降低源站服务器压力。
+- 我搭建了一个 Disqus API 反代的服务 `https://disqus.skk.moe/disqus/` 供没有能力搭建反代的用户使用，不保证 SLA、缓存 TTL 1 小时。
 
 ## 谁在使用 DisqusJS？
 
@@ -183,6 +183,7 @@ var dsqjs = new DisqusJS({
 
 ## 调试、进阶使用 & 开发相关
 
+- 需要反代的 Endpoint 是 `https://disqus.com/api/`，使用 Nginx、Caddy 都可以很轻松的设置一个反代。如果没有自己的服务器，可以使用 [Now](https://zeit.co) 提供的 Serverless 平台搭建一个反代，[这里](https://github.com/SukkaW/disqusjs-proxy-example) 提供了一个样例。
 - `a.disquscdn.com` 和 `c.disquscdn.com` 解析到 Cloudflare 而不是 Fastly，可用性大大增强；`disqus.com` 和 `shortname.disqus.com` 仍然被墙；`disq.us` 解析到 Fastly 连通性较差，建议直接解析获得原链接。
 - DisqusJS 检测访客的 Disqus 可用性是通过检测 `disqus.com/favicon.ico` 和 `${disqusjs.config.shortname}.disqus.com/favicon.ico` 是否能正常加载，如果有一个加载出错或超时（2s）就判定 Disqus 不可用。
 - DisqusJS 在 localStorage 中持久化了 Disqus 连通性检查结果，key 为 `dsqjs_mode`，value 为 `disqus` 或者 `dsqjs`。需要调整 DisqusJS 的模式时可以直接操作 localStorage。
