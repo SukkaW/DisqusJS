@@ -374,17 +374,16 @@
              */
             let parseCommentData = (data) => {
                 let topLevelComments = [],
-                    childComments = [];
-
-                let commentJSON = (comment) => {
-                    return {
-                        comment,
-                        author: comment.author.name,
-                        // 如果不设置 admin 会返回 undefined，所以需要嘴一个判断
-                        isPrimary: (disqusjs.config.admin ? (comment.author.username === disqusjs.config.admin) : false),
-                        children: getChildren(+comment.id)
-                    }
-                }
+                    childComments = [],
+                    commentJSON = (comment) => {
+                        return {
+                            comment,
+                            author: comment.author.name,
+                            // 如果不设置 admin 会返回 undefined，所以需要嘴一个判断
+                            isPrimary: (disqusjs.config.admin ? (comment.author.username === disqusjs.config.admin) : false),
+                            children: getChildren(+comment.id)
+                        }
+                    };
 
                 let getChildren = (id) => {
                     // 如果没有子评论，就不需要解析子评论了
@@ -399,11 +398,7 @@
                         }
                     }
 
-                    if (list.length) {
-                        return list;
-                    } else {
-                        return null;
-                    }
+                    return (list.length) ? list : null
                 }
 
                 data.forEach((comment) => {
