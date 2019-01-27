@@ -144,7 +144,7 @@
             $$('disqus_thread').innerHTML = '<div id="dsqjs"><section><div id="dsqjs-msg">评论完整模式加载中...如果长时间无法加载，请针对 disq.us | disquscdn.com | disqus.com 启用代理，或使用 <a id="dsqjs-force-dsqjs" class="dsqjs-msg-btn">评论基础模式</a></div></section><footer><p class="dsqjs-footer">Powered by <a class="dsqjs-disqus-logo" href="https://disqus.com" rel="nofollow noopener noreferrer" target="_blank"></a>&nbsp;&amp;&nbsp;<a href="https://github.com/SukkaW/DisqusJS" target="_blank">DisqusJS</a></p></footer>'
             $$('dsqjs-force-dsqjs').addEventListener('click', forceDsqjs);
 
-            s.src = 'https://' + disqusjs.config.shortname + '.disqus.com/embed.js';
+            s.src = `https://${disqusjs.config.shortname}.disqus.com/embed.js`;
             s.setAttribute('data-timestamp', + new Date());
             (d.head || d.body).appendChild(s);
         }
@@ -299,24 +299,21 @@
                     getComment(disqusjs.page.next);
                 }
 
-                // 处理传入的 cursor
-                if (!cursor) {
-                    // 不存在 cursor，API 中不需要带上 cursor 参数
-                    cursor = '';
-                    var getCommentError = () => {
-                        // 不存在 cursor，出错时只需要在 #dsqjs-msg 中显示提示信息
+                let getCommentError = () => {
+                    if (!cursor) {
                         loadError();
-                    }
-                } else {
-                    // 带上 cursor 参数
-                    cursor = `&cursor=${cursor}`;
-                    var getCommentError = () => {
-                        // 解禁 加载更多评论
+                    } else {
                         $loadMoreBtn.classList.remove('dsqjs-disabled');
                         // 在按钮上显示提示信息
-                        $loadMoreBtn.innerHTML = '加载更多评论失败，点击重试'
+                        $loadMoreBtn.innerHTML = '加载更多评论失败，点击重试';
+                        // 重新在按钮上绑定 加载更多按钮
+                        $loadMoreBtn.addEventListener('click', getMoreComment);
                     }
-                }
+                };
+
+                // 处理传入的 cursor
+                cursor = (!cursor) ? '' : `&cursor=${cursor}`;
+
                 // 在发起请求前禁用 加载更多评论 按钮防止重复调用
                 $loadMoreBtn.classList.add('dsqjs-disabled')
                 /*
@@ -536,7 +533,7 @@
                     children.map((comment) => {
                         comment = processData(comment);
                         comment.nesting = nesting + 1;
-                        html += `<li data-id="comment-${comment.comment.id}">${renderPostItem(comment.comment)}${childrenComments(comment)}</li>`;
+                        html += `<li data-id="comment-${comment.comment.id}" id="comment-${comment.comment.id}">${renderPostItem(comment.comment)}${childrenComments(comment)}</li>`;
                     });
 
                     html += '</ul>';
@@ -558,7 +555,7 @@
                         comment.nesting = 1;
                     }
                     comment = processData(comment);
-                    html += `<li data-id="comment-${comment.comment.id}">${renderPostItem(comment.comment)}${childrenComments(comment)}</li>`;
+                    html += `<li data-id="comment-${comment.comment.id}" id="comment-${comment.comment.id}">${renderPostItem(comment.comment)}${childrenComments(comment)}</li>`;
                 });
 
 
