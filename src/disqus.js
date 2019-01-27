@@ -115,7 +115,7 @@
             date = Date.parse(new Date(date));
 
             // Disqus API 返回的是 UTC 时间，所以在时间戳上加 28800000 毫秒补上 8 小时时差
-            date = new Date(date + 28800000);
+            date = new Date(date + 8 * 60 * 60 * 1000);
             let y = date.getFullYear();
             let m = date.getMonth() + 1;
             // 如果不足两位则补 0
