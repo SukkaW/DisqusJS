@@ -202,7 +202,11 @@
             (() => {
                 // 在 #disqus_thread 中填充 DisqusJS Container
                 /*
-                <div id="dsqjs">
+
+                */
+
+
+                $$('disqus_thread').innerHTML = `                <div id="dsqjs">
                 <section>
                      <div id="dsqjs-msg"></div>
                 </section>
@@ -216,6 +220,14 @@
                                 <span id="dsqjs-site-name"></span>
                             </li>
                         </ul>
+                        <div class="dsqjs-order">
+                        <input class="dsqjs-order-radio" id="order-popular" type="radio" name="comment-order" value="popular">
+                        <label class="dsqjs-order-label" for="order-popular" title="按评分高低排序">最佳</label>
+                        <input class="dsqjs-order-radio" id="order-desc" type="radio" name="comment-order" value="desc">
+                        <label class="dsqjs-order-label" for="order-desc" title="按从新到旧排序">最新</label>
+                        <input class="dsqjs-order-radio" id="order-asc" type="radio" name="comment-order" value="asc">
+                        <label class="dsqjs-order-label" for="order-asc" title="按从旧到新排序">最早</label>
+                    </div>
                     </nav>
                 </header>
                 <section class="dsqjs-post-container">
@@ -227,11 +239,7 @@
                         Powered by <a class="dsqjs-disqus-logo" href="https://disqus.com" rel="nofollow noopener noreferrer" target="_blank"></a>&nbsp;&amp;&nbsp;<a href="https://github.com/SukkaW/DisqusJS" target="_blank">DisqusJS</a>
                     </p>
                 </footer>
-                </div>
-                */
-
-
-                $$('disqus_thread').innerHTML = `<div id="dsqjs"><section><div id="dsqjs-msg"></div></section><header class="dsqjs-header dsqjs-hide" id="dsqjs-header"><nav class="dsqjs-nav dsqjs-clearfix"><ul><li class="dsqjs-nav-tab dsqjs-tab-active"><span><span id="dsqjs-comment-num"></span> Comments</span></li><li class="dsqjs-nav-tab"><span id="dsqjs-site-name"></span></li></ul></nav></header><section class="dsqjs-post-container"><ul class="dsqjs-post-list" id="dsqjs-post-container"></ul><a id="dsqjs-load-more" class="dsqjs-load-more dsqjs-hide">加载更多评论</a></section><footer><p class="dsqjs-footer">Powered by <a class="dsqjs-disqus-logo" href="https://disqus.com" rel="nofollow noopener noreferrer" target="_blank"></a>&nbsp;&amp;&nbsp;<a href="https://github.com/SukkaW/DisqusJS" target="_blank">DisqusJS</a></p></footer></div>`;
+                </div>`;
                 // DisqusJS 加载中信息
                 $$('dsqjs-msg').innerHTML = `评论基础模式加载中。如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并 <a id="dsqjs-reload-disqus" class="dsqjs-msg-btn">尝试完整 Disqus 模式</a> | <a id="dsqjs-force-disqus" class="dsqjs-msg-btn">强制完整 Disqus 模式</a>。`
                 $$('dsqjs-reload-disqus').addEventListener('click', checkDisqus);
