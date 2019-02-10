@@ -106,21 +106,18 @@
          * @return {string} - 格式化后的日期
          */
         const formatDate = (date) => {
+            // 不足两位补 0
+            let x = (input) => (input < 10) ? `0${input}` : input;
             // 将传入的 date 转化为时间戳
             date = Date.parse(new Date(date));
 
             // Disqus API 返回的是 UTC 时间，所以在时间戳上加 28800000 毫秒补上 8 小时时差
             date = new Date(date + 8 * 60 * 60 * 1000);
             let y = date.getFullYear();
-            let m = date.getMonth() + 1;
-            // 如果不足两位则补 0
-            m = m < 10 ? `0${m}` : m;
-            let d = date.getDate();
-            d = d < 10 ? `0${d}` : d;
-            let h = date.getHours();
-            h = h < 10 ? `0${h}` : h;
-            let minute = date.getMinutes();
-            minute = minute < 10 ? (`0${minute}`) : minute;
+            let m = x(date.getMonth() + 1);
+            let d = x(date.getDate());
+            let h = x(date.getHours());
+            let minute = x(date.getMinutes());
             return `${y}-${m}-${d} ${h}:${minute}`;
         }
 
