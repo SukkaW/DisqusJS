@@ -201,12 +201,9 @@
         function loadDsqjs() {
             (() => {
                 // 在 #disqus_thread 中填充 DisqusJS Container
-                /*
 
-                */
-
-
-                $$('disqus_thread').innerHTML = `                <div id="dsqjs">
+                $$('disqus_thread').innerHTML = `
+            <div id="dsqjs">
                 <section>
                      <div id="dsqjs-msg"></div>
                 </section>
@@ -221,12 +218,12 @@
                             </li>
                         </ul>
                         <div class="dsqjs-order">
-                        <input class="dsqjs-order-radio" id="order-popular" type="radio" name="comment-order" value="popular">
-                        <label class="dsqjs-order-label" for="order-popular" title="按评分高低排序">最佳</label>
-                        <input class="dsqjs-order-radio" id="order-desc" type="radio" name="comment-order" value="desc">
-                        <label class="dsqjs-order-label" for="order-desc" title="按从新到旧排序">最新</label>
-                        <input class="dsqjs-order-radio" id="order-asc" type="radio" name="comment-order" value="asc">
-                        <label class="dsqjs-order-label" for="order-asc" title="按从旧到新排序">最早</label>
+                        <input class="dsqjs-order-radio" id="dsqjs-order-popular" type="radio" name="comment-order" value="popular">
+                        <label class="dsqjs-order-label" for="dsqjs-order-popular" title="按评分高低排序">最佳</label>
+                        <input class="dsqjs-order-radio" id="dsqjs-order-desc" type="radio" name="comment-order" value="desc">
+                        <label class="dsqjs-order-label" for="dsqjs-order-desc" title="按从新到旧排序">最新</label>
+                        <input class="dsqjs-order-radio" id="dsqjs-order-asc" type="radio" name="comment-order" value="asc">
+                        <label class="dsqjs-order-label" for="dsqjs-order-asc" title="按从旧到新排序">最早</label>
                     </div>
                     </nav>
                 </header>
@@ -332,8 +329,25 @@
                  *
                  * https://github.com/SukkaW/DisqusJS/issues/6
                  * 可以使用 include=deleted 来获得已被删除评论列表
+                 *
+                 * https://blog.fooleap.org/disqus-api-comments-order-by-desc.html
+                 * 处理评论嵌套问题，使用了一个隐藏 API /threads/listPostsThreaded
+                 * 用法和 /threads/listPosts 相似，和 /threads/post 的区别也只有 include 字段不同
+                 * 这个能够返回已删除评论，所以也不需要 include=deleted 了
+                 * sort 字段提供三个取值：
+                 *   - desc   （升序）
+                 *   - asc    （降序）
+                 *   - popular（最热）
+                 * 这个 API 的问题在于被嵌套的评论总是降序，看起来很不习惯
+                 *
+                 * 只获取一次使用 popular 排序的评论，之后在本地进行排序：
+                 *   1. 将存在 parent 的使用 createdAt 进行降序升序并存放在 disqusjs.comment.popular
+                 *   2. 将全部评论再进行升序排序，存放在 disqusjs.comment.desc
+                 *   3. 将没有 parent 的条目进行升序排列存放在 disqusjs.comment.asc
+                 * 每次加载翻页评论的时候 concat 并进行重排序
+                 * 用户切换排序方式的时候直接取出进行重新渲染
                  */
-                let url = `${disqusjs.config.api}3.0/posts/list.json?forum=${disqusjs.config.shortname}&thread=${disqusjs.page.id}${cursor}&include=approved&include=deleted&api_key=${apikey()}`;
+                let url = `${disqusjs.config.api}3.0/threads/listPostsThreaded?forum=${disqusjs.config.shortname}&thread=${disqusjs.page.id}${cursor}&api_key=${apikey()}&order=desc`;
                 get(url, (res) => {
                     if (res.code === 0 && res.response.length > 0) {
                         // 解禁 加载更多评论
