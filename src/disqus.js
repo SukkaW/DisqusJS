@@ -124,6 +124,13 @@
             return `${y}-${m}-${d} ${h}:${minute}`;
         }
 
+        // 封装一个 Array.isArray 方法以兼容老旧浏览器
+        // 应该不会有人重写了 Array.isArray 方法的，也不会有人改变 Object 的原型链上的 toString 方法
+        // 如果有的话，还是直接劝退吧
+        if (!Array.isArray) {
+            Array.isArray = (arg) => Object.prototype.toString.call(arg) === '[object Array]';
+        }
+
         /*
          * loadDisqus() - 加载 Disqus
          */
@@ -237,7 +244,7 @@
                  * API Docs: https://disqus.com/api/docs/threads/list/
                  * API URI: /3.0/threads/list.json?forum=[disqus_shortname]&thread=ident:[identifier]&api_key=[apikey]
                  */
-                let url = `${disqusjs.config.api}3.0/threads/list.json?forum=${disqusjs.config.shortname}&thread=ident:${disqusjs.config.identifier}&api_key=${disqusjs.config.apikey}`;
+                let url = `${disqusjs.config.api}3.0/threads/list.json?forum=${disqusjs.config.shortname}&thread=ident:${disqusjs.config.identifier}&api_key=${apikey()}`;
 
                 get(url, (res) => {
 
@@ -318,7 +325,7 @@
                  * https://github.com/SukkaW/DisqusJS/issues/6
                  * 可以使用 include=deleted 来获得已被删除评论列表
                  */
-                let url = `${disqusjs.config.api}3.0/posts/list.json?forum=${disqusjs.config.shortname}&thread=${disqusjs.page.id}${cursor}&include=approved&include=deleted&api_key=${disqusjs.config.apikey}`;
+                let url = `${disqusjs.config.api}3.0/posts/list.json?forum=${disqusjs.config.shortname}&thread=${disqusjs.page.id}${cursor}&include=approved&include=deleted&api_key=${apikey()}`;
                 get(url, (res) => {
                     if (res.code === 0 && res.response.length > 0) {
                         // 解禁 加载更多评论
@@ -584,16 +591,19 @@
         let disqusjs = [];
 
         // 将传入的 config 参数赋给 disqusjs.config
-        disqusjs.config = config
+        disqusjs.config = config;
         // 使用 https://disqus.skk.moe/disqus/ 作为备选反代服务器
-        disqusjs.config.api = (disqusjs.config.api || 'https://disqus.skk.moe/disqus/')
+        disqusjs.config.api = (disqusjs.config.api || 'https://disqus.skk.moe/disqus/');
         // 使用 d.location.origin + d.location.pathname + d.location.search 为默认 URL 和 identifier
         // Google Analytics Measurement Protocol 也使用这个参数作为 URL
-        disqusjs.config.identifier = (disqusjs.config.identifier || d.location.origin + d.location.pathname + d.location.search)
-        disqusjs.config.url = (disqusjs.config.url || d.location.origin + d.location.pathname + d.location.search)
+        disqusjs.config.identifier = (disqusjs.config.identifier || d.location.origin + d.location.pathname + d.location.search);
+        disqusjs.config.url = (disqusjs.config.url || d.location.origin + d.location.pathname + d.location.search);
 
         // 定义 disqusjs.page，之后会填充 thread id、title 等数据
         disqusjs.page = [];
+
+        // 通过 用户配置的 apikey 来判断是否需要使用随机取值
+        const apikey = () => (Array.isArray(disqusjs.config.apikey)) ? disqusjs.config.apikey[Math.floor(Math.random() * disqusjs.config.apikey.length)] : disqusjs.config.apikey;
 
         /*
          * window.disqus_config - 从 disqusjs.config 获取 Disqus 所需的配置
