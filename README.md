@@ -136,9 +136,10 @@ var dsqjs = new DisqusJS({
 - DisqusJS 请求的 API Endpoint，通常情况下你应该配置一个 Disqus API 的反代并填入反代的地址。你也可以直接使用 DISQUS 官方 API 的 Endpoint `https://disqus.com/api/`，或是使用我搭建的 Disqus API 反代 Endpoint `https://disqus.skk.moe/disqus/`。如有必要可以阅读关于搭建反代的 [相关内容](https://github.com/SukkaW/DisqusJS#%E8%B0%83%E8%AF%95%E8%BF%9B%E9%98%B6%E4%BD%BF%E7%94%A8--%E5%BC%80%E5%8F%91%E7%9B%B8%E5%85%B3)
 - **建议**，默认值为 `https://disqus.skk.moe/disqus/`
 
-**apikey** `{string}`
+**apikey** `{string || {Array}}`
 
 - DisqusJS 向 API 发起请求时使用的 API Key，你应该在配置 Disqus Application 时获取了 API Key
+- DisqusJS 支持填入一个 包含多个 API Key 的 Array，在每次请求时会随机使用其中一个；如果你只需要填入一个 API Key，则可以填入 String 或 Array。
 - **必填**，无默认值
 
 以下配置和 Disqus Moderator Badge 相关，缺少一个都不会显示 Badge
@@ -158,18 +159,25 @@ var dsqjs = new DisqusJS({
 未来可能扩展的配置：
 
 - nesting 最大评论嵌套数（超过嵌套层数的评论会显示在同一层级下，目前该值采用 Disqus 官方 4 级嵌套且不可改变）
-- apikey (array) 一组 APIKey 用于“负载均衡”、应对 DISQUS API 的 Rate Limit。
 - nocomment 没有评论时的提示语（对应 Disqus Admin - Settings - Community - Comment Count Link - Zero comments）
-- commentPolicyURL 站点评论政策 URL（对应 对应 Disqus Admin - Settings - General - Comment Policy URL）
-- commentPolicyText 站点评论政策 URL（对应 对应 Disqus Admin - Settings - General - Comment Policy Summary）
-- newcomment 是否允许添加新评论（目前增加评论功能尚未实现）
+~~- commentPolicyURL 站点评论政策 URL（对应 对应 Disqus Admin - Settings - General - Comment Policy URL）~~
+~~- commentPolicyText 站点评论政策简介（对应 对应 Disqus Admin - Settings - General - Comment Policy Summary）~~
+~~- newcomment 是否允许添加新评论（目前增加评论功能尚未实现）~~
+
+### PJAX 站点注意事项
+
+如果你在使用 DisqusJS v0.2.5 版本，需要在 PJAX 的页面跳转事件下销毁 Disqus 实例（Disqus 不支持 PJAX）、并通过 `window.disqusjs.load();` 重新加载 DisqusJS。DisqusJS v0.2.5 版本支持自动判断当前页面是否存在 `#disqus_thread` 容器，如果容器不存在就不加载。
+
+DisqusJS v1.0.0 及之后的版本使用了新的方法加载 DisqusJS，并去除了对 `#disqus_thread` 容器的判断，在没有容器的页面初始化 DisqusJS 实例会报错。在切换页面时需要销毁已有的 Disqus 实例和 DisqusJS 实例，然后重新初始化一个新的 DisqusJS 实例。
+
+代码可以参考 [DIYgod 的这条 commit](https://github.com/DIYgod/diygod.me/commit/31012c21a457df5ab172c2e24bc197d5a0de8e69#diff-566630479f69d2ba36b6b996f6ba5a8f)，DIYgod 在这次 commit 中将 DisqusJS 从 v0.2.5 升级到了 v1.0.8。
 
 ## 注意
 
 - Disqus API 不支持通过 AJAX 方式调用创建评论或者初始化页面，所以自动初始化页面和创建匿名评论在不搭配专门的后端程序的话不能实现。
 - 所以如果 DisqusJS 检测到当前页面没有初始化、会提示是否切换到 Disqus 完整模式进行初始化。
 - DisqusJS 仅在当前域名首次访问时检测 Disqus 可用性并选择模式，并把结果持久化在 localStorage 中，之后访问都会沿用之前的模式。
-- 一个 Disqus Application 的 Rate Limit 是每小时 1000 次；DisqusJS 一次正常加载会产生 2 次请求。未来可能会开放填入多个 API Key，支持调用多个 Application，绕过 Rate Limit。
+- 一个 Disqus Application 的 Rate Limit 是每小时 1000 次；DisqusJS 一次正常加载会产生 2 次请求。~~未来可能会开放填入多个 API Key，支持调用多个 Application，绕过 Rate Limit。~~DisqusJS 已经支持填入多个 API Key，你可以创建多个 Disqus API Application 并分别获取 API Key。
 - 我搭建了一个 Disqus API 反代的服务 `https://disqus.skk.moe/disqus/` 供没有能力搭建反代的用户使用，不保证 SLA、缓存 TTL 1 小时。
 
 ## 谁在使用 DisqusJS？
@@ -177,19 +185,19 @@ var dsqjs = new DisqusJS({
 - Sukka: [Sukka's Blog](https://blog.skk.moe)
 - DIYgod: [Hi, DIYgod](https://diygod.me) ([source](https://github.com/DIYgod/diygod.me))
 - imlonghao: [Imlonghao](https://imlonghao.com/)
-- Yrom Wang: [Yrom's](https://yrom.net/) (Still using v0.2.5)
+- Yrom Wang: [Yrom's](https://yrom.net/) (Still using DisqusJS v0.2.5)
 
 如果你的站点或者个人博客在使用 DisqusJS，来 [把你的网站分享给其他人吧](https://github.com/SukkaW/DisqusJS/issues/12)！
 
 ## 调试、进阶使用 & 开发相关
 
-- 需要反代的 Endpoint 是 `https://disqus.com/api/`，使用 Nginx、Caddy 都可以很轻松的设置一个反代。如果没有自己的服务器，可以使用 [Now](https://zeit.co) 提供的 Serverless 平台搭建一个反代，[这里](https://github.com/SukkaW/disqusjs-proxy-example) 提供了一个样例。
-- `a.disquscdn.com` 和 `c.disquscdn.com` 解析到 Cloudflare 而不是 Fastly，可用性大大增强；`disqus.com` 和 `shortname.disqus.com` 仍然被墙；`disq.us` 解析到 Fastly 连通性较差，建议直接解析获得原链接。
+- 需要反代的 Endpoint 是 `https://disqus.com/api/`，使用 Nginx、Caddy 都可以很轻松的设置一个反代。如果没有自己的服务器，可以使用 [Now](https://zeit.co) 提供的 Serverless 平台搭建一个反代，[这里](https://github.com/SukkaW/disqusjs-proxy-example) 提供了一个样例。当然，你也可以使用我搭建的反代 `https://disqus.skk.moe/disqus/`。
+- `a.disquscdn.com` 和 `c.disquscdn.com` 解析到 Cloudflare 而不是 Fastly，可用性大大增强；`disqus.com` 和 `shortname.disqus.com` 仍然被墙；`disq.us` 解析到 Fastly 连通性较差，DisqusJS 通过解析获得了原链接。
 - DisqusJS 检测访客的 Disqus 可用性是通过检测 `disqus.com/favicon.ico` 和 `${disqusjs.config.shortname}.disqus.com/favicon.ico` 是否能正常加载，如果有一个加载出错或超时（2s）就判定 Disqus 不可用。
 - DisqusJS 在 localStorage 中持久化了 Disqus 连通性检查结果，key 为 `dsqjs_mode`，value 为 `disqus` 或者 `dsqjs`。需要调整 DisqusJS 的模式时可以直接操作 localStorage。
 - Disqus 自己的 config 保存在全局变量 `window.disqus_config` 中，你可能好奇为什么没有引入。实际上由于 `disqus_config` 和 DisqusJS 中有很多重复的配置，所以 DisqusJS 直接将相关配置项赋给了 `disqus_config`，所以用户只需要配置 Disqus 即可。
 - DisqusJS 并没有使用 Webpack 将 `disqusjs.css` 和 `disqus.js` 打包在一起，大家可以开发自己的 DisqusJS 主题。所有 DisqusJS 创建的 HTML 元素都在 `<div id="dsqjs"></div>` 之中、几乎所有的元素都有自己的类名并都以 `dsqjs-` 为前缀，防止污染。
-- 为 PJAX 站点添加 
+- DisqusJS v1.2.0 版本实现了评论排序。Disqus 将评论排序方式持久化在 localStorage 中、key 为 `disqus.sort`，DisqusJS 沿用了这一位置。
 
 ## Todo List
 
