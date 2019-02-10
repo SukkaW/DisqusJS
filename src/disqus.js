@@ -341,13 +341,32 @@
                  * 这个 API 的问题在于被嵌套的评论总是降序，看起来很不习惯
                  *
                  * 只获取一次使用 popular 排序的评论，之后在本地进行排序：
-                 *   1. 将存在 parent 的使用 createdAt 进行降序升序并存放在 disqusjs.comment.popular
+                 *   1. 将存在 parent 的使用 createdAt 进行升序并存放在 disqusjs.comment.popular
                  *   2. 将全部评论再进行升序排序，存放在 disqusjs.comment.desc
                  *   3. 将没有 parent 的条目进行升序排列存放在 disqusjs.comment.asc
                  * 每次加载翻页评论的时候 concat 并进行重排序
                  * 用户切换排序方式的时候直接取出进行重新渲染
                  */
-                let url = `${disqusjs.config.api}3.0/threads/listPostsThreaded?forum=${disqusjs.config.shortname}&thread=${disqusjs.page.id}${cursor}&api_key=${apikey()}&order=desc`;
+
+                let sortComment = {
+                    parseDate: (item) => Date.parse(new Date(item.createdAt)),
+                    descHelper: (a, b) => sortComment.parseDate(b) - sortComment.parseDate(a),
+                    ascHelper: (a, b) => sortComment.parseDate(a) - sortComment.parseDate(b),
+
+                    popular: (comment) => {
+                        let sortParentAsc = (a, b) => {
+                            if (a.parent && b.parent) {
+                                return sortComment.descHelper(a, b)
+                            } else {
+                                return null;
+                            }
+                        }
+
+                        return comment.sort(sortParentAsc);
+                    }
+                };
+
+                let url = `${disqusjs.config.api}3.0/threads/listPostsThreaded?forum=${disqusjs.config.shortname}&thread=${disqusjs.page.id}${cursor}&api_key=${apikey()}&order=popular`;
                 get(url, (res) => {
                     if (res.code === 0 && res.response.length > 0) {
                         // 解禁 加载更多评论
@@ -355,6 +374,8 @@
 
                         // 将获得的评论数据和当前页面已有的评论数据合并
                         disqusjs.page.comment = disqusjs.page.comment.concat(res.response);
+
+                        console.log(sortComment.popular(disqusjs.page.comment));
                         // 用当前页面的所有评论数据进行渲染
                         renderComment(disqusjs.page.comment)
 
