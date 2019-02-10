@@ -3,6 +3,7 @@
  *
  * DisqusJS Mode
  * @param {string} disqusjs.mode = dsqjs | disqus - Set which mode to use, should store and get in localStorage
+ * @param {string} disqusjs.sortType = popular | asc(oldest first) | desc(latest first) - Set which sort type to use, should store and get in localStorage
  *
  * DisqusJS Config
  * @param {string} disqusjs.config.shortname - The disqus shortname
@@ -120,7 +121,6 @@
             h = h < 10 ? `0${h}` : h;
             let minute = date.getMinutes();
             minute = minute < 10 ? (`0${minute}`) : minute;
-
             return `${y}-${m}-${d} ${h}:${minute}`;
         }
 
@@ -201,8 +201,7 @@
         function loadDsqjs() {
             (() => {
                 // 在 #disqus_thread 中填充 DisqusJS Container
-
-                $$('disqus_thread').innerHTML = `
+                /*
             <div id="dsqjs">
                 <section>
                      <div id="dsqjs-msg"></div>
@@ -218,12 +217,12 @@
                             </li>
                         </ul>
                         <div class="dsqjs-order">
-                        <input class="dsqjs-order-radio" id="dsqjs-order-popular" type="radio" name="comment-order" value="popular">
-                        <label class="dsqjs-order-label" for="dsqjs-order-popular" title="按评分高低排序">最佳</label>
                         <input class="dsqjs-order-radio" id="dsqjs-order-desc" type="radio" name="comment-order" value="desc">
-                        <label class="dsqjs-order-label" for="dsqjs-order-desc" title="按从新到旧排序">最新</label>
+                        <label class="dsqjs-order-label" for="dsqjs-order-desc" title="按从新到旧">最新</label>
                         <input class="dsqjs-order-radio" id="dsqjs-order-asc" type="radio" name="comment-order" value="asc">
-                        <label class="dsqjs-order-label" for="dsqjs-order-asc" title="按从旧到新排序">最早</label>
+                        <label class="dsqjs-order-label" for="dsqjs-order-asc" title="按从旧到新">最早</label>
+                        <input class="dsqjs-order-radio" id="dsqjs-order-popular" type="radio" name="comment-order" value="popular">
+                        <label class="dsqjs-order-label" for="dsqjs-order-popular" title="按评分从高到低">最佳</label>
                     </div>
                     </nav>
                 </header>
@@ -236,11 +235,15 @@
                         Powered by <a class="dsqjs-disqus-logo" href="https://disqus.com" rel="nofollow noopener noreferrer" target="_blank"></a>&nbsp;&amp;&nbsp;<a href="https://github.com/SukkaW/DisqusJS" target="_blank">DisqusJS</a>
                     </p>
                 </footer>
-                </div>`;
+            </div>
+                */
+
+                $$('disqus_thread').innerHTML = `<div id="dsqjs"><section><div id="dsqjs-msg"></div></section><header class="dsqjs-header dsqjs-hide" id="dsqjs-header"><nav class="dsqjs-nav dsqjs-clearfix"><ul><li class="dsqjs-nav-tab dsqjs-tab-active"><span><span id="dsqjs-comment-num"></span> Comments</span></li><li class="dsqjs-nav-tab"><span id="dsqjs-site-name"></span></li></ul><div class="dsqjs-order"><input class="dsqjs-order-radio" id="dsqjs-order-desc" type="radio" name="comment-order" value="desc"> <label class="dsqjs-order-label" for="dsqjs-order-desc" title="按从新到旧">最新</label> <input class="dsqjs-order-radio" id="dsqjs-order-asc" type="radio" name="comment-order" value="asc"> <label class="dsqjs-order-label" for="dsqjs-order-asc" title="按从旧到新">最早</label> <input class="dsqjs-order-radio" id="dsqjs-order-popular" type="radio" name="comment-order" value="popular"> <label class="dsqjs-order-label" for="dsqjs-order-popular" title="按评分从高到低">最佳</label></div></nav></header><section class="dsqjs-post-container"><ul class="dsqjs-post-list" id="dsqjs-post-container"></ul><a id="dsqjs-load-more" class="dsqjs-load-more dsqjs-hide">加载更多评论</a></section><footer><p class="dsqjs-footer">Powered by <a class="dsqjs-disqus-logo" href="https://disqus.com" rel="nofollow noopener noreferrer" target="_blank"></a>&nbsp;&amp;&nbsp;<a href="https://github.com/SukkaW/DisqusJS" target="_blank">DisqusJS</a></p></footer></div>`;
                 // DisqusJS 加载中信息
                 $$('dsqjs-msg').innerHTML = `评论基础模式加载中。如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并 <a id="dsqjs-reload-disqus" class="dsqjs-msg-btn">尝试完整 Disqus 模式</a> | <a id="dsqjs-force-disqus" class="dsqjs-msg-btn">强制完整 Disqus 模式</a>。`
                 $$('dsqjs-reload-disqus').addEventListener('click', checkDisqus);
                 $$('dsqjs-force-disqus').addEventListener('click', forceDisqus);
+                $$(`dsqjs-order-${disqusjs.sortType}`).setAttribute('checked', 'true');
 
                 /*
                  * 获取 Thread 信息
@@ -295,10 +298,15 @@
              * @param {string} cursor - 传入 cursor 用于加载下一页的评论
              */
             let getComment = (cursor) => {
-                let $loadMoreBtn = $$('dsqjs-load-more');
+                let $loadMoreBtn = $$('dsqjs-load-more'),
+                    $orderRadio = d.getElementsByClassName('dsqjs-order-radio');
 
                 let getMoreComment = () => {
-                    // 执行完以后去除当前监听器避免重复调用
+                    // 为按钮们取消事件，避免重复绑定
+                    // 重新 getComment() 时会重新绑定
+                    for (i of $orderRadio) {
+                        i.removeEventListener('change', switchSortType);
+                    };
                     $loadMoreBtn.removeEventListener('click', getMoreComment);
                     // 加载下一页评论
                     getComment(disqusjs.page.next);
@@ -315,6 +323,30 @@
                         $loadMoreBtn.addEventListener('click', getMoreComment);
                     }
                 };
+
+                // 切换排序方式
+                let switchSortType = (evt) => {
+                    // 通过 event.target 获取被选中的按钮
+                    disqusjs.sortType = evt.target.getAttribute('value');
+                    // 将结果在 localStorage 中持久化
+                    setLS('disqus.sort', disqusjs.sortType);
+                    // 为按钮们取消事件，避免重复绑定
+                    // 重新 getComment() 时会重新绑定
+                    for (i of $orderRadio) {
+                        i.removeEventListener('change', switchSortType);
+                    };
+                    $loadMoreBtn.removeEventListener('click', getMoreComment);
+                    // 清空评论列表和其它参数
+                    disqusjs.page.comment = [];
+                    disqusjs.page.next = ''; // 不然切换排序方式以后以后加载更多评论就会重复加载
+
+                    // 显示加载中提示信息
+                    // 反正只有评论基础模式已经加载成功了才会看到排序选项，所以无所谓再提示一次 Disqus 不可访问了
+                    $$('dsqjs-post-container').innerHTML = '<p style="text-align: center">正在切换排序方式...</p>';
+                    // 把 加载更多评论 隐藏起来
+                    $loadMoreBtn.classList.add('dsqjs-hide');
+                    getComment();
+                }
 
                 // 处理传入的 cursor
                 cursor = (!cursor) ? '' : `&cursor=${cursor}`;
@@ -335,38 +367,27 @@
                  * 用法和 /threads/listPosts 相似，和 /threads/post 的区别也只有 include 字段不同
                  * 这个能够返回已删除评论，所以也不需要 include=deleted 了
                  * sort 字段提供三个取值：
-                 *   - desc   （升序）
-                 *   - asc    （降序）
+                 *   - desc   （降序）
+                 *   - asc    （升序）
                  *   - popular（最热）
                  * 这个 API 的问题在于被嵌套的评论总是降序，看起来很不习惯
                  *
-                 * 只获取一次使用 popular 排序的评论，之后在本地进行排序：
-                 *   1. 将存在 parent 的使用 createdAt 进行升序并存放在 disqusjs.comment.popular
-                 *   2. 将全部评论再进行升序排序，存放在 disqusjs.comment.desc
-                 *   3. 将没有 parent 的条目进行升序排列存放在 disqusjs.comment.asc
                  * 每次加载翻页评论的时候 concat 并进行重排序
                  * 用户切换排序方式的时候直接取出进行重新渲染
                  */
 
                 let sortComment = {
                     parseDate: (item) => Date.parse(new Date(item.createdAt)),
-                    descHelper: (a, b) => sortComment.parseDate(b) - sortComment.parseDate(a),
-                    ascHelper: (a, b) => sortComment.parseDate(a) - sortComment.parseDate(b),
-
-                    popular: (comment) => {
-                        let sortParentAsc = (a, b) => {
-                            if (a.parent && b.parent) {
-                                return sortComment.descHelper(a, b)
-                            } else {
-                                return null;
-                            }
+                    parentAsc: (a, b) => {
+                        if (a.parent && b.parent) {
+                            return sortComment.parseDate(a) - sortComment.parseDate(b);
+                        } else {
+                            return 0;
                         }
-
-                        return comment.sort(sortParentAsc);
                     }
                 };
 
-                let url = `${disqusjs.config.api}3.0/threads/listPostsThreaded?forum=${disqusjs.config.shortname}&thread=${disqusjs.page.id}${cursor}&api_key=${apikey()}&order=popular`;
+                let url = `${disqusjs.config.api}3.0/threads/listPostsThreaded?forum=${disqusjs.config.shortname}&thread=${disqusjs.page.id}${cursor}&api_key=${apikey()}&order=${disqusjs.sortType}`;
                 get(url, (res) => {
                     if (res.code === 0 && res.response.length > 0) {
                         // 解禁 加载更多评论
@@ -374,11 +395,16 @@
 
                         // 将获得的评论数据和当前页面已有的评论数据合并
                         disqusjs.page.comment = disqusjs.page.comment.concat(res.response);
+                        // 将所有的子评论进行降序排列
+                        disqusjs.page.comment.sort(sortComment.parentAsc);
 
-                        console.log(sortComment.popular(disqusjs.page.comment));
                         // 用当前页面的所有评论数据进行渲染
-                        renderComment(disqusjs.page.comment)
+                        renderComment(disqusjs.page.comment);
 
+                        // 为排序按钮们委托事件
+                        for (i of $orderRadio) {
+                            i.addEventListener('change', switchSortType);
+                        }
 
                         if (res.cursor.hasNext) {
                             // 将 cursor.next 存入 disqusjs 变量中供不能传参的不匿名函数使用
@@ -475,7 +501,7 @@
                         <a href="${data.comment.author.profileUrl}">
                             <img src="${data.comment.author.avatar.cache}">
                         </a>
-    
+
                         Author Element
                         <span class="dsqjs-post-author">
                             <a href="${data.comment.author.profileUrl}" target="_blank" rel="nofollow noopener noreferrer">${data.comment.author.name}</a>
@@ -658,7 +684,12 @@
 
 
         disqusjs.mode = localStorage.getItem('dsqjs_mode');
+        disqusjs.sortType = localStorage.getItem('disqus.sort');
 
+        if (!disqusjs.sortType) {
+            setLS('disqus.sort', 'desc');
+            disqusjs.sortType = 'desc';
+        }
         if (disqusjs.mode === 'disqus') {
             loadDisqus();
         } else if (disqusjs.mode === 'dsqjs') {
