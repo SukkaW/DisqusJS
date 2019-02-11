@@ -301,7 +301,7 @@
                 let getMoreComment = () => {
                     // 为按钮们取消事件，避免重复绑定
                     // 重新 getComment() 时会重新绑定
-                    for (i of $orderRadio) {
+                    for (let i of $orderRadio) {
                         i.removeEventListener('change', switchSortType);
                     };
                     $loadMoreBtn.removeEventListener('click', getMoreComment);
@@ -399,7 +399,7 @@
                         renderComment(disqusjs.page.comment);
 
                         // 为排序按钮们委托事件
-                        for (i of $orderRadio) {
+                        for (let i of $orderRadio) {
                             i.addEventListener('change', switchSortType);
                         }
 
