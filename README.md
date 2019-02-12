@@ -85,6 +85,7 @@ var dsqjs = new DisqusJS({
     siteName: '',
     identifier: '',
     url: '',
+    title: '',
     api: '',
     apikey: '',
     admin: '',
@@ -130,6 +131,11 @@ var dsqjs = new DisqusJS({
 
 - 当前页面的 URL，Disqus 的爬虫会爬取该 URL 获取页面相关信息
 - **建议**，默认值为 `document.location.origin + document.location.pathname + document.location.search`
+
+**title** `{string}`
+
+- 当前页面的标题，如果没有设置默认为当前页面的标题。当页面标题中有其他信息（比如站点名称）而不想在 Disqus 中展示时，可以设置此项。
+- 非必须，默认值为 `document.title`
 
 **api** `{string}`
 
