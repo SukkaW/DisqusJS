@@ -654,7 +654,7 @@
             loadDisqus()
         }
 
-        let disqusjs = [];
+        let disqusjs = {};
 
         // 将传入的 config 参数赋给 disqusjs.config
         disqusjs.config = config;
