@@ -665,7 +665,7 @@
         // Google Analytics Measurement Protocol 也使用这个参数作为 URL
         disqusjs.config.identifier = (disqusjs.config.identifier || d.location.origin + d.location.pathname + d.location.search);
         disqusjs.config.url = (disqusjs.config.url || d.location.origin + d.location.pathname + d.location.search);
-        disqusjs.config.title = (disqusjs.config.url || d.title);
+        disqusjs.config.title = (disqusjs.config.title || d.title);
 
         // 定义 disqusjs.page，之后会填充 thread id、title 等数据
         disqusjs.page = [];
