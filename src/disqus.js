@@ -9,6 +9,7 @@
  * @param {string} disqusjs.config.shortname - The disqus shortname
  * @param {string} disqusjs.config.siteName - The Forum Name
  * @param {string} disqusjs.config.identifier - The identifier of the page
+ * @param {string} disqusjs.config.title - The title of the page
  * @param {string} disqusjs.config.url - The url of the page
  * @param {string} disqusjs.config.api - Where to get data
  * @param {string} disqusjs.config.apikey - The apikey used to request Disqus API
@@ -654,7 +655,7 @@
             loadDisqus()
         }
 
-        let disqusjs = [];
+        let disqusjs = {};
 
         // 将传入的 config 参数赋给 disqusjs.config
         disqusjs.config = config;
@@ -664,6 +665,7 @@
         // Google Analytics Measurement Protocol 也使用这个参数作为 URL
         disqusjs.config.identifier = (disqusjs.config.identifier || d.location.origin + d.location.pathname + d.location.search);
         disqusjs.config.url = (disqusjs.config.url || d.location.origin + d.location.pathname + d.location.search);
+        disqusjs.config.title = (disqusjs.config.title || d.title);
 
         // 定义 disqusjs.page，之后会填充 thread id、title 等数据
         disqusjs.page = [];
@@ -677,6 +679,7 @@
         window.disqus_config = function () {
             this.page.url = disqusjs.config.url;
             this.page.identifier = disqusjs.config.identifier;
+            this.page.title = disqusjs.config.title;
         };
 
 
