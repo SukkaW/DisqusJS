@@ -584,7 +584,7 @@
 
                     let html = (() => {
                         // 如果当前评论嵌套数大于 4 则不再右移
-                        if (nesting < 4) {
+                        if (nesting < disqusjs.config.nesting) {
                             return '<ul class="dsqjs-post-list dsqjs-children">';
                         } else {
                             return '<ul class="dsqjs-post-list">';
@@ -666,6 +666,8 @@
         disqusjs.config.identifier = (disqusjs.config.identifier || d.location.origin + d.location.pathname + d.location.search);
         disqusjs.config.url = (disqusjs.config.url || d.location.origin + d.location.pathname + d.location.search);
         disqusjs.config.title = (disqusjs.config.title || d.title);
+        // 将 nesting 数值转换为整数，防止用户犯傻
+        disqusjs.config.nesting = (disqusjs.config.nesting) ? parseInt(disqusjs.config.nesting) : 4;
 
         // 定义 disqusjs.page，之后会填充 thread id、title 等数据
         disqusjs.page = [];
