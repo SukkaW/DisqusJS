@@ -297,8 +297,8 @@
              */
             let getComment = (cursor) => {
                 let $loadMoreBtn = $$('dsqjs-load-more'),
-                    $orderRadio = d.getElementsByClassName('dsqjs-order-radio');
-                $loadHideCommentInDisqus = d.getElementsByClassName('dsqjs-has-more-btn');
+                    $orderRadio = d.getElementsByClassName('dsqjs-order-radio'),
+                    $loadHideCommentInDisqus = d.getElementsByClassName('dsqjs-has-more-btn');
 
                 let getMoreComment = () => {
                     // 为按钮们取消事件，避免重复绑定
