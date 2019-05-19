@@ -45,11 +45,11 @@
 
 ```html
 <!-- Unpkg -->
-<link rel="stylesheet" href="https://unpkg.com/disqusjs@1.1/dist/disqusjs.css">
+<link rel="stylesheet" href="https://unpkg.com/disqusjs@1.2/dist/disqusjs.css">
 <script src="https://unpkg.com/disqusjs@1.1/dist/disqus.js"></script>
 
 <!-- jsDelivr -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/disqusjs@1.1/dist/disqusjs.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/disqusjs@1.2/dist/disqusjs.css">
 <script src="https://cdn.jsdelivr.net/npm/disqusjs@1.1/dist/disqus.js"></script>
 ```
 

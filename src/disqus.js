@@ -546,7 +546,7 @@
                  * @return {string} msg - 经过处理的评论信息
                  */
                 let removeDisqUs = (msg) => {
-                    let el = document.createElement('div');
+                    let el = d.createElement('div');
                     el.innerHTML = msg;
                     let aTag = el.getElementsByTagName('a');
                     for (let i of aTag) {
