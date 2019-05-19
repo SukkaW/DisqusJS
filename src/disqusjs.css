@@ -295,13 +295,13 @@
 }
 
 #dsqjs p.dsqjs-has-more {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
     margin-left: 48px;
+    font-size: 13px;
+    line-height: 15px;
 }
 
 #dsqjs p.dsqjs-has-more a.dsqjs-has-more-btn {
-    font-size: 13px;
-    line-height: 15px;
     color: #656c7a;
     text-decoration: underline;
     cursor: pointer;

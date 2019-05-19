@@ -617,10 +617,10 @@
                         // 处理可能存在的隐藏回复
                         let hasMoreEl = ``;
                         if (comment.hasMore) {
-                            hasMoreEl = `<p class="dsqjs-has-more">切换到 <a class="dsqjs-has-more-btn" id="load-more-${comment.comment.id}">Disqus 完整模式</a> 显示更多回复</p>`
+                            hasMoreEl = `<p class="dsqjs-has-more">切换到 <a class="dsqjs-has-more-btn" id="load-more-${comment.comment.id}">完整 Disqus 模式</a> 显示更多回复</p>`
                         }
 
-                        html += `<li data-id="comment-${comment.comment.id}" id="comment-${comment.comment.id}">${renderPostItem(comment.comment)}${hasMoreEl}${childrenComments(comment)}</li>`;
+                        html += `<li data-id="comment-${comment.comment.id}" id="comment-${comment.comment.id}">${renderPostItem(comment.comment)}${childrenComments(comment)}${hasMoreEl}</li>`;
                     });
 
                     html += '</ul>';
@@ -646,10 +646,10 @@
                     // 处理可能存在的隐藏回复
                     let hasMoreEl = ``;
                     if (comment.hasMore) {
-                        hasMoreEl = `<p class="dsqjs-has-more">切换到 <a id="load-more-${comment.comment.id}">Disqus 完整模式</a> 显示更多回复</p>`
+                        hasMoreEl = `<p class="dsqjs-has-more">切换到 <a id="load-more-${comment.comment.id}">完整 Disqus 模式</a> 显示更多回复</p>`
                     }
 
-                    html += `<li data-id="comment-${comment.comment.id}" id="comment-${comment.comment.id}">${renderPostItem(comment.comment)}${hasMoreEl}${childrenComments(comment)}</li>`;
+                    html += `<li data-id="comment-${comment.comment.id}" id="comment-${comment.comment.id}">${renderPostItem(comment.comment)}${childrenComments(comment)}${hasMoreEl}</li>`;
                 });
 
 
