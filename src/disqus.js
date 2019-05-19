@@ -448,7 +448,8 @@
                             author: comment.author.name,
                             // 如果不设置 admin 会返回 undefined，所以需要嘴一个判断
                             isPrimary: (disqusjs.config.admin ? (comment.author.username === disqusjs.config.admin) : false),
-                            children: getChildren(+comment.id)
+                            children: getChildren(+comment.id),
+                            hasMore: comment.hasMore
                         }
                     };
 
