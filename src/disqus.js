@@ -298,7 +298,7 @@
             let getComment = (cursor) => {
                 let $loadMoreBtn = $$('dsqjs-load-more'),
                     $orderRadio = d.getElementsByClassName('dsqjs-order-radio');
-                    $loadHideCommentInDisqus = d.getElementsByClassName('dsqjs-has-more-btn');
+                $loadHideCommentInDisqus = d.getElementsByClassName('dsqjs-has-more-btn');
 
                 let getMoreComment = () => {
                     // 为按钮们取消事件，避免重复绑定
@@ -546,21 +546,26 @@
                  * @return {string} msg - 经过处理的评论信息
                  */
                 let removeDisqUs = (msg) => {
-                    // aMatcher - 只处理 Disqus 短链接
-                    let aMatcher = new RegExp(/<a(.*?)href="https:\/\/disq\.us(.+?)"(.+?)>(.+?)<\/a>/gi),
-                        hrefMatcher = new RegExp(/href=\"(.+?)\"/gi)
-                    let link = (msg.match(aMatcher) || []);
-                    link.map((olink) => {
-                        // (.*) 是贪婪处理，会一致匹配到最后，可以用于匹配最后一次
-                        let link = olink.match(hrefMatcher)[0].replace(/href=\"https:\/\/disq.us\/url\?url=/g, '').replace(/(.*)"/, '$1');
-                        link = decodeURIComponent(link);
-                        link = link.replace(/(.*):(.*)cuid=(.*)/, '$1')
-                        msg = msg.replace(olink, `<a href="${link}" rel="nofollow noopener noreferrer">${link}</a>`)
-                    })
+                    let el = document.createElement('div');
+                    el.innerHTML = msg;
+                    let aTag = el.getElementsByTagName('a');
+                    for (let i of aTag) {
+                        let link = i.href;
+                        /*
+                            link = link.replace(/https:\/\/disq.us\/url\?url=/g, '').replace(/(.*)"/, '$1');
+                            link = decodeURIComponent(link);
+                            link = link.replace(/(.*):(.*)cuid=(.*)/, '$1')
+                         */
+                        link = decodeURIComponent(link.replace(/https:\/\/disq.us\/url\?url=/g, '').replace(/(.*)"/, '$1')).replace(/(.*):(.*)cuid=(.*)/, '$1');
+                        i.href = link;
+                        i.innerHTML = link;
+                        // 为所有链接添加 nofollow noopener noreferrer 可以生效到全局链接（包括 Disqus CDN 直链）
+                        i.rel = 'nofollow noopener noreferrer'
+                        // 为所有链接添加 target="_blank" 可以生效到全局链接（包括 Disqus CDN 直链）
+                        i.target = '_blank'
+                    }
 
-                    // 在最后添加 target="_blank" 可以生效到全局链接（包括 Disqus CDN 直链）
-                    msg = msg.replace(/href=/g, `target="_blank" href=`)
-                    return msg
+                    return el.innerHTML;
                 }
 
                 let renderPostItem = (s) => {
