@@ -210,9 +210,11 @@
     #dsqjs .dsqjs-post-list.dsqjs-children>li {
         margin-left: 48px;
     }
+
     #dsqjs .dsqjs-post-list .dsqjs-post-avatar {
         margin-right: 12px;
     }
+
     #dsqjs .dsqjs-post-list .dsqjs-post-item {
         margin-bottom: 20px;
     }
@@ -289,5 +291,18 @@
     border-radius: 2px;
     padding: 0 5px;
     background-color: #dcdcdc;
+    cursor: pointer;
+}
+
+#dsqjs p.dsqjs-has-more {
+    margin-bottom: 20px;
+    margin-left: 48px;
+}
+
+#dsqjs p.dsqjs-has-more a.dsqjs-has-more-btn {
+    font-size: 13px;
+    line-height: 15px;
+    color: #656c7a;
+    text-decoration: underline;
     cursor: pointer;
 }

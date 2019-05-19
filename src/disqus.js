@@ -298,6 +298,7 @@
             let getComment = (cursor) => {
                 let $loadMoreBtn = $$('dsqjs-load-more'),
                     $orderRadio = d.getElementsByClassName('dsqjs-order-radio');
+                    $loadHideCommentInDisqus = d.getElementsByClassName('dsqjs-has-more-btn');
 
                 let getMoreComment = () => {
                     // 为按钮们取消事件，避免重复绑定
@@ -306,6 +307,9 @@
                         i.removeEventListener('change', switchSortType);
                     };
                     $loadMoreBtn.removeEventListener('click', getMoreComment);
+                    for (let i of $loadHideCommentInDisqus) {
+                        i.removeEventListener('click', checkDisqus);
+                    };
                     // 加载下一页评论
                     getComment(disqusjs.page.next);
                 }
@@ -334,6 +338,10 @@
                         i.removeEventListener('change', switchSortType);
                     };
                     $loadMoreBtn.removeEventListener('click', getMoreComment);
+                    for (let i of $loadHideCommentInDisqus) {
+                        i.removeEventListener('click', checkDisqus);
+                    };
+
                     // 清空评论列表和其它参数
                     disqusjs.page.comment = [];
                     disqusjs.page.next = ''; // 不然切换排序方式以后以后加载更多评论就会重复加载
@@ -404,6 +412,10 @@
                             i.addEventListener('change', switchSortType);
                         }
 
+                        for (let i of $loadHideCommentInDisqus) {
+                            i.addEventListener('click', checkDisqus);
+                        };
+
                         if (res.cursor.hasNext) {
                             // 将 cursor.next 存入 disqusjs 变量中供不能传参的不匿名函数使用
                             disqusjs.page.next = res.cursor.next;
@@ -449,6 +461,12 @@
                             // 如果不设置 admin 会返回 undefined，所以需要嘴一个判断
                             isPrimary: (disqusjs.config.admin ? (comment.author.username === disqusjs.config.admin) : false),
                             children: getChildren(+comment.id),
+                            /*
+                             * Disqus 改变了 Private API 的行为
+                             * https://github.com/fooleap/disqus-php-api/issues/44
+                             * 默认隐藏更多的评论，通过 hasMore 字段判断
+                             */
+                            // 将 hasMore 字段提升到上层字段中
                             hasMore: comment.hasMore
                         }
                     };
@@ -595,7 +613,14 @@
                     children.map((comment) => {
                         comment = processData(comment);
                         comment.nesting = nesting + 1;
-                        html += `<li data-id="comment-${comment.comment.id}" id="comment-${comment.comment.id}">${renderPostItem(comment.comment)}${childrenComments(comment)}</li>`;
+
+                        // 处理可能存在的隐藏回复
+                        let hasMoreEl = ``;
+                        if (comment.hasMore) {
+                            hasMoreEl = `<p class="dsqjs-has-more">切换到 <a class="dsqjs-has-more-btn" id="load-more-${comment.comment.id}">Disqus 完整模式</a> 显示更多回复</p>`
+                        }
+
+                        html += `<li data-id="comment-${comment.comment.id}" id="comment-${comment.comment.id}">${renderPostItem(comment.comment)}${hasMoreEl}${childrenComments(comment)}</li>`;
                     });
 
                     html += '</ul>';
@@ -617,7 +642,14 @@
                         comment.nesting = 1;
                     }
                     comment = processData(comment);
-                    html += `<li data-id="comment-${comment.comment.id}" id="comment-${comment.comment.id}">${renderPostItem(comment.comment)}${childrenComments(comment)}</li>`;
+
+                    // 处理可能存在的隐藏回复
+                    let hasMoreEl = ``;
+                    if (comment.hasMore) {
+                        hasMoreEl = `<p class="dsqjs-has-more">切换到 <a id="load-more-${comment.comment.id}">Disqus 完整模式</a> 显示更多回复</p>`
+                    }
+
+                    html += `<li data-id="comment-${comment.comment.id}" id="comment-${comment.comment.id}">${renderPostItem(comment.comment)}${hasMoreEl}${childrenComments(comment)}</li>`;
                 });
 
 
@@ -627,6 +659,7 @@
 
                 $$('dsqjs-post-container').innerHTML = html;
 
+                // 为 checkDisqus 和 forceDisqus 按钮添加事件
                 $$('dsqjs-reload-disqus').addEventListener('click', checkDisqus);
                 $$('dsqjs-force-disqus').addEventListener('click', forceDisqus);
             }
