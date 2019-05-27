@@ -183,6 +183,7 @@ DisqusJS v1.0.0 及之后的版本使用了新的方法加载 DisqusJS，并去�
 - Disqus API 不支持通过 AJAX 方式调用创建评论或者初始化页面，所以自动初始化页面和创建匿名评论在不搭配专门的后端程序的话不能实现。
 - 所以如果 DisqusJS 检测到当前页面没有初始化、会提示是否切换到 Disqus 完整模式进行初始化。
 - DisqusJS 仅在当前域名首次访问时检测 Disqus 可用性并选择模式，并把结果持久化在 localStorage 中，之后访问都会沿用之前的模式。
+  - 一些广告拦截规则（如 [Fanboy’s Enhanced Tracking List](https://github.com/ryanbr/fanboy-adblock)） 会导致检测失败，可在广告拦截器的自定义规则中添加 `@@||*disqus*.com/favicon.ico*` 解决。
 - 一个 Disqus Application 的 Rate Limit 是每小时 1000 次；DisqusJS 一次正常加载会产生 2 次请求。DisqusJS 支持填入多个 API Key，你可以创建多个 Disqus API Application 并分别获取 API Key。
 - 我搭建了一个 Disqus API 反代的服务 `https://disqus.skk.moe/disqus/` 供没有能力搭建反代的用户使用，不保证 SLA、缓存 TTL 1 小时。
 
@@ -202,7 +203,7 @@ DisqusJS v1.0.0 及之后的版本使用了新的方法加载 DisqusJS，并去�
 - `a.disquscdn.com` 和 `c.disquscdn.com` 解析到 Cloudflare 而不是 Fastly，可用性大大增强；`disqus.com` 和 `shortname.disqus.com` 仍然被墙；`disq.us` 解析到 Fastly 连通性较差，DisqusJS 通过解析获得了原链接。
 - DisqusJS 检测访客的 Disqus 可用性是通过检测 `disqus.com/favicon.ico` 和 `${disqusjs.config.shortname}.disqus.com/favicon.ico` 是否能正常加载，如果有一个加载出错或超时（2s）就判定 Disqus 不可用。
 - DisqusJS 在 localStorage 中持久化了 Disqus 连通性检查结果，key 为 `dsqjs_mode`，value 为 `disqus` 或者 `dsqjs`。需要调整 DisqusJS 的模式时可以直接操作 localStorage。
-- Disqus 自己的 config 保存在全局变量 `window.disqus_config` 中，你可能好奇为什么没有引入。实际上由于 `disqus_config` 和 DisqusJS 中有很多重复的配置，所以 DisqusJS 直接将相关配置项赋给了 `disqus_config`，所以用户只需要配置 Disqus 即可。
+- Disqus 自己的 config 保存在全局变量 `window.disqus_config` 中，你可能好奇为什么没有引入。实际上由于 `disqus_config` 和 DisqusJS 中有很多重复的配置，所以 DisqusJS 直接将相关配置项赋给了 `disqus_config`，所以用户只需要配置 DisqusJS 即可。
 - DisqusJS 并没有使用 Webpack 将 `disqusjs.css` 和 `disqus.js` 打包在一起，大家可以开发自己的 DisqusJS 主题。所有 DisqusJS 创建的 HTML 元素都在 `<div id="dsqjs"></div>` 之中、几乎所有的元素都有自己的类名并都以 `dsqjs-` 为前缀，防止污染。
 - DisqusJS 从 v1.2.0 版本开始实现了评论排序。Disqus 将评论排序方式持久化在 localStorage 中、key 为 `disqus.sort`，DisqusJS 沿用了这一位置。
 
