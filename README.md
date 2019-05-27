@@ -183,6 +183,7 @@ DisqusJS v1.0.0 及之后的版本使用了新的方法加载 DisqusJS，并去�
 - Disqus API 不支持通过 AJAX 方式调用创建评论或者初始化页面，所以自动初始化页面和创建匿名评论在不搭配专门的后端程序的话不能实现。
 - 所以如果 DisqusJS 检测到当前页面没有初始化、会提示是否切换到 Disqus 完整模式进行初始化。
 - DisqusJS 仅在当前域名首次访问时检测 Disqus 可用性并选择模式，并把结果持久化在 localStorage 中，之后访问都会沿用之前的模式。
+  - 一些广告拦截规则（如 [Fanboy’s Enhanced Tracking List](https://github.com/ryanbr/fanboy-adblock)） 会导致检测失败，可在广告拦截器的自定义规则中添加 `@@||*disqus*.com/favicon.ico*` 解决。
 - 一个 Disqus Application 的 Rate Limit 是每小时 1000 次；DisqusJS 一次正常加载会产生 2 次请求。DisqusJS 支持填入多个 API Key，你可以创建多个 Disqus API Application 并分别获取 API Key。
 - 我搭建了一个 Disqus API 反代的服务 `https://disqus.skk.moe/disqus/` 供没有能力搭建反代的用户使用，不保证 SLA、缓存 TTL 1 小时。
 
