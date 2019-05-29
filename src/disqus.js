@@ -133,16 +133,27 @@
          * loadDisqus() - 加载 Disqus
          */
         function loadDisqus() {
-            let s = d.createElement('script');
+            if (window.DISQUS) {
+                window.DISQUS.reset({
+                    reload: true,
+                    config: function() {
+                        this.page.identifier = disqusjs.config.identifier;
+                        this.page.url = disqusjs.config.url;
+                        this.page.title = disqusjs.config.title;
+                    }
+                });
+            } else {
+                let s = d.createElement('script');
 
-            // 显示提示信息
-            // Disqus 加载成功以后会把 #disqus_thread 内的内容全部覆盖
-            $$('disqus_thread').innerHTML = '<div id="dsqjs"><section><div id="dsqjs-msg">评论完整模式加载中...如果长时间无法加载，请针对 disq.us | disquscdn.com | disqus.com 启用代理，或使用 <a id="dsqjs-force-dsqjs" class="dsqjs-msg-btn">评论基础模式</a></div></section><footer><p class="dsqjs-footer">Powered by <a class="dsqjs-disqus-logo" href="https://disqus.com" rel="nofollow noopener noreferrer" target="_blank"></a>&nbsp;&amp;&nbsp;<a href="https://github.com/SukkaW/DisqusJS" target="_blank">DisqusJS</a></p></footer>'
-            $$('dsqjs-force-dsqjs').addEventListener('click', forceDsqjs);
+                // 显示提示信息
+                // Disqus 加载成功以后会把 #disqus_thread 内的内容全部覆盖
+                $$('disqus_thread').innerHTML = '<div id="dsqjs"><section><div id="dsqjs-msg">评论完整模式加载中...如果长时间无法加载，请针对 disq.us | disquscdn.com | disqus.com 启用代理，或使用 <a id="dsqjs-force-dsqjs" class="dsqjs-msg-btn">评论基础模式</a></div></section><footer><p class="dsqjs-footer">Powered by <a class="dsqjs-disqus-logo" href="https://disqus.com" rel="nofollow noopener noreferrer" target="_blank"></a>&nbsp;&amp;&nbsp;<a href="https://github.com/SukkaW/DisqusJS" target="_blank">DisqusJS</a></p></footer>'
+                $$('dsqjs-force-dsqjs').addEventListener('click', forceDsqjs);
 
-            s.src = `https://${disqusjs.config.shortname}.disqus.com/embed.js`;
-            s.setAttribute('data-timestamp', + new Date());
-            (d.head || d.body).appendChild(s);
+                s.src = `https://${disqusjs.config.shortname}.disqus.com/embed.js`;
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            }
         }
 
         function checkDisqus() {
