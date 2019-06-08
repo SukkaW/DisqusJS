@@ -1,9 +1,6 @@
 #dsqjs * {
     margin: 0;
     padding: 0;
-    font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
 }
 
 #dsqjs a {
@@ -165,11 +162,6 @@
     word-wrap: break-word;
     overflow: hidden;
     color: #2a2e2e
-}
-
-#dsqjs .dsqjs-post-body code,
-#dsqjs .dsqjs-post-body pre {
-    font-family: "SF Mono", "Segoe UI Mono", Consolas, "Roboto Mono", "Liberation Mono", Menlo, Courier, 'Courier New', monospace !important;
 }
 
 #dsqjs .dsqjs-post-body code {
