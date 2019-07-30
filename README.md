@@ -4,8 +4,8 @@
 
 [![npm version](https://img.shields.io/npm/v/disqusjs.svg?style=flat-square)](https://www.npmjs.com/package/disqusjs)
 [![Author](https://img.shields.io/badge/Author-Sukka-b68469.svg?style=flat-square)](https://skk.moe)
-[![npm license](https://img.shields.io/npm/l/disqusjs.svg?style=flat-square)](https://github.com/SukkaW/suka.css/blob/master/LICENSE)
-[![Size](https://badge-size.herokuapp.com/SukkaW/DisqusJS/master/dist/disqus.js?compression=gzip&style=flat-square)](https://github.com/SukkaW/suka.css/tree/master/dist)
+[![npm license](https://img.shields.io/npm/l/disqusjs.svg?style=flat-square)](https://github.com/SukkaW/DisqusJS/blob/master/LICENSE)
+[![Size](https://badge-size.herokuapp.com/SukkaW/DisqusJS/master/dist/disqus.js?compression=gzip&style=flat-square)](https://github.com/SukkaW/DisqusJS/tree/master/dist)
 [![Travis](https://img.shields.io/travis/SukkaW/DisqusJS.svg?style=flat-square)](https://travis-ci.org/SukkaW/DisqusJS)
 [![Codacy Badge](https://img.shields.io/codacy/grade/20babb75dd6047c2828f231e7254bb5b.svg?style=flat-square)](https://app.codacy.com/app/SukkaW/DisqusJS)
 [![Dependency Status](https://img.shields.io/david/SukkaW/DisqusJS.svg?style=flat-square)](https://david-dm.org/SukkaW/DisqusJS)
@@ -145,7 +145,7 @@ var dsqjs = new DisqusJS({
 **apikey** `{string || Array}`
 
 - DisqusJS 向 API 发起请求时使用的 API Key，你应该在配置 Disqus Application 时获取了 API Key
-- DisqusJS 支持填入一个 包含多个 API Key 的 Array，在每次请求时会随机使用其中一个；如果你只需要填入一个 API Key，则可以填入 String 或 Array。
+- DisqusJS 支持填入一个 包含多个 API Key 的 Array，在每次请求时会随机使用其中一个；如果你只填入一个 API Key，可以填入 string 或 Array。
 - **必填**，无默认值
 
 以下配置和 Disqus Moderator Badge 相关，缺少一个都不会显示 Badge
@@ -178,6 +178,22 @@ DisqusJS v1.0.0 及之后的版本使用了新的方法加载 DisqusJS，并去�
 
 代码可以参考 [DIYgod 的这条 commit](https://github.com/DIYgod/diygod.me/commit/31012c21a457df5ab172c2e24bc197d5a0de8e69#diff-566630479f69d2ba36b6b996f6ba5a8f)，DIYgod 在这次 commit 中将 DisqusJS 从 v0.2.5 升级到了 v1.0.8。
 
+## 如何搭建 Disqus API 反代
+
+使用 Caddy 或者 Nginx 都可以搭建一个反代服务器，需要反代的 Endpoint 是 `https://disqus.com/api/`。这里介绍的是针对不使用服务器和后端程序，使用 Serverless 平台搭建 Disqus API 反代的方法。
+
+> 当然，你也可以直接使用我搭建的反代 `https://disqus.skk.moe/disqus/`。
+
+### ZEIT Now
+
+[ZEIT Now](https://zeit.co) 是一个 Serverless 平台，免费 Plan 提供每月 100GiB 流量。
+[sukkaw/disqusjs-proxy-example](https://github.com/SukkaW/disqusjs-proxy-example) 提供了一个使用 Now Router 进行反代的样例配置文件。
+
+### Cloudflare Workers
+
+[Cloudflare Workers](https://www.cloudflare.com/products/cloudflare-workers/) 提供了一个在 Cloudflare 上运行 JavaScript 的平台。在 `workers.dev` 域名上部署可提供每天 `100000` 次免费请求次数额度，在自己的域名上部署提供 `10M` 次免费请求额度（超出收费）。
+[idawnlight/disqusjs-proxy-cloudflare-workers](https://github.com/idawnlight/disqusjs-proxy-cloudflare-workers) 提供了一份使用 Cloudflare Workers 进行反代的样例代码。
+
 ## 注意
 
 - Disqus API 不支持通过 AJAX 方式调用创建评论或者初始化页面，所以自动初始化页面和创建匿名评论在不搭配专门的后端程序的话不能实现。
@@ -199,7 +215,6 @@ DisqusJS v1.0.0 及之后的版本使用了新的方法加载 DisqusJS，并去�
 
 ## 调试、进阶使用 & 开发相关
 
-- 需要反代的 Endpoint 是 `https://disqus.com/api/`，使用 Nginx、Caddy 都可以很轻松的设置一个反代。如果没有自己的服务器，可以使用 [Now](https://zeit.co) 提供的 Serverless 平台搭建一个反代，[这里](https://github.com/SukkaW/disqusjs-proxy-example) 提供了一个样例。当然，你也可以使用我搭建的反代 `https://disqus.skk.moe/disqus/`。
 - `a.disquscdn.com` 和 `c.disquscdn.com` 解析到 Cloudflare 而不是 Fastly，可用性大大增强；`disqus.com` 和 `shortname.disqus.com` 仍然被墙；`disq.us` 解析到 Fastly 连通性较差，DisqusJS 通过解析获得了原链接。
 - DisqusJS 检测访客的 Disqus 可用性是通过检测 `disqus.com/favicon.ico` 和 `${disqusjs.config.shortname}.disqus.com/favicon.ico` 是否能正常加载，如果有一个加载出错或超时（2s）就判定 Disqus 不可用。
 - DisqusJS 在 localStorage 中持久化了 Disqus 连通性检查结果，key 为 `dsqjs_mode`，value 为 `disqus` 或者 `dsqjs`。需要调整 DisqusJS 的模式时可以直接操作 localStorage。
@@ -213,7 +228,7 @@ DisqusJS v1.0.0 及之后的版本使用了新的方法加载 DisqusJS，并去�
 
 ## Author 作者
 
-**DisqusJS** © [Sukka](https://github.com/SukkaW), Released under the [MIT](https://github.com/SukkaW/suka.css/blob/master/LICENSE) License.<br>
-Authored and maintained by Sukka with help from contributors ([list](https://github.com/SukkaW/suka.css/graphs/contributors)).
+**DisqusJS** © [Sukka](https://github.com/SukkaW), Released under the [MIT](https://github.com/SukkaW/DisqusJS/blob/master/LICENSE) License.<br>
+Authored and maintained by Sukka with help from contributors ([list](https://github.com/SukkaW/DisqusJS/graphs/contributors)).
 
 > [Personal Website](https://skk.moe) · [Blog](https://blog.skk.moe) · GitHub [@SukkaW](https://github.com/SukkaW) · Telegram Channel [@SukkaChannel](https://t.me/SukkaChannel) · Twitter [@isukkaw](https://twitter.com/isukkaw) · Keybase [@sukka](https://keybase.io/sukka)
