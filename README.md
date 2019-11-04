@@ -1,6 +1,6 @@
 # DisqusJS
 
-> 超轻量级的「评论基础模式」实现：使用 Disqus API 渲染评论列表
+> 纯前端、超轻量级的「评论基础模式」实现：使用 Disqus API 渲染评论列表
 
 [![npm version](https://img.shields.io/npm/v/disqusjs.svg?style=flat-square)](https://www.npmjs.com/package/disqusjs)
 [![Author](https://img.shields.io/badge/Author-Sukka-b68469.svg?style=flat-square)](https://skk.moe)
@@ -13,16 +13,16 @@
 
 ## 简介
 
-使用 Disqus API 获取到的数据渲染评论列表，搭配 Disqus API 的反代可以实现在网络审查地区加载 Disqus 评论列表；支持自动检测访客的 Disqus 可用性自动选择加载原生 DISQUS（评论完整模式）和 DisqusJS 提供的评论基础模式。
+使用 Disqus API 获取到的数据渲染评论列表，搭配 Disqus API 的反代可以实现在网络审查地区加载 Disqus 评论列表；支持自动检测访客的 Disqus 可用性自动选择加载原生 Disqus（评论完整模式）和 DisqusJS 提供的评论基础模式。
 
 ## 功能
 
-- 展示评论列表
-- 自动判断访客的 DISQUS 可用性选择「评论基础模式」或「Disqus 完整模式」
+- 展示评论列表、支持按照「最新」、「最早」、「最佳」排序
+- 判断访客能否访问 Disqus、自动选择「评论基础模式」或「Disqus 完整模式」
 
 ## Demo
 
-- https://suka.js.org/DisqusJS/
+- https://disqusjs.skk.moe
 - https://blog.skk.moe
 
 ## 使用
@@ -46,11 +46,11 @@
 ```html
 <!-- Unpkg -->
 <link rel="stylesheet" href="https://unpkg.com/disqusjs@1.2/dist/disqusjs.css">
-<script src="https://unpkg.com/disqusjs@1.1/dist/disqus.js"></script>
+<script src="https://unpkg.com/disqusjs@1.2/dist/disqus.js"></script>
 
 <!-- jsDelivr -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/disqusjs@1.2/dist/disqusjs.css">
-<script src="https://cdn.jsdelivr.net/npm/disqusjs@1.1/dist/disqus.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/disqusjs@1.2/dist/disqus.js"></script>
 ```
 
 #### 从 NPM 安装
@@ -61,9 +61,13 @@
 npm i --save disqusjs
 ```
 
-```
+```js
 import 'disqusjs/dist/disqusjs.css'
 import DisqusJS from 'disqusjs'
+```
+
+```js
+
 ```
 
 ### 使用
@@ -148,6 +152,13 @@ var dsqjs = new DisqusJS({
 - DisqusJS 支持填入一个 包含多个 API Key 的 Array，在每次请求时会随机使用其中一个；如果你只填入一个 API Key，可以填入 string 或 Array。
 - **必填**，无默认值
 
+**nesting** `{Number}`
+
+- 最大评论嵌套数；超过嵌套层数的评论，会不论从属关系显示在同一层级下
+- 非必须，默认值为 `4`
+
+---
+
 以下配置和 Disqus Moderator Badge 相关，缺少一个都不会显示 Badge
 
 **admin** `{string}`
@@ -164,7 +175,6 @@ var dsqjs = new DisqusJS({
 
 未来可能扩展的配置：
 
-- nesting 最大评论嵌套数（超过嵌套层数的评论会显示在同一层级下，目前该值采用 Disqus 官方 4 级嵌套且不可改变）
 - nocomment 没有评论时的提示语（对应 Disqus Admin - Settings - Community - Comment Count Link - Zero comments）
 - ~~commentPolicyURL 站点评论政策 URL（对应 对应 Disqus Admin - Settings - General - Comment Policy URL）~~
 - ~~commentPolicyText 站点评论政策简介（对应 对应 Disqus Admin - Settings - General - Comment Policy Summary）~~
@@ -176,6 +186,8 @@ var dsqjs = new DisqusJS({
 
 DisqusJS v1.0.0 及之后的版本使用了新的方法加载 DisqusJS，并去除了对 `#disqus_thread` 容器的判断，在没有容器的页面初始化 DisqusJS 实例会报错。在切换页面时需要销毁已有的 Disqus 实例和 DisqusJS 实例，然后重新初始化一个新的 DisqusJS 实例。
 
+DisqusJS v1.2.6 开始支持检测是否存在 Disqus 实例，并在加载 Disqus 时直接调用 `DISQUS.reset()` 方法重载 Disqus 评论，无需用户手动销毁现有的 Disqus 实例。
+
 代码可以参考 [DIYgod 的这条 commit](https://github.com/DIYgod/diygod.me/commit/31012c21a457df5ab172c2e24bc197d5a0de8e69#diff-566630479f69d2ba36b6b996f6ba5a8f)，DIYgod 在这次 commit 中将 DisqusJS 从 v0.2.5 升级到了 v1.0.8。
 
 ## 如何搭建 Disqus API 反代
@@ -186,22 +198,33 @@ DisqusJS v1.0.0 及之后的版本使用了新的方法加载 DisqusJS，并去�
 
 ### ZEIT Now
 
-[ZEIT Now](https://zeit.co) 是一个 Serverless 平台，免费 Plan 提供每月 100GiB 流量。
+[ZEIT Now](https://zeit.co) 是一个 Serverless 平台。免费 Plan 提供每月 20 GiB 流量。
 [sukkaw/disqusjs-proxy-example](https://github.com/SukkaW/disqusjs-proxy-example) 提供了一个使用 Now Router 进行反代的样例配置文件。
 
 ### Cloudflare Workers
 
-[Cloudflare Workers](https://www.cloudflare.com/products/cloudflare-workers/) 提供了一个在 Cloudflare 上运行 JavaScript 的平台。在 `workers.dev` 域名上部署可提供每天 `100000` 次免费请求次数额度，在自己的域名上部署提供 `10M` 次免费请求额度（超出收费）。
+[Cloudflare Workers](https://www.cloudflare.com/products/cloudflare-workers/) 提供了一个在 Cloudflare 上运行 JavaScript 的平台。免费 Plan 可提供每天 `100000` 次免费请求次数额度。
 [idawnlight/disqusjs-proxy-cloudflare-workers](https://github.com/idawnlight/disqusjs-proxy-cloudflare-workers) 提供了一份使用 Cloudflare Workers 进行反代的样例代码。
+
+### Heroku
+
+[Heroku](https://www.heroku.com/) 是一个支持多种编程语言的 SaaS 平台。不绑定信用卡每月有 550 小时的免费运行时间、绑定信用卡后每月有 1000 小时的免费运行时间。
+[ysc3839/disqusjs-proxy](https://github.com/ysc3839/disqusjs-proxy) 提供了一个直接部署至 Heroku 的 Disqus API 反代项目。你可以点击 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/ysc3839/disqusjs-proxy) 直接部署。
+
+### Firebase
+
+[Firebase Cloud Functions](https://firebase.google.com/products/functions/) 提供了执行 Node.js 代码的 Serverless 平台。需绑定银行卡 (Visa 或 MasterCard) 才能启用互联网出站访问功能。
+[ysc3839/disqusjs-proxy 的 `firebase` 分支](https://github.com/ysc3839/disqusjs-proxy/tree/firebase) 提供了一个可以部署在 Firebase 上的反代样例。
 
 ## 注意
 
 - Disqus API 不支持通过 AJAX 方式调用创建评论或者初始化页面，所以自动初始化页面和创建匿名评论在不搭配专门的后端程序的话不能实现。
+  - Disqus API 会检查请求是否包含 `Origin`、`X-Request-With` 等响应头、拦截 AJAX 请求。就算 Disqus API 不做检查，把你的私钥和公钥一起明文写在前端也是 **十分愚蠢** 的
 - 所以如果 DisqusJS 检测到当前页面没有初始化、会提示是否切换到 Disqus 完整模式进行初始化。
 - DisqusJS 仅在当前域名首次访问时检测 Disqus 可用性并选择模式，并把结果持久化在 localStorage 中，之后访问都会沿用之前的模式。
-  - 一些广告拦截规则（如 [Fanboy’s Enhanced Tracking List](https://github.com/ryanbr/fanboy-adblock)） 会导致检测失败，可在广告拦截器的自定义规则中添加 `@@||*disqus*.com/favicon.ico*` 解决。
-- 一个 Disqus Application 的 Rate Limit 是每小时 1000 次；DisqusJS 一次正常加载会产生 2 次请求。DisqusJS 支持填入多个 API Key，你可以创建多个 Disqus API Application 并分别获取 API Key。
-- 我搭建了一个 Disqus API 反代的服务 `https://disqus.skk.moe/disqus/` 供没有能力搭建反代的用户使用，不保证 SLA、缓存 TTL 1 小时。
+  - 一些广告拦截规则（如 [Fanboy’s Enhanced Tracking List](https://github.com/ryanbr/fanboy-adblock)） 会导致检测失败，可在广告拦截器的自定义规则中添加 `@@||*disqus*.com/favicon.ico*` 解决。当然你不必担心访客，因为 DisqusJS 会提供 `尝试 Disqus 完整模式 | 强制 Disqus 完整模式` 的按钮供访客切换。
+- 一个 Disqus Application 的 Rate Limit 是每小时 1000 次；DisqusJS 一次正常加载会产生 2 次请求。DisqusJS 支持将多个 API Key 填入一个 Array 中，并在请求时随机选择（负载均衡）。你可以创建多个 Disqus API Application 并分别获取 API Key。
+- 我搭建了一个 Disqus API 反代的服务 `https://disqus.skk.moe/disqus/` 供没有能力搭建反代的用户使用，不保证 SLA、缓存 TTL 3 小时。
 
 ## 谁在使用 DisqusJS？
 
@@ -210,6 +233,7 @@ DisqusJS v1.0.0 及之后的版本使用了新的方法加载 DisqusJS，并去�
 - imlonghao: [Imlonghao](https://imlonghao.com/)
 - Yrom Wang: [Yrom's](https://yrom.net/) (Still using DisqusJS v0.2.5)
 - h404bi: [Chawye Hsu's Blog](https://www.h404bi.com/blog/) ([source](https://github.com/h404bi/www.h404bi.com))
+- ysc3839: [YSC's blog](https://blog.ysc3839.com/)
 
 如果你的站点或者个人博客在使用 DisqusJS，来 [把你的网站分享给其他人吧](https://github.com/SukkaW/DisqusJS/issues/12)！
 
