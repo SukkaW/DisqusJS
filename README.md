@@ -194,6 +194,21 @@ DisqusJS v1.0.0 及之后的版本使用了新的方法加载 DisqusJS，并去�
 [Cloudflare Workers](https://www.cloudflare.com/products/cloudflare-workers/) 提供了一个在 Cloudflare 上运行 JavaScript 的平台。在 `workers.dev` 域名上部署可提供每天 `100000` 次免费请求次数额度，在自己的域名上部署提供 `10M` 次免费请求额度（超出收费）。
 [idawnlight/disqusjs-proxy-cloudflare-workers](https://github.com/idawnlight/disqusjs-proxy-cloudflare-workers) 提供了一份使用 Cloudflare Workers 进行反代的样例代码。
 
+### Firebase
+
+[Firebase Cloud Functions](https://firebase.google.com/products/functions/) 提供了执行 Nodejs 代码的 Serverless 平台。但是需要绑定银行卡 (不可使用银联，但可使用中国大陆发行的 Visa 或 MasterCard) 才能开启互联网出站访问功能，如无此条件建议使用别的免费服务商。
+[ysc3839/disqusjs-proxy 的 firebase 分支](https://github.com/ysc3839/disqusjs-proxy/tree/firebase) 提供了一个简单的反向代理代码。
+
+### Netlify
+
+[Netlify](https://www.netlify.com/) 和 ZEIT Now 类似，提供了每月 100GiB 的免费流量，并且可以通过配置文件直接配置反向代理。
+[ysc3839/disqusjs-proxy-netlify](https://github.com/ysc3839/disqusjs-proxy-netlify) 提供了一个使用 Netlify 进行反代的样例配置文件。
+
+### Heroku
+
+[Heroku](https://www.heroku.com/) 是一个支持多种编程语言的 Serverless 平台。
+[ysc3839/disqusjs-proxy](https://github.com/ysc3839/disqusjs-proxy) 可直接部署至 Heroku。
+
 ## 注意
 
 - Disqus API 不支持通过 AJAX 方式调用创建评论或者初始化页面，所以自动初始化页面和创建匿名评论在不搭配专门的后端程序的话不能实现。
@@ -210,6 +225,7 @@ DisqusJS v1.0.0 及之后的版本使用了新的方法加载 DisqusJS，并去�
 - imlonghao: [Imlonghao](https://imlonghao.com/)
 - Yrom Wang: [Yrom's](https://yrom.net/) (Still using DisqusJS v0.2.5)
 - h404bi: [Chawye Hsu's Blog](https://www.h404bi.com/blog/) ([source](https://github.com/h404bi/www.h404bi.com))
+- ysc3839: [YSC's blog](https://blog.ysc3839.com/)
 
 如果你的站点或者个人博客在使用 DisqusJS，来 [把你的网站分享给其他人吧](https://github.com/SukkaW/DisqusJS/issues/12)！
 
