@@ -1,5 +1,5 @@
 /*!
- * DisqusJS | v1.2.5
+ * DisqusJS | v1.2.6
  * Author: SukkaW
  * Link: https://github.com/SukkaW/DisqusJS
  * License: MIT
