@@ -1,66 +1,59 @@
-let gulp = require('gulp');
-let uglify = require('gulp-uglify');
-let babel = require('gulp-babel');
-let autoprefixer = require('gulp-autoprefixer');
-let cleanCSS = require('gulp-clean-css');
-let header = require('gulp-header');
-let pkg = require('./package.json');
-
-var jsBanner = ['/*!',
-    ' * DisqusJS | v<%= pkg.version %>',
-    ' * Author: SukkaW',
-    ' * Link: https://github.com/SukkaW/DisqusJS',
-    ' * License: <%= pkg.license %>',
-    ' */'
-].join('\n');
-
-var cssBanner = ['/*!',
-    ' * DisqusJS - Default Theme | v<%= pkg.version %>',
-    ' * Author: SukkaW',
-    ' * Link: https://github.com/SukkaW/DisqusJS',
-    ' * License: <%= pkg.license %>',
-    ' */'
-].join('\n');
+const gulp = require('gulp');
+const uglify = require('gulp-uglify');
+const babel = require('gulp-babel');
+const autoprefixer = require('gulp-autoprefixer');
+const cleanCSS = require('gulp-clean-css');
+const header = require('gulp-header');
+const pkg = require('./package.json');
 
 
-var configs = {
+const jsBanner = ['/*! DisqusJS v<%= pkg.version %>',
+    'Sukka (https://skk.moe)',
+    'https://disqusjs.skk.moe',
+    '<%= pkg.license %> License */',
+].join(' | ');
+
+const cssBanner = ['/*! DisqusJS - Default Theme | v<%= pkg.version %>',
+    'Sukka (https://skk.moe)',
+    'https://disqusjs.skk.moe',
+    '<%= pkg.license %> License */'
+].join(' | ');
+
+
+const configs = {
     browsers: [
         'last 2 versions',
         'since 2015',
         '> 1%',
-        'Chrome >= 30',
-        'Firefox >= 30',
-        'ie >= 9',
+        'Chrome >= 49',
+        'Firefox >= 44',
+        'ie >= 10',
         'Safari >= 9',
     ],
     cleanCSS: {
-        compatibility: 'ie9'
+        compatibility: 'ie10'
     },
 };
 
-gulp.task('minify-js', () => {
-    return gulp.src('src/**/*.js')
-        .pipe(babel({
-            "presets": [
-                ["@babel/env", {
-                    "targets": configs.browsers
-                }]
-            ]
-        }))
-        .pipe(uglify({
-            keep_fnames: false
-        }))
-        .pipe(header(jsBanner, { pkg: pkg }))
-        .pipe(gulp.dest('dist'));
-});
+gulp.task('minify-js', () => gulp.src('src/**/*.js')
+    .pipe(babel({
+        "presets": [
+            ["@babel/env", {
+                "targets": configs.browsers
+            }]
+        ]
+    }))
+    .pipe(uglify({
+        keep_fnames: false
+    }))
+    .pipe(header(jsBanner, { pkg }))
+    .pipe(gulp.dest('dist')));
 
-gulp.task('minify-css', () => {
-    return gulp.src('src/**/*.css')
-        .pipe(autoprefixer(configs.browsers))
-        .pipe(cleanCSS(configs.cleanCSS))
-        .pipe(header(cssBanner, { pkg: pkg }))
-        .pipe(gulp.dest('dist'));
-});
+gulp.task('minify-css', () => gulp.src('src/**/*.css')
+    .pipe(autoprefixer(configs.browsers))
+    .pipe(cleanCSS(configs.cleanCSS))
+    .pipe(header(cssBanner, { pkg }))
+    .pipe(gulp.dest('dist')));
 
 gulp.task('build', gulp.parallel('minify-js', 'minify-css'));
 

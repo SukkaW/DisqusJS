@@ -97,7 +97,7 @@
     height: 2px;
     background-color: #076dd0 !important;
     position: absolute;
-    bottom: -2px;
+    bottom: -5px;
     left: 0;
     right: 0;
 }
@@ -242,7 +242,10 @@
 #dsqjs footer {
     text-align: right;
     line-height: 1.5;
-    padding-top: 12px;
+    padding-top: 10px;
+    padding-right: 10px;
+    border-top: 2px solid #e7e9ee;
+    margin-top: 12px;
     font-weight: 700;
     font-size: 16px;
     color: #555;
