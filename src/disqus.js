@@ -110,7 +110,7 @@ function DisqusJS(config) {
             /*
             如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并 <a id="dsqjs-reload-disqus" class="dsqjs-msg-btn">尝试完整 Disqus 模式</a> | <a id="dsqjs-force-disqus" class="dsqjs-msg-btn">强制完整 Disqus 模式</a>
             */
-           askForFull: '如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并 <a id="dsqjs-reload-disqus" class="dsqjs-msg-btn">尝试完整 Disqus 模式</a> | <a id="dsqjs-force-disqus" class="dsqjs-msg-btn">强制完整 Disqus 模式</a>'
+            askForFull: '如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并 <a id="dsqjs-reload-disqus" class="dsqjs-msg-btn">尝试完整 Disqus 模式</a> | <a id="dsqjs-force-disqus" class="dsqjs-msg-btn">强制完整 Disqus 模式</a>'
         }
 
         /**
@@ -210,7 +210,7 @@ function DisqusJS(config) {
 
                 // 显示提示信息
                 // Disqus 加载成功以后会把 #disqus_thread 内的内容全部覆盖
-                $$('disqus_thread').innerHTML = `<div id="dsqjs"><section><div id="dsqjs-msg">评论完整模式加载中...如果长时间无法加载，请针对 disq.us | disquscdn.com | disqus.com 启用代理，或切换至 <a id="dsqjs-force-dsqjs" class="dsqjs-msg-btn">评论基础模式</a></div></section>${htmlTpl.footer}`
+                $$('disqus_thread').innerHTML = `<div id="dsqjs"><section><div id="dsqjs-msg">评论完整模式加载中...如果长时间无法加载，请针对 disq.us | disquscdn.com | disqus.com 启用代理，或切换至 <a id="dsqjs-force-dsqjs" class="dsqjs-msg-btn">评论基础模式</a></div></section>${htmlTpl.footer}</div>`
                 $$('dsqjs-force-dsqjs').addEventListener('click', useDsqjs);
 
                 s.src = `https://${disqusjs.config.shortname}.disqus.com/embed.js`;
@@ -703,6 +703,7 @@ function DisqusJS(config) {
             identifier: document.location.origin + document.location.pathname + document.location.search,
             url: document.location.origin + document.location.pathname + document.location.search,
             title: document.title,
+            siteName: '',
             nesting: parseInt(config.nesting) || 4
         }, config);
 
@@ -721,25 +722,36 @@ function DisqusJS(config) {
             this.page.title = disqusjs.config.title;
         };
 
-
-        disqusjs.mode = localStorage.getItem('dsqjs_mode');
-        disqusjs.sortType = localStorage.getItem('dsqjs_sort') || localStorage.getItem('disqus.sort');
-
         // 填充 DisqusJS 的 Container
         $$('disqus_thread').innerHTML = `<div id="dsqjs">${htmlTpl.msg}${htmlTpl.footer}</div>`
 
-        if (!disqusjs.sortType) {
-            setLS('dsqjs_sort', 'desc');
-            disqusjs.sortType = 'desc';
+        function initDsqjs() {
+            disqusjs.mode = localStorage.getItem('dsqjs_mode');
+            disqusjs.sortType = localStorage.getItem('dsqjs_sort') || localStorage.getItem('disqus.sort');
+
+            if (!disqusjs.sortType) {
+                setLS('dsqjs_sort', 'desc');
+                disqusjs.sortType = 'desc';
+            }
+            if (disqusjs.mode === 'disqus') {
+                loadDisqus();
+            } else if (disqusjs.mode === 'dsqjs') {
+                loadDsqjs();
+            } else {
+                // 没有在 localStorage 中找到 disqusjs_mode 相关内容，开始检查访客的 Disqus 可用性
+                // 也作为不支持 localStorage 的浏览器的 fallback
+                checkDisqus();
+            }
         }
-        if (disqusjs.mode === 'disqus') {
-            loadDisqus();
-        } else if (disqusjs.mode === 'dsqjs') {
-            loadDsqjs();
+
+        // 引入 Fetch 以后，一堆浏览器将不再被支持，所以加个判断，劝退一些浏览器
+        if (!fetch || !localStorage) {
+            msg('你的浏览器不兼容评论基础模式。' + htmlTpl.askForFull);
+
+            $$('dsqjs-reload-disqus').addEventListener('click', checkDisqus);
+            $$('dsqjs-force-disqus').addEventListener('click', useDsqjs);
         } else {
-            // 没有在 localStorage 中找到 disqusjs_mode 相关内容，开始检查访客的 Disqus 可用性
-            // 也作为不支持 localStorage 的浏览器的 fallback
-            checkDisqus();
+            initDsqjs();
         }
     })(window, document, localStorage);
 }
