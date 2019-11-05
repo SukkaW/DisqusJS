@@ -39,7 +39,8 @@ gulp.task('minify-js', () => gulp.src('src/**/*.js')
     .pipe(babel({
         "presets": [
             ["@babel/env", {
-                "targets": configs.browsers
+                "targets": configs.browsers,
+                "loose": true
             }]
         ]
     }))

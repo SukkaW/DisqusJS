@@ -1,4 +1,4 @@
-/*
+/**
  * The variable used in DisqusJS
  *
  * DisqusJS Mode
@@ -13,6 +13,8 @@
  * @param {string} disqusjs.config.url - The url of the page
  * @param {string} disqusjs.config.api - Where to get data
  * @param {string} disqusjs.config.apikey - The apikey used to request Disqus API
+ * @param {number} disqusjs.config.nesting - The max nesting level of Disqus comment
+ * @param {string} disqusjs.config.nocomment - The msg when there is no comment
  * @param {string} disqusjs.config.admin - The disqus forum admin username
  * @param {string} disqusjs.config.adminLabel - The disqus moderator badge text
  *
@@ -290,7 +292,7 @@ function DisqusJS(config) {
 
                         // 获取评论列表
                         getComment()
-                    } else if (code === 0 && response.length !== 1) {
+                    } else if (data.code === 0 && data.response.length !== 1) {
                         // 当前页面可能还未初始化（需要创建 thread）
                         // Disqus API 的 threads/create 需要在服务端发起请求，不支持 AJAX Call
                         msg('该 Thread 并没有初始化，是否切换至 <a id="dsqjs-force-disqus" class="dsqjs-msg-btn">完整 Disqus 模式</a> 进行初始化？')
@@ -441,13 +443,13 @@ function DisqusJS(config) {
                     } else if (data.code === 0 && data.response.length === 0) {
                         // 当前没有评论，显示提示信息
                         msg(`你可能无法访问 Disqus，已启用评论基础模式。${htmlTpl.askForFull}`)
-                        $$('dsqjs-post-container').innerHTML = '<p class="dsqjs-no-comment" >这里冷冷清清的，一条评论都没有</p>'
+                        $$('dsqjs-post-container').innerHTML = `<p class="dsqjs-no-comment" >${disqusjs.config.nocomment}</p>`
                         $$('dsqjs-reload-disqus').addEventListener('click', checkDisqus);
                         $$('dsqjs-force-disqus').addEventListener('click', useDsqjs);
                     } else {
                         throw new Error;
                     }
-                }).catch(getCommentError)
+                }).catch(getCommentError);
             }
 
             /*
@@ -550,9 +552,9 @@ function DisqusJS(config) {
                 const removeDisqUs = (msg) => {
                     const el = document.createElement('div');
                     el.innerHTML = msg;
-                    const aTag = div.getElementsByTagName('a');
+                    const aTag = el.getElementsByTagName('a');
                     for (const i of aTag) {
-                        const link = decodeURIComponent(a.href.replace(/https:\/\/disq.us\/url\?url=/g, '')).replace(/(.*):.+cuid=.*/, '$1');
+                        const link = decodeURIComponent(i.href.replace(/https:\/\/disq.us\/url\?url=/g, '')).replace(/(.*):.+cuid=.*/, '$1');
 
                         i.href = link;
                         i.innerHTML = link;
@@ -648,7 +650,8 @@ function DisqusJS(config) {
         /*
          * loadError() - 评论基础模式加载出现错误
          */
-        function loadError() {
+        function loadError(err) {
+            console.log(err);
             msg('评论基础模式加载失败，是否 <a id="dsqjs-reload-dsqjs" class="dsqjs-msg-btn">重载</a> 或 <a id="dsqjs-reload-disqus" class="dsqjs-msg-btn">尝试完整 Disqus 模式</a> ？')
             $$('dsqjs-reload-dsqjs').addEventListener('click', loadDsqjs);
             $$('dsqjs-reload-disqus').addEventListener('click', checkDisqus);
@@ -676,7 +679,8 @@ function DisqusJS(config) {
             url: document.location.origin + document.location.pathname + document.location.search,
             title: document.title,
             siteName: '',
-            nesting: parseInt(config.nesting) || 4
+            nesting: parseInt(config.nesting) || 4,
+            nocomment: '这里冷冷清清的，一条评论都没有'
         }, config);
 
         // 定义 disqusjs.page，之后会填充 thread id、title 等数据
