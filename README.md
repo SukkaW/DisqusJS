@@ -66,10 +66,6 @@ import 'disqusjs/dist/disqusjs.css'
 import DisqusJS from 'disqusjs'
 ```
 
-```js
-
-```
-
 ### 使用
 
 创建一个 DisqusJS 的容器：
