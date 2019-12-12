@@ -66,14 +66,21 @@ function DisqusJS(config) {
          * footer: 尾部信息模板
          */
         const htmlTpl = {
+            /*
+            target="_blank" rel="external nofollow noopener noreferrer"
+             */
+            aAttr: `target="_blank" rel="external nofollow noopener noreferrer"`,
+            /*
+            <div id="dsqjs-msg"></div>
+             */
             msg: `<div id="dsqjs-msg"></div>`,
             /*
             <footer>
-                <p class="dsqjs-footer">Powered by <a class="dsqjs-disqus-logo" href="https://disqus.com" rel="nofollow noopener noreferrer" target="_blank"></a>&nbsp;&amp;&nbsp;<a href="https://disqusjs.skk.moe" target="_blank">DisqusJS</a>
+                <p class="dsqjs-footer">Powered by <a class="dsqjs-disqus-logo" href="https://disqus.com" ${htmlTpl.aAttr}></a>&nbsp;&amp;&nbsp;<a href="https://disqusjs.skk.moe" target="_blank">DisqusJS</a>
                 </p>
             </footer>
              */
-            footer: `<footer><p class="dsqjs-footer">Powered by <a class="dsqjs-disqus-logo" href="https://disqus.com" rel="nofollow noopener noreferrer" target="_blank"></a>&nbsp;&amp;&nbsp;<a href="https://disqusjs.skk.moe" target="_blank">DisqusJS</a></p></footer>`,
+            footer: `<footer><p class="dsqjs-footer">Powered by <a class="dsqjs-disqus-logo" href="https://disqus.com" ${htmlTpl.aAttr}></a>&nbsp;&amp;&nbsp;<a href="https://disqusjs.skk.moe" target="_blank">DisqusJS</a></p></footer>`,
             /*
             <header class="dsqjs-header" id="dsqjs-header">
                 <nav class="dsqjs-nav dsqjs-clearfix">
@@ -520,16 +527,16 @@ function DisqusJS(config) {
                     if (data.comment.author.profileUrl) {
                         /*
                         Avatar Element
-                        <a href="${data.comment.author.profileUrl}">
+                        <a href="${data.comment.author.profileUrl}" ${htmlTpl.aAttr}>
                             <img src="${data.comment.author.avatar.cache}">
                         </a>
                         Author Element
                         <span class="dsqjs-post-author">
-                            <a href="${data.comment.author.profileUrl}" target="_blank" rel="nofollow noopener noreferrer">${data.comment.author.name}</a>
+                            <a href="${data.comment.author.profileUrl}" ${htmlTpl.aAttr}>${data.comment.author.name}</a>
                         </span>
                         */
-                        data.comment.avatarEl = `<a href="${data.comment.author.profileUrl}"><img src="${replaceDisquscdn(data.comment.author.avatar.cache)}"></a>`
-                        data.comment.authorEl = `<span class="dsqjs-post-author"><a href="${data.comment.author.profileUrl}" target="_blank" rel="nofollow noopener noreferrer">${data.comment.author.name}</a></span>`
+                        data.comment.avatarEl = `<a href="${data.comment.author.profileUrl}"><img src="${replaceDisquscdn(data.comment.author.avatar.cache)}" ${htmlTpl.aAttr}></a>`
+                        data.comment.authorEl = `<span class="dsqjs-post-author"><a href="${data.comment.author.profileUrl}" ${htmlTpl.aAttr}>${data.comment.author.name}</a></span>`
                     } else {
                         data.comment.avatarEl = `<img src="${replaceDisquscdn(data.comment.author.avatar.cache)}">`
                         data.comment.authorEl = `<span class="dsqjs-post-author">${data.comment.author.name}</span>`
