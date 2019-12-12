@@ -528,10 +528,10 @@ function DisqusJS(config) {
                             <a href="${data.comment.author.profileUrl}" target="_blank" rel="nofollow noopener noreferrer">${data.comment.author.name}</a>
                         </span>
                         */
-                        data.comment.avatarEl = `<a href="${data.comment.author.profileUrl}"><img src="${data.comment.author.avatar.cache}"></a>`
+                        data.comment.avatarEl = `<a href="${data.comment.author.profileUrl}"><img src="${replaceDisquscdn(data.comment.author.avatar.cache)}"></a>`
                         data.comment.authorEl = `<span class="dsqjs-post-author"><a href="${data.comment.author.profileUrl}" target="_blank" rel="nofollow noopener noreferrer">${data.comment.author.name}</a></span>`
                     } else {
-                        data.comment.avatarEl = `<img src="${data.comment.author.avatar.cache}">`
+                        data.comment.avatarEl = `<img src="${replaceDisquscdn(data.comment.author.avatar.cache)}">`
                         data.comment.authorEl = `<span class="dsqjs-post-author">${data.comment.author.name}</span>`
                     }
 
@@ -544,7 +544,7 @@ function DisqusJS(config) {
                     return data;
                 }
 
-                /*
+                /**
                  * removeDisqUs(msg) - 将 comment 中的短链接 disq.us 去除
                  * @param {string} msg - 评论信息
                  * @return {string} msg - 经过处理的评论信息
@@ -565,6 +565,13 @@ function DisqusJS(config) {
                     return el.innerHTML;
                 }
 
+                /**
+                 * replaceDisquscdn(str) - 将 a.disquscdn.com 替换为 c.disquscdn.com
+                 * @param {string} str - 字符串
+                 * @return {string} - 替换后的字符串
+                 */
+                const replaceDisquscdn = (str) => str.replace('/a.disquscdn.com/ig', 'c.disquscdn.com');
+
                 const renderPostItem = (s) => {
                     let authorEl = '';
                     let message = '';
@@ -572,7 +579,7 @@ function DisqusJS(config) {
                         message = `<small>此评论已被删除</small>`;
                     } else {
                         authorEl = `${s.authorEl}<span class="dsqjs-bullet"></span>`;
-                        message = removeDisqUs(s.message);
+                        message = removeDisqUs(replaceDisquscdn(s.message));
                     }
 
                     return htmlTpl.comment(s, authorEl, message)
