@@ -27,7 +27,7 @@
 
 
 function DisqusJS(config) {
-    ((window, document, localStorage, fetch) => {
+    ((window, document, localStorage, fetch, Promise) => {
         // 封装一下基于 Object.asign 的方法
         function _extends(...args) {
             _extends = Object.assign || function (target) {
@@ -53,6 +53,11 @@ function DisqusJS(config) {
             const msgEl = $$('dsqjs-msg');
             if (msgEl) msgEl.innerHTML = str;
         }
+
+        // 定义一些常量
+        const CLICK = 'click';
+        const DISQUS_CONTAINER_EL_ID = 'disqus_thread';
+        const DSQJS_STORAGE_KEY_SORT_TYPE = 'dsqjs_sort'
 
         /**
          * htmlTpl - DisqusJS 的 HTML 模板片段
@@ -180,8 +185,8 @@ function DisqusJS(config) {
 
                 // 显示提示信息
                 // Disqus 加载成功以后会把 #disqus_thread 内的内容全部覆盖
-                $$('disqus_thread').innerHTML = `<div id="dsqjs"><section><div id="dsqjs-msg">评论完整模式加载中...如果长时间无法加载，请针对 disq.us | disquscdn.com | disqus.com 启用代理，或切换至 <a id="dsqjs-force-dsqjs" class="dsqjs-msg-btn">评论基础模式</a></div></section>${HTML_TPL_EL_FOOTER}</div>`
-                $$('dsqjs-force-dsqjs').addEventListener('click', useDsqjs);
+                $$(DISQUS_CONTAINER_EL_ID).innerHTML = `<div id="dsqjs"><section><div id="dsqjs-msg">评论完整模式加载中... 如果长时间无法加载，请针对 disq.us | disquscdn.com | disqus.com 启用代理，或切换至 <a id="dsqjs-force-dsqjs" class="dsqjs-msg-btn">评论基础模式</a></div></section>${HTML_TPL_EL_FOOTER}</div>`
+                $$('dsqjs-force-dsqjs').addEventListener(CLICK, useDsqjs);
 
                 s.src = `https://${disqusjs.config.shortname}.disqus.com/embed.js`;
                 s.setAttribute('data-timestamp', +new Date());
@@ -190,7 +195,7 @@ function DisqusJS(config) {
         }
 
         function checkDisqus() {
-            $$('disqus_thread').innerHTML = `<div id="dsqjs"><section><div id="dsqjs-msg">正在检查 Disqus 能否访问...</div></section>${HTML_TPL_EL_FOOTER}</div>`;
+            $$(DISQUS_CONTAINER_EL_ID).innerHTML = `<div id="dsqjs"><section><div id="dsqjs-msg">正在检查 Disqus 能否访问...</div></section>${HTML_TPL_EL_FOOTER}</div>`;
 
             // 测试 Disqus 的域名
             // *.disquscdn.com 没有被墙所以不做检查
@@ -200,12 +205,12 @@ function DisqusJS(config) {
             let success = 0;
 
             const checker = () => {
-                // 测试域名数量 ==== 测试次数 === 成功次数
-                // 如果 truw 则认定可以 Disqus 可以连通
                 if (domain.length === test && test === success) {
-                    useDsqjs()
-                    // 否则认为 Disqus 无法连通
+                    // 测试域名数量 ==== 测试次数 === 成功次数
+                    // 如果 true 则认定可以 Disqus 可以连通
+                    useDisqus()
                 } else if (domain.length === test) {
+                    // 否则认为 Disqus 无法连通
                     useDsqjs()
                 }
                 // 如果测试域名数量不等于测试次数则说明测试还没有完成，不执行任何操作
@@ -233,7 +238,7 @@ function DisqusJS(config) {
                     checker()
                 }
 
-                img.src = `https://${domain}/favicon.ico?${+(new Date)}`
+                img.src = `https://${domain}/favicon.ico?${+(new Date)}=${+(new Date)}`
             }
 
             for (const i of domain) {
@@ -242,13 +247,13 @@ function DisqusJS(config) {
         }
 
         function assignClickEventForAskForFulButton() {
-            $$('dsqjs-reload-disqus').addEventListener('click', checkDisqus);
-            $$('dsqjs-force-disqus').addEventListener('click', useDisqus);
+            $$('dsqjs-reload-disqus').addEventListener(CLICK, checkDisqus);
+            $$('dsqjs-force-disqus').addEventListener(CLICK, useDisqus);
         }
 
         function loadDsqjs() {
             // DisqusJS 加载中信息
-            msg(`评论基础模式加载中。${HTML_TPL_EL_ASK_FOR_FULL}`)
+            msg(`评论基础模式加载中... ${HTML_TPL_EL_ASK_FOR_FULL}`)
             assignClickEventForAskForFulButton();
 
             /*
@@ -262,17 +267,11 @@ function DisqusJS(config) {
 
             _get(url).then(({ data }) => {
                 if (data.code === 0 && data.response.length === 1) {
-                    const resp = data.response[0];
-                    disqusjs.page = {
-                        id: resp.id,
-                        title: resp.title,
-                        isClosed: resp.isClosed,
-                        length: resp.posts,
-                        comment: []
-                    };
+                    const { id, title, isClosed, posts: length } = data.response[0];
+                    disqusjs.page = { id, title, isClosed, length, comment: [] };
 
                     // 在 #disqus_thread 中填充 DisqusJS Container
-                    $$('disqus_thread').innerHTML = `<div id="dsqjs"><div id="dsqjs-msg">评论基础模式加载中。${HTML_TPL_EL_ASK_FOR_FULL}</div>${HTML_TPL_EL_HEADER(resp.posts, disqusjs.config.siteName)}<section class="dsqjs-post-container"><ul class="dsqjs-post-list" id="dsqjs-post-container"><p class="dsqjs-no-comment">评论列表加载中...</p></ul><a id="dsqjs-load-more" class="dsqjs-load-more dsqjs-hide">加载更多评论</a></section>${HTML_TPL_EL_FOOTER}</div>`;
+                    $$(DISQUS_CONTAINER_EL_ID).innerHTML = `<div id="dsqjs"><div id="dsqjs-msg">评论基础模式加载中... ${HTML_TPL_EL_ASK_FOR_FULL}</div>${HTML_TPL_EL_HEADER(resp.posts, disqusjs.config.siteName)}<section class="dsqjs-post-container"><ul class="dsqjs-post-list" id="dsqjs-post-container"><p class="dsqjs-no-comment">评论列表加载中...</p></ul><a id="dsqjs-load-more" class="dsqjs-load-more dsqjs-hide">加载更多评论</a></section>${HTML_TPL_EL_FOOTER}</div>`;
 
                     assignClickEventForAskForFulButton();
 
@@ -284,7 +283,7 @@ function DisqusJS(config) {
                     // 当前页面可能还未初始化（需要创建 thread）
                     // Disqus API 的 threads/create 需要在服务端发起请求，不支持 AJAX Call
                     msg('当前 Thread 尚未创建。是否切换至 <a id="dsqjs-force-disqus" class="dsqjs-msg-btn">完整 Disqus 模式</a>？')
-                    $$('dsqjs-force-disqus').addEventListener('click', useDisqus);
+                    $$('dsqjs-force-disqus').addEventListener(CLICK, useDisqus);
                 } else {
                     throw new Error;
                 }
@@ -300,20 +299,20 @@ function DisqusJS(config) {
                 const $orderRadio = document.getElementsByClassName('dsqjs-order-radio');
                 const $loadHideCommentInDisqus = document.getElementsByClassName('dsqjs-has-more-btn');
 
-                const unregisterListener = () => {
+                const unregisterListenerForSwitchTypeRadioAndGetMoreCommentBtn = () => {
                     // 为按钮们取消事件，避免重复绑定
                     // 重新 getComment() 时会重新绑定
                     for (const i of $orderRadio) {
                         i.removeEventListener('change', switchSortType);
                     };
-                    $loadMoreBtn.removeEventListener('click', getMoreComment);
+                    $loadMoreBtn.removeEventListener(CLICK, getMoreComment);
                     for (const i of $loadHideCommentInDisqus) {
-                        i.removeEventListener('click', checkDisqus);
+                        i.removeEventListener(CLICK, checkDisqus);
                     };
                 }
 
                 const getMoreComment = () => {
-                    unregisterListener();
+                    unregisterListenerForSwitchTypeRadioAndGetMoreCommentBtn();
                     // 加载下一页评论
                     getComment(disqusjs.page.next);
                 }
@@ -326,7 +325,7 @@ function DisqusJS(config) {
                         // 在按钮上显示提示信息
                         $loadMoreBtn.innerHTML = '加载更多评论失败，点击重试';
                         // 重新在按钮上绑定 加载更多按钮
-                        $loadMoreBtn.addEventListener('click', getMoreComment);
+                        $loadMoreBtn.addEventListener(CLICK, getMoreComment);
                     }
                 };
 
@@ -335,8 +334,8 @@ function DisqusJS(config) {
                     // 通过 event.target 获取被选中的按钮
                     disqusjs.sortType = target.getAttribute('value');
                     // 将结果在 localStorage 中持久化
-                    setLS('dsqjs_sort', disqusjs.sortType);
-                    unregisterListener();
+                    setLS(DSQJS_STORAGE_KEY_SORT_TYPE, disqusjs.sortType);
+                    unregisterListenerForSwitchTypeRadioAndGetMoreCommentBtn();
 
                     // 清空评论列表和其它参数
                     disqusjs.page.comment = [];
@@ -377,15 +376,12 @@ function DisqusJS(config) {
                  * 每次加载翻页评论的时候合并数据并进行重排序
                  * 用户切换排序方式的时候直接取出进行重新渲染
                  */
-
-                const sortComment = {
-                    parseDate: ({ createdAt }) => Date.parse(new Date(createdAt)),
-                    parentAsc: (a, b) => {
-                        if (a.parent && b.parent) {
-                            return sortComment.parseDate(a) - sortComment.parseDate(b);
-                        } else {
-                            return 0;
-                        }
+                const sortCommentParseDate = ({ createdAt }) => Date.parse(new Date(createdAt));
+                const sortCommentparentAsc = (a, b) => {
+                    if (a.parent && b.parent) {
+                        return sortCommentParseDate(a) - sortCommentParseDate(b);
+                    } else {
+                        return 0;
                     }
                 };
 
@@ -400,7 +396,7 @@ function DisqusJS(config) {
                         disqusjs.page.comment.push(...data.response)
 
                         // 将所有的子评论进行降序排列
-                        disqusjs.page.comment.sort(sortComment.parentAsc);
+                        disqusjs.page.comment.sort(sortCommentparentAsc);
 
                         // 用当前页面的所有评论数据进行渲染
                         renderComment(disqusjs.page.comment);
@@ -411,7 +407,7 @@ function DisqusJS(config) {
                         }
 
                         for (const i of $loadHideCommentInDisqus) {
-                            i.addEventListener('click', checkDisqus);
+                            i.addEventListener(CLICK, checkDisqus);
                         };
 
                         if (data.cursor.hasNext) {
@@ -421,7 +417,7 @@ function DisqusJS(config) {
                             $loadMoreBtn.innerHTML = '加载更多评论'
                             // 显示 加载更多评论 按钮
                             $loadMoreBtn.classList.remove('dsqjs-hide');
-                            $loadMoreBtn.addEventListener('click', getMoreComment);
+                            $loadMoreBtn.addEventListener(CLICK, getMoreComment);
                         } else {
                             // 没有更多评论了，确保按钮隐藏
                             $loadMoreBtn.classList.add('dsqjs-hide');
@@ -433,7 +429,7 @@ function DisqusJS(config) {
 
                         assignClickEventForAskForFulButton();
 
-                        $$('dsqjs-force-disqus').addEventListener('click', useDsqjs);
+                        $$('dsqjs-force-disqus').addEventListener(CLICK, useDsqjs);
                     } else {
                         throw new Error;
                     }
@@ -646,8 +642,8 @@ function DisqusJS(config) {
             console.log(err);
             msg('评论基础模式加载失败，是否 <a id="dsqjs-reload-dsqjs" class="dsqjs-msg-btn">重载</a> 或 <a id="dsqjs-reload-disqus" class="dsqjs-msg-btn">尝试完整 Disqus 模式</a> ？');
 
-            $$('dsqjs-reload-dsqjs').addEventListener('click', loadDsqjs);
-            $$('dsqjs-reload-disqus').addEventListener('click', checkDisqus);
+            $$('dsqjs-reload-dsqjs').addEventListener(CLICK, loadDsqjs);
+            $$('dsqjs-reload-disqus').addEventListener(CLICK, checkDisqus);
         }
 
         /*
@@ -666,10 +662,11 @@ function DisqusJS(config) {
 
         const disqusjs = {};
 
+        const currentPageFullUrl = document.location.origin + document.location.pathname + document.location.search;
         disqusjs.config = _extends({
             api: 'https://disqus.skk.moe/disqus/',
-            identifier: document.location.origin + document.location.pathname + document.location.search,
-            url: document.location.origin + document.location.pathname + document.location.search,
+            identifier: currentPageFullUrl,
+            url: currentPageFullUrl,
             title: document.title,
             siteName: '',
             nesting: parseInt(config.nesting) || 4,
@@ -677,10 +674,11 @@ function DisqusJS(config) {
         }, config);
 
         // 定义 disqusjs.page，之后会填充 thread id、title 等数据
-        disqusjs.page = [];
+        disqusjs.page = {};
 
         // 通过 用户配置的 apikey 来判断是否需要使用随机取值
-        const apikey = () => (Array.isArray(disqusjs.config.apikey)) ? disqusjs.config.apikey[Math.floor(Math.random() * disqusjs.config.apikey.length)] : disqusjs.config.apikey;
+        const disqusJsApiKeys = disqusjs.config.apikey;
+        const apikey = () => (Array.isArray(disqusJsApiKeys)) ? disqusJsApiKeys[Math.floor(Math.random() * disqusJsApiKeys.length)] : disqusJsApiKeys;
 
         /*
          * window.disqus_config - 从 disqusjs.config 获取 Disqus 所需的配置
@@ -692,14 +690,14 @@ function DisqusJS(config) {
         };
 
         // 填充 DisqusJS 的 Container
-        $$('disqus_thread').innerHTML = `<div id="dsqjs">${HTML_TPL_EL_MSG}${HTML_TPL_EL_FOOTER}</div>`
+        $$(DISQUS_CONTAINER_EL_ID).innerHTML = `<div id="dsqjs">${HTML_TPL_EL_MSG}${HTML_TPL_EL_FOOTER}</div>`
 
         function initDsqjs() {
             disqusjs.mode = localStorage.getItem('dsqjs_mode');
-            disqusjs.sortType = localStorage.getItem('dsqjs_sort') || localStorage.getItem('disqus.sort');
+            disqusjs.sortType = localStorage.getItem(DSQJS_STORAGE_KEY_SORT_TYPE) || localStorage.getItem('disqus.sort');
 
             if (!disqusjs.sortType) {
-                setLS('dsqjs_sort', 'desc');
+                setLS(DSQJS_STORAGE_KEY_SORT_TYPE, 'desc');
                 disqusjs.sortType = 'desc';
             }
             if (disqusjs.mode === 'disqus') {
@@ -714,14 +712,13 @@ function DisqusJS(config) {
         }
 
         // 引入 Fetch 以后，一堆浏览器将不再被支持，所以加个判断，劝退一些浏览器
-        if (!fetch || !localStorage) {
+        if (!fetch || !localStorage || !Promise) {
             msg(`你的浏览器版本过低，不兼容评论基础模式。${HTML_TPL_EL_ASK_FOR_FULL}`);
-
             assignClickEventForAskForFulButton();
         } else {
             initDsqjs();
         }
-    })(window, document, localStorage, fetch);
+    })(window, document, localStorage, fetch, Promise);
 }
 
 // CommonJS 模块
