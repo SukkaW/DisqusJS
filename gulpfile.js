@@ -20,27 +20,31 @@ const cssBanner = ['/*! DisqusJS - Default Theme | v<%= pkg.version %>',
 ].join(' | ');
 
 
+const browserslist = [
+    'last 3 versions',
+    'since 2016',
+    '> 1%',
+    'Chrome >= 49',
+    'Firefox >= 50',
+    'ie >= 11',
+    'Safari >= 9',
+]
+
 const configs = {
-    browsers: [
-        'last 2 versions',
-        'since 2015',
-        '> 1%',
-        'Chrome >= 49',
-        'Firefox >= 44',
-        'ie >= 10',
-        'Safari >= 9',
-    ],
+    autoprefixer: {
+        overrideBrowserslist: browserslist
+    },
     cleanCSS: {
-        compatibility: 'ie10'
+        compatibility: 'ie11'
     },
 };
 
 gulp.task('minify-js', () => gulp.src('src/**/*.js')
     .pipe(babel({
-        "presets": [
-            ["@babel/env", {
-                "targets": configs.browsers,
-                "loose": true
+        'presets': [
+            ['@babel/env', {
+                'targets': browserslist,
+                'loose': true
             }]
         ]
     }))
@@ -51,7 +55,7 @@ gulp.task('minify-js', () => gulp.src('src/**/*.js')
     .pipe(gulp.dest('dist')));
 
 gulp.task('minify-css', () => gulp.src('src/**/*.css')
-    .pipe(autoprefixer(configs.browsers))
+    .pipe(autoprefixer(configs.autoprefixer))
     .pipe(cleanCSS(configs.cleanCSS))
     .pipe(header(cssBanner, { pkg }))
     .pipe(gulp.dest('dist')));

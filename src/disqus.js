@@ -271,7 +271,7 @@ function DisqusJS(config) {
                     disqusjs.page = { id, title, isClosed, length, comment: [] };
 
                     // 在 #disqus_thread 中填充 DisqusJS Container
-                    $$(DISQUS_CONTAINER_EL_ID).innerHTML = `<div id="dsqjs"><div id="dsqjs-msg">评论基础模式加载中... ${HTML_TPL_EL_ASK_FOR_FULL}</div>${HTML_TPL_EL_HEADER(resp.posts, disqusjs.config.siteName)}<section class="dsqjs-post-container"><ul class="dsqjs-post-list" id="dsqjs-post-container"><p class="dsqjs-no-comment">评论列表加载中...</p></ul><a id="dsqjs-load-more" class="dsqjs-load-more dsqjs-hide">加载更多评论</a></section>${HTML_TPL_EL_FOOTER}</div>`;
+                    $$(DISQUS_CONTAINER_EL_ID).innerHTML = `<div id="dsqjs"><div id="dsqjs-msg">评论基础模式加载中... ${HTML_TPL_EL_ASK_FOR_FULL}</div>${HTML_TPL_EL_HEADER(length, disqusjs.config.siteName)}<section class="dsqjs-post-container"><ul class="dsqjs-post-list" id="dsqjs-post-container"><p class="dsqjs-no-comment">评论列表加载中...</p></ul><a id="dsqjs-load-more" class="dsqjs-load-more dsqjs-hide">加载更多评论</a></section>${HTML_TPL_EL_FOOTER}</div>`;
 
                     assignClickEventForAskForFulButton();
 
