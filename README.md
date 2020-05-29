@@ -50,7 +50,7 @@
 
 <!-- jsDelivr -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/disqusjs@1.3/dist/disqusjs.css">
-<script src="https://cdn.jsdelivr.net/npm/disqusjs@1.3dist/disqus.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/disqusjs@1.3/dist/disqus.js"></script>
 ```
 
 DisqusJS 从 v1.3.0 版本开始使用 Fetch API 代替 XMLHttpRequest，因此不再兼容低于 IE 11 的老旧浏览器。这些浏览器将会收到如下提示：
