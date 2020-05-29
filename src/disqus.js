@@ -27,27 +27,22 @@
 
 
 function DisqusJS(config) {
-    // 封装一下基于 Object.asign 的方法
-    function _extends(...args) {
-        _extends = Object.assign || function (target) {
-            for (const source of arguments) {
-                for (const key in source) {
-                    if (Object.prototype.hasOwnProperty.call(source, key)) {
-                        target[key] = source[key];
+    ((window, document, localStorage, fetch) => {
+        // 封装一下基于 Object.asign 的方法
+        function _extends(...args) {
+            _extends = Object.assign || function (target) {
+                for (const source of arguments) {
+                    for (const key in source) {
+                        if (Object.prototype.hasOwnProperty.call(source, key)) {
+                            target[key] = source[key];
+                        }
                     }
                 }
+                return target;
             }
-            return target;
-        }
-        return _extends.apply(this, args);
-    }
+            return _extends.apply(this, args);
+        };
 
-    // Array.isArray 的 Polyfill
-    if (!Array.isArray) {
-        Array.isArray = (arg) => Object.prototype.toString.call(arg) === '[object Array]';
-    }
-
-    ((window, document, localStorage, fetch) => {
         const $$ = (elementID) => document.getElementById(elementID);
         /**
          * msg - 提示信息
@@ -65,62 +60,46 @@ function DisqusJS(config) {
          * msg: DisqusJS 提示信息模板
          * footer: 尾部信息模板
          */
-        const htmlTpl = {
-            /*
-            target="_blank" rel="external nofollow noopener noreferrer"
-             */
-            aAttr: `target="_blank" rel="external nofollow noopener noreferrer"`,
-            /*
-            <div id="dsqjs-msg"></div>
-             */
-            msg: `<div id="dsqjs-msg"></div>`,
-            /*
-            <footer>
-                <p class="dsqjs-footer">Powered by <a class="dsqjs-disqus-logo" href="https://disqus.com" ${htmlTpl.aAttr}></a>&nbsp;&amp;&nbsp;<a href="https://disqusjs.skk.moe" target="_blank">DisqusJS</a>
-                </p>
-            </footer>
-             */
-            footer: `<footer><p class="dsqjs-footer">Powered by <a class="dsqjs-disqus-logo" href="https://disqus.com" ${htmlTpl.aAttr}></a>&nbsp;&amp;&nbsp;<a href="https://disqusjs.skk.moe" target="_blank">DisqusJS</a></p></footer>`,
-            /*
-            <header class="dsqjs-header" id="dsqjs-header">
-                <nav class="dsqjs-nav dsqjs-clearfix">
-                    <ul>
-                        <li class="dsqjs-nav-tab dsqjs-tab-active"><span>${num} Comments</span></li>
-                        <li class="dsqjs-nav-tab">${title}</li>
-                    </ul>
-                    <div class="dsqjs-order">
-                        <input class="dsqjs-order-radio" id="dsqjs-order-desc" type="radio" name="comment-order" value="desc" checked="true">
-                        <label class="dsqjs-order-label" for="dsqjs-order-desc" title="按从新到旧">最新</label>
-                        <input class="dsqjs-order-radio" id="dsqjs-order-asc" type="radio" name="comment-order" value="asc">
-                        <label class="dsqjs-order-label" for="dsqjs-order-asc" title="按从旧到新">最早</label>
-                        <input class="dsqjs-order-radio" id="dsqjs-order-popular" type="radio" name="comment-order" value="popular">
-                        <label class="dsqjs-order-label" for="dsqjs-order-popular" title="按评分从高到低">最佳</label></div>
-                    </nav>
-            </header>
-            */
-            header: (num, title) => `<header class="dsqjs-header" id="dsqjs-header"><nav class="dsqjs-nav dsqjs-clearfix"><ul><li class="dsqjs-nav-tab dsqjs-tab-active"><span>${num} Comments</span></li><li class="dsqjs-nav-tab">${title}</li></ul><div class="dsqjs-order"><input class="dsqjs-order-radio" id="dsqjs-order-desc" type="radio" name="comment-order" value="desc" checked="true"><label class="dsqjs-order-label" for="dsqjs-order-desc" title="按从新到旧">最新</label><input class="dsqjs-order-radio" id="dsqjs-order-asc" type="radio" name="comment-order" value="asc"><label class="dsqjs-order-label" for="dsqjs-order-asc" title="按从旧到新">最早</label><input class="dsqjs-order-radio" id="dsqjs-order-popular" type="radio" name="comment-order" value="popular"><label class="dsqjs-order-label" for="dsqjs-order-popular" title="按评分从高到低">最佳</label></div></nav></header>`,
-            /*
-            <div class="dsqjs-post-item dsqjs-clearfix">
-                <div class="dsqjs-post-avatar">
-                    ${s.avatarEl}
+
+        /*
+        target="_blank" rel="external nofollow noopener noreferrer"
+         */
+        const HTML_TPL_A_ATTR = `target="_blank" rel="external nofollow noopener noreferrer"`;
+        /*
+        <div id="dsqjs-msg"></div>
+        */
+        const HTML_TPL_EL_MSG = `<div id="dsqjs-msg"></div>`;
+        /*
+        <footer>
+            <p class="dsqjs-footer">Powered by <a class="dsqjs-disqus-logo" href="https://disqus.com" ${HTML_TPL_A_ATTR}></a>&nbsp;&amp;&nbsp;<a href="https://disqusjs.skk.moe" target="_blank">DisqusJS</a>
+            </p>
+        </footer>
+        */
+        const HTML_TPL_EL_FOOTER = `<footer><p class="dsqjs-footer">Powered by <a class="dsqjs-disqus-logo" href="https://disqus.com" ${HTML_TPL_A_ATTR}></a>&nbsp;&amp;&nbsp;<a href="https://disqusjs.skk.moe" target="_blank">DisqusJS</a></p></footer>`;
+
+        /*
+        <header class="dsqjs-header" id="dsqjs-header">
+            <nav class="dsqjs-nav dsqjs-clearfix">
+                <ul>
+                    <li class="dsqjs-nav-tab dsqjs-tab-active"><span>${num} Comments</span></li>
+                    <li class="dsqjs-nav-tab">${title}</li>
+                </ul>
+                <div class="dsqjs-order">
+                    <input class="dsqjs-order-radio" id="dsqjs-order-desc" type="radio" name="comment-order" value="desc" checked="true">
+                    <label class="dsqjs-order-label" for="dsqjs-order-desc" title="按从新到旧">最新</label>
+                    <input class="dsqjs-order-radio" id="dsqjs-order-asc" type="radio" name="comment-order" value="asc">
+                    <label class="dsqjs-order-label" for="dsqjs-order-asc" title="按从旧到新">最早</label>
+                    <input class="dsqjs-order-radio" id="dsqjs-order-popular" type="radio" name="comment-order" value="popular">
+                    <label class="dsqjs-order-label" for="dsqjs-order-popular" title="按评分从高到低">最佳</label>
                 </div>
-                <div class="dsqjs-post-body">
-                    <div class="dsqjs-post-header">
-                        ${authorEl}
-                        <span class="dsqjs-meta"><time>${formatDate(s.createdAt)}</time></span>
-                    </div>
-                    <div class="dsqjs-post-content">
-                        ${message}
-                    </div>
-                </div>
-            </div>
-            */
-            comment: ({ avatarEl, createdAt }, authorEl, message) => `<div class="dsqjs-post-item dsqjs-clearfix"><div class="dsqjs-post-avatar">${avatarEl}</div><div class="dsqjs-post-body"><div class="dsqjs-post-header">${authorEl}<span class="dsqjs-meta"><time>${formatDate(createdAt)}</time></span></div><div class="dsqjs-post-content">${message}</div></div></div>`,
-            /*
-            如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并 <a id="dsqjs-reload-disqus" class="dsqjs-msg-btn">尝试完整 Disqus 模式</a> | <a id="dsqjs-force-disqus" class="dsqjs-msg-btn">强制完整 Disqus 模式</a>
-            */
-            askForFull: '如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并 <a id="dsqjs-reload-disqus" class="dsqjs-msg-btn">尝试完整 Disqus 模式</a> | <a id="dsqjs-force-disqus" class="dsqjs-msg-btn">强制完整 Disqus 模式</a>'
-        }
+            </nav>
+        </header>
+        */
+        const HTML_TPL_EL_HEADER = (num, title) => `<header class="dsqjs-header" id="dsqjs-header"><nav class="dsqjs-nav dsqjs-clearfix"><ul><li class="dsqjs-nav-tab dsqjs-tab-active"><span>${num} Comments</span></li><li class="dsqjs-nav-tab">${title}</li></ul><div class="dsqjs-order"><input class="dsqjs-order-radio" id="dsqjs-order-desc" type="radio" name="comment-order" value="desc" checked="true"><label class="dsqjs-order-label" for="dsqjs-order-desc" title="按从新到旧">最新</label><input class="dsqjs-order-radio" id="dsqjs-order-asc" type="radio" name="comment-order" value="asc"><label class="dsqjs-order-label" for="dsqjs-order-asc" title="按从旧到新">最早</label><input class="dsqjs-order-radio" id="dsqjs-order-popular" type="radio" name="comment-order" value="popular"><label class="dsqjs-order-label" for="dsqjs-order-popular" title="按评分从高到低">最佳</label></div></nav></header>`;
+
+        const HTML_TPL_EL_COMMENT = ({ avatarEl, createdAt }, authorEl, message) => `<div class="dsqjs-post-item dsqjs-clearfix"><div class="dsqjs-post-avatar">${avatarEl}</div><div class="dsqjs-post-body"><div class="dsqjs-post-header">${authorEl}<span class="dsqjs-meta"><time>${formatDate(createdAt)}</time></span></div><div class="dsqjs-post-content">${message}</div></div></div>`;
+
+        const HTML_TPL_EL_ASK_FOR_FULL = '如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并 <a id="dsqjs-reload-disqus" class="dsqjs-msg-btn">尝试完整 Disqus 模式</a> | <a id="dsqjs-force-disqus" class="dsqjs-msg-btn">强制完整 Disqus 模式</a>';
 
         /**
          * _get(url) - 对 Fetch 的一个封装
@@ -201,7 +180,7 @@ function DisqusJS(config) {
 
                 // 显示提示信息
                 // Disqus 加载成功以后会把 #disqus_thread 内的内容全部覆盖
-                $$('disqus_thread').innerHTML = `<div id="dsqjs"><section><div id="dsqjs-msg">评论完整模式加载中...如果长时间无法加载，请针对 disq.us | disquscdn.com | disqus.com 启用代理，或切换至 <a id="dsqjs-force-dsqjs" class="dsqjs-msg-btn">评论基础模式</a></div></section>${htmlTpl.footer}</div>`
+                $$('disqus_thread').innerHTML = `<div id="dsqjs"><section><div id="dsqjs-msg">评论完整模式加载中...如果长时间无法加载，请针对 disq.us | disquscdn.com | disqus.com 启用代理，或切换至 <a id="dsqjs-force-dsqjs" class="dsqjs-msg-btn">评论基础模式</a></div></section>${HTML_TPL_EL_FOOTER}</div>`
                 $$('dsqjs-force-dsqjs').addEventListener('click', useDsqjs);
 
                 s.src = `https://${disqusjs.config.shortname}.disqus.com/embed.js`;
@@ -211,7 +190,7 @@ function DisqusJS(config) {
         }
 
         function checkDisqus() {
-            $$('disqus_thread').innerHTML = `<div id="dsqjs"><section><div id="dsqjs-msg">正在检查 Disqus 能否访问...</div></section>${htmlTpl.footer}</div>`;
+            $$('disqus_thread').innerHTML = `<div id="dsqjs"><section><div id="dsqjs-msg">正在检查 Disqus 能否访问...</div></section>${HTML_TPL_EL_FOOTER}</div>`;
 
             // 测试 Disqus 的域名
             // *.disquscdn.com 没有被墙所以不做检查
@@ -262,54 +241,54 @@ function DisqusJS(config) {
             }
         }
 
+        function assignClickEventForAskForFulButton() {
+            $$('dsqjs-reload-disqus').addEventListener('click', checkDisqus);
+            $$('dsqjs-force-disqus').addEventListener('click', useDisqus);
+        }
+
         function loadDsqjs() {
-            (() => {
-                // DisqusJS 加载中信息
-                msg(`评论基础模式加载中。${htmlTpl.askForFull}`)
-                $$('dsqjs-reload-disqus').addEventListener('click', checkDisqus);
-                $$('dsqjs-force-disqus').addEventListener('click', useDsqjs);
+            // DisqusJS 加载中信息
+            msg(`评论基础模式加载中。${HTML_TPL_EL_ASK_FOR_FULL}`)
+            assignClickEventForAskForFulButton();
 
-                /*
-                 * 获取 Thread 信息
-                 * Disqus API 只支持通过 Thread ID 获取评论列表，所以必须先通过 identifier 获取当前页面 Thread ID
-                 *
-                 * API Docs: https://disqus.com/api/docs/threads/list/
-                 * API URI: /3.0/threads/list.json?forum=[disqus_shortname]&thread=ident:[identifier]&api_key=[apikey]
-                 */
-                const url = `${disqusjs.config.api}3.0/threads/list.json?forum=${disqusjs.config.shortname}&thread=ident:${disqusjs.config.identifier}&api_key=${apikey()}`;
+            /*
+             * 获取 Thread 信息
+             * Disqus API 只支持通过 Thread ID 获取评论列表，所以必须先通过 identifier 获取当前页面 Thread ID
+             *
+             * API Docs: https://disqus.com/api/docs/threads/list/
+             * API URI: /3.0/threads/list.json?forum=[disqus_shortname]&thread=ident:[identifier]&api_key=[apikey]
+             */
+            const url = `${disqusjs.config.api}3.0/threads/list.json?forum=${disqusjs.config.shortname}&thread=ident:${disqusjs.config.identifier}&api_key=${apikey()}`;
 
-                _get(url).then(({ data }) => {
-                    if (data.code === 0 && data.response.length === 1) {
-                        const resp = data.response[0];
-                        disqusjs.page = {
-                            id: resp.id,
-                            title: resp.title,
-                            isClosed: resp.isClosed,
-                            length: resp.posts,
-                            comment: []
-                        };
+            _get(url).then(({ data }) => {
+                if (data.code === 0 && data.response.length === 1) {
+                    const resp = data.response[0];
+                    disqusjs.page = {
+                        id: resp.id,
+                        title: resp.title,
+                        isClosed: resp.isClosed,
+                        length: resp.posts,
+                        comment: []
+                    };
 
-                        // 在 #disqus_thread 中填充 DisqusJS Container
-                        $$('disqus_thread').innerHTML = `<div id="dsqjs"><div id="dsqjs-msg">评论基础模式加载中。${htmlTpl.askForFull}</div>${htmlTpl.header(resp.posts, disqusjs.config.siteName)}<section class="dsqjs-post-container"><ul class="dsqjs-post-list" id="dsqjs-post-container"><p class="dsqjs-no-comment">评论列表加载中...</p></ul><a id="dsqjs-load-more" class="dsqjs-load-more dsqjs-hide">加载更多评论</a></section>${htmlTpl.footer}</div>`;
+                    // 在 #disqus_thread 中填充 DisqusJS Container
+                    $$('disqus_thread').innerHTML = `<div id="dsqjs"><div id="dsqjs-msg">评论基础模式加载中。${HTML_TPL_EL_ASK_FOR_FULL}</div>${HTML_TPL_EL_HEADER(resp.posts, disqusjs.config.siteName)}<section class="dsqjs-post-container"><ul class="dsqjs-post-list" id="dsqjs-post-container"><p class="dsqjs-no-comment">评论列表加载中...</p></ul><a id="dsqjs-load-more" class="dsqjs-load-more dsqjs-hide">加载更多评论</a></section>${HTML_TPL_EL_FOOTER}</div>`;
 
-                        $$('dsqjs-reload-disqus').addEventListener('click', checkDisqus);
-                        $$('dsqjs-force-disqus').addEventListener('click', useDsqjs);
+                    assignClickEventForAskForFulButton();
 
-                        $$(`dsqjs-order-${disqusjs.sortType}`).setAttribute('checked', 'true');
+                    $$(`dsqjs-order-${disqusjs.sortType}`).setAttribute('checked', 'true');
 
-                        // 获取评论列表
-                        getComment()
-                    } else if (data.code === 0 && data.response.length !== 1) {
-                        // 当前页面可能还未初始化（需要创建 thread）
-                        // Disqus API 的 threads/create 需要在服务端发起请求，不支持 AJAX Call
-                        msg('该 Thread 并没有初始化，是否切换至 <a id="dsqjs-force-disqus" class="dsqjs-msg-btn">完整 Disqus 模式</a> 进行初始化？')
-                        $$('dsqjs-force-disqus').addEventListener('click', useDsqjs);
-                    } else {
-                        throw new Error;
-                    }
-                }).catch(loadError)
-
-            })()
+                    // 获取评论列表
+                    getComment()
+                } else if (data.code === 0 && data.response.length !== 1) {
+                    // 当前页面可能还未初始化（需要创建 thread）
+                    // Disqus API 的 threads/create 需要在服务端发起请求，不支持 AJAX Call
+                    msg('当前 Thread 尚未创建。是否切换至 <a id="dsqjs-force-disqus" class="dsqjs-msg-btn">完整 Disqus 模式</a>？')
+                    $$('dsqjs-force-disqus').addEventListener('click', useDisqus);
+                } else {
+                    throw new Error;
+                }
+            }).catch(loadError)
 
             /*
              * getComment(cursor) - 获取评论列表
@@ -449,9 +428,11 @@ function DisqusJS(config) {
                         }
                     } else if (data.code === 0 && data.response.length === 0) {
                         // 当前没有评论，显示提示信息
-                        msg(`你可能无法访问 Disqus，已启用评论基础模式。${htmlTpl.askForFull}`)
+                        msg(`你可能无法访问 Disqus，已启用评论基础模式。${HTML_TPL_EL_ASK_FOR_FULL}`)
                         $$('dsqjs-post-container').innerHTML = `<p class="dsqjs-no-comment" >${disqusjs.config.nocomment}</p>`
-                        $$('dsqjs-reload-disqus').addEventListener('click', checkDisqus);
+
+                        assignClickEventForAskForFulButton();
+
                         $$('dsqjs-force-disqus').addEventListener('click', useDsqjs);
                     } else {
                         throw new Error;
@@ -489,9 +470,7 @@ function DisqusJS(config) {
 
                 const getChildren = (id) => {
                     // 如果没有子评论，就不需要解析子评论了
-                    if (childComments.length === 0) {
-                        return null;
-                    }
+                    if (childComments.length === 0) return null;
 
                     const list = [];
                     for (const comment of childComments) {
@@ -527,16 +506,16 @@ function DisqusJS(config) {
                     if (data.comment.author.profileUrl) {
                         /*
                         Avatar Element
-                        <a href="${data.comment.author.profileUrl}" ${htmlTpl.aAttr}>
+                        <a href="${data.comment.author.profileUrl}" ${HTML_TPL_A_ATTR}>
                             <img src="${data.comment.author.avatar.cache}">
                         </a>
                         Author Element
                         <span class="dsqjs-post-author">
-                            <a href="${data.comment.author.profileUrl}" ${htmlTpl.aAttr}>${data.comment.author.name}</a>
+                            <a href="${data.comment.author.profileUrl}" ${HTML_TPL_A_ATTR}>${data.comment.author.name}</a>
                         </span>
                         */
-                        data.comment.avatarEl = `<a href="${data.comment.author.profileUrl}"><img src="${replaceDisquscdn(data.comment.author.avatar.cache)}" ${htmlTpl.aAttr}></a>`
-                        data.comment.authorEl = `<span class="dsqjs-post-author"><a href="${data.comment.author.profileUrl}" ${htmlTpl.aAttr}>${data.comment.author.name}</a></span>`
+                        data.comment.avatarEl = `<a href="${data.comment.author.profileUrl}"><img src="${replaceDisquscdn(data.comment.author.avatar.cache)}" ${HTML_TPL_A_ATTR}></a>`
+                        data.comment.authorEl = `<span class="dsqjs-post-author"><a href="${data.comment.author.profileUrl}" ${HTML_TPL_A_ATTR}>${data.comment.author.name}</a></span>`
                     } else {
                         data.comment.avatarEl = `<img src="${replaceDisquscdn(data.comment.author.avatar.cache)}">`
                         data.comment.authorEl = `<span class="dsqjs-post-author">${data.comment.author.name}</span>`
@@ -589,7 +568,7 @@ function DisqusJS(config) {
                         message = removeDisqUs(replaceDisquscdn(s.message));
                     }
 
-                    return htmlTpl.comment(s, authorEl, message)
+                    return HTML_TPL_EL_COMMENT(s, authorEl, message)
                 }
 
                 const childrenComments = (data) => {
@@ -651,13 +630,12 @@ function DisqusJS(config) {
 
 
                 // 增加提示信息
-                msg(`你可能无法访问 Disqus，已启用评论基础模式。${htmlTpl.askForFull}`)
+                msg(`你可能无法访问 Disqus，已启用评论基础模式。${HTML_TPL_EL_ASK_FOR_FULL}`)
 
                 $$('dsqjs-post-container').innerHTML = html;
 
                 // 为 checkDisqus 和 useDsqjs 按钮添加事件
-                $$('dsqjs-reload-disqus').addEventListener('click', checkDisqus);
-                $$('dsqjs-force-disqus').addEventListener('click', useDsqjs);
+                assignClickEventForAskForFulButton();
             }
         }
 
@@ -666,7 +644,8 @@ function DisqusJS(config) {
          */
         function loadError(err) {
             console.log(err);
-            msg('评论基础模式加载失败，是否 <a id="dsqjs-reload-dsqjs" class="dsqjs-msg-btn">重载</a> 或 <a id="dsqjs-reload-disqus" class="dsqjs-msg-btn">尝试完整 Disqus 模式</a> ？')
+            msg('评论基础模式加载失败，是否 <a id="dsqjs-reload-dsqjs" class="dsqjs-msg-btn">重载</a> 或 <a id="dsqjs-reload-disqus" class="dsqjs-msg-btn">尝试完整 Disqus 模式</a> ？');
+
             $$('dsqjs-reload-dsqjs').addEventListener('click', loadDsqjs);
             $$('dsqjs-reload-disqus').addEventListener('click', checkDisqus);
         }
@@ -676,16 +655,16 @@ function DisqusJS(config) {
          * useDsqjs() - 强制使用 Disqus
          */
         function useDsqjs() {
-            setLS('dsqjs_mode', 'dsqjs')
-            loadDsqjs()
+            setLS('dsqjs_mode', 'dsqjs');
+            loadDsqjs();
         }
 
-        function useDsqjs() {
-            setLS('dsqjs_mode', 'disqus')
-            loadDisqus()
+        function useDisqus() {
+            setLS('dsqjs_mode', 'disqus');
+            loadDisqus();
         }
 
-        let disqusjs = {};
+        const disqusjs = {};
 
         disqusjs.config = _extends({
             api: 'https://disqus.skk.moe/disqus/',
@@ -713,7 +692,7 @@ function DisqusJS(config) {
         };
 
         // 填充 DisqusJS 的 Container
-        $$('disqus_thread').innerHTML = `<div id="dsqjs">${htmlTpl.msg}${htmlTpl.footer}</div>`
+        $$('disqus_thread').innerHTML = `<div id="dsqjs">${HTML_TPL_EL_MSG}${HTML_TPL_EL_FOOTER}</div>`
 
         function initDsqjs() {
             disqusjs.mode = localStorage.getItem('dsqjs_mode');
@@ -736,10 +715,9 @@ function DisqusJS(config) {
 
         // 引入 Fetch 以后，一堆浏览器将不再被支持，所以加个判断，劝退一些浏览器
         if (!fetch || !localStorage) {
-            msg(`你的浏览器版本过低，不兼容评论基础模式。${htmlTpl.askForFull}`);
+            msg(`你的浏览器版本过低，不兼容评论基础模式。${HTML_TPL_EL_ASK_FOR_FULL}`);
 
-            $$('dsqjs-reload-disqus').addEventListener('click', checkDisqus);
-            $$('dsqjs-force-disqus').addEventListener('click', useDsqjs);
+            assignClickEventForAskForFulButton();
         } else {
             initDsqjs();
         }
