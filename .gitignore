@@ -14,3 +14,5 @@ _build
 public
 
 src/index.html
+
+dist/index.html

@@ -45,12 +45,27 @@
 
 ```html
 <!-- Unpkg -->
-<link rel="stylesheet" href="https://unpkg.com/disqusjs@1.2/dist/disqusjs.css">
-<script src="https://unpkg.com/disqusjs@1.2/dist/disqus.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/disqusjs@1.3/dist/disqusjs.css">
+<script src="https://unpkg.com/disqusjs@1.3/dist/disqus.js"></script>
 
 <!-- jsDelivr -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/disqusjs@1.2/dist/disqusjs.css">
-<script src="https://cdn.jsdelivr.net/npm/disqusjs@1.2/dist/disqus.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/disqusjs@1.3/dist/disqusjs.css">
+<script src="https://cdn.jsdelivr.net/npm/disqusjs@1.3dist/disqus.js"></script>
+```
+
+DisqusJS 从 v1.3.0 版本开始使用 Fetch API 代替 XMLHttpRequest，因此不再兼容低于 IE 11 的老旧浏览器。这些浏览器将会收到如下提示：
+
+```
+你的浏览器版本过低，不兼容评论基础模式。如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并尝试完整 Disqus 模式
+```
+
+如果需要为 IE8 及以上浏览器提供 DisqusJS 评论基础模式的兼容性支持，请在 DisqusJS 加载之前添加如下的 Polyfill：
+
+```html
+<!-- Promise Polyfill -->
+<script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"></script>
+<!-- Fetch Polyfill -->
+<script src="https://cdn.jsdelivr.net/npm/whatwg-fetch@3.0.0/dist/fetch.umd.min.js"></script>
 ```
 
 #### 从 NPM 安装
@@ -153,6 +168,11 @@ var dsqjs = new DisqusJS({
 - 最大评论嵌套数；超过嵌套层数的评论，会不论从属关系显示在同一层级下
 - 非必须，默认值为 `4`
 
+**nocomment** `{Number}`
+
+- 没有评论时的提示语（对应 Disqus Admin - Settings - Community - Comment Count Link - Zero comments）
+- 非必须，默认值为 `这里冷冷清清的，一条评论都没有`
+
 ---
 
 以下配置和 Disqus Moderator Badge 相关，缺少一个都不会显示 Badge
@@ -166,15 +186,6 @@ var dsqjs = new DisqusJS({
 
 - 你想显示在 Disqus Moderator Badge 中的文字。该配置应和 [Disqus Admin - Settings - Community - Moderator Badge Text](https://disqus.com/admin/settings/community/) 相同
 - 非必须，无默认值
-
----
-
-未来可能扩展的配置：
-
-- nocomment 没有评论时的提示语（对应 Disqus Admin - Settings - Community - Comment Count Link - Zero comments）
-- ~~commentPolicyURL 站点评论政策 URL（对应 对应 Disqus Admin - Settings - General - Comment Policy URL）~~
-- ~~commentPolicyText 站点评论政策简介（对应 对应 Disqus Admin - Settings - General - Comment Policy Summary）~~
-- ~~newcomment 是否允许添加新评论（目前增加评论功能尚未实现）~~
 
 ### PJAX 站点注意事项
 
@@ -192,9 +203,9 @@ DisqusJS v1.2.6 开始支持检测是否存在 Disqus 实例，并在加载 Disq
 
 > 当然，你也可以直接使用我搭建的反代 `https://disqus.skk.moe/disqus/`。
 
-### ZEIT Now
+### Vercel (ZEIT Now)
 
-[ZEIT Now](https://zeit.co) 是一个 Serverless 平台。免费 Plan 提供每月 20 GiB 流量。
+[ZEIT Now](https://zeit.co) 是一个 Serverless 平台。免费 Plan 提供每月 100 GiB 流量和无限的请求次数。
 [sukkaw/disqusjs-proxy-example](https://github.com/SukkaW/disqusjs-proxy-example) 提供了一个使用 Now Router 进行反代的样例配置文件。
 
 ### Cloudflare Workers
@@ -235,11 +246,12 @@ DisqusJS v1.2.6 开始支持检测是否存在 Disqus 实例，并在加载 Disq
 
 ## 调试、进阶使用 & 开发相关
 
-- `a.disquscdn.com` 和 `c.disquscdn.com` 解析到 Cloudflare 而不是 Fastly，可用性大大增强；`disqus.com` 和 `shortname.disqus.com` 仍然被墙；`disq.us` 解析到 Fastly 连通性较差，DisqusJS 通过解析获得了原链接。
+- ~~`a.disquscdn.com` 和 ~~`c.disquscdn.com` 解析到 Cloudflare 而不是 Fastly，可用性大大增强；`disqus.com` 和 `shortname.disqus.com` 仍然被墙；`disq.us` 解析到 Fastly 连通性较差，DisqusJS 通过解析获得了原链接。
+- `a.disquscdn.com` 重新解析到 Fastly，可用性不如 `c.disquscdn.com`，DisqusJS 内部已增加替换 `a.disquscdn.com` 为 `c.disquscdn.com` 以改善速度。
 - DisqusJS 检测访客的 Disqus 可用性是通过检测 `disqus.com/favicon.ico` 和 `${disqusjs.config.shortname}.disqus.com/favicon.ico` 是否能正常加载，如果有一个加载出错或超时（2s）就判定 Disqus 不可用。
 - DisqusJS 在 localStorage 中持久化了 Disqus 连通性检查结果，key 为 `dsqjs_mode`，value 为 `disqus` 或者 `dsqjs`。需要调整 DisqusJS 的模式时可以直接操作 localStorage。
 - Disqus 自己的 config 保存在全局变量 `window.disqus_config` 中，你可能好奇为什么没有引入。实际上由于 `disqus_config` 和 DisqusJS 中有很多重复的配置，所以 DisqusJS 直接将相关配置项赋给了 `disqus_config`，所以用户只需要配置 DisqusJS 即可。
-- DisqusJS 并没有使用 Webpack 将 `disqusjs.css` 和 `disqus.js` 打包在一起，大家可以开发自己的 DisqusJS 主题。所有 DisqusJS 创建的 HTML 元素都在 `<div id="dsqjs"></div>` 之中、几乎所有的元素都有自己的类名并都以 `dsqjs-` 为前缀，防止污染。
+- DisqusJS 并没有使用 Webpack 将 `disqusjs.css` 和 `disqus.js` 打包在一起，大家可以开发自己的 DisqusJS 主题。所有 DisqusJS 创建的 HTML 元素都包裹在 `<div id="dsqjs"></div>` 之中、几乎所有的元素都有自己的类名并都以 `dsqjs-` 为前缀，防止污染。
 - DisqusJS 从 v1.2.0 版本开始实现了评论排序。Disqus 将评论排序方式持久化在 localStorage 中、key 为 `disqus.sort`，DisqusJS 沿用了这一位置。
 
 ## Todo List
