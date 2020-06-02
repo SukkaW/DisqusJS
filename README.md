@@ -168,7 +168,7 @@ var dsqjs = new DisqusJS({
 - 最大评论嵌套数；超过嵌套层数的评论，会不论从属关系显示在同一层级下
 - 非必须，默认值为 `4`
 
-**nocomment** `{Number}`
+**nocomment** `{string}`
 
 - 没有评论时的提示语（对应 Disqus Admin - Settings - Community - Comment Count Link - Zero comments）
 - 非必须，默认值为 `这里冷冷清清的，一条评论都没有`
