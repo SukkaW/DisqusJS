@@ -246,7 +246,7 @@ DisqusJS v1.2.6 开始支持检测是否存在 Disqus 实例，并在加载 Disq
 
 ## 调试、进阶使用 & 开发相关
 
-- ~~`a.disquscdn.com` 和 ~~`c.disquscdn.com` 解析到 Cloudflare 而不是 Fastly，可用性大大增强；`disqus.com` 和 `shortname.disqus.com` 仍然被墙；`disq.us` 解析到 Fastly 连通性较差，DisqusJS 通过解析获得了原链接。
+- ~~`a.disquscdn.com` 和~~ `c.disquscdn.com` 解析到 Cloudflare 而不是 Fastly，可用性大大增强；`disqus.com` 和 `shortname.disqus.com` 仍然被墙；`disq.us` 解析到 Fastly 连通性较差，DisqusJS 通过解析获得了原链接。
 - `a.disquscdn.com` 重新解析到 Fastly，可用性不如 `c.disquscdn.com`，DisqusJS 内部已增加替换 `a.disquscdn.com` 为 `c.disquscdn.com` 以改善速度。
 - DisqusJS 检测访客的 Disqus 可用性是通过检测 `disqus.com/favicon.ico` 和 `${disqusjs.config.shortname}.disqus.com/favicon.ico` 是否能正常加载，如果有一个加载出错或超时（2s）就判定 Disqus 不可用。
 - DisqusJS 在 localStorage 中持久化了 Disqus 连通性检查结果，key 为 `dsqjs_mode`，value 为 `disqus` 或者 `dsqjs`。需要调整 DisqusJS 的模式时可以直接操作 localStorage。

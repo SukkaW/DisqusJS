@@ -28,7 +28,7 @@
 
 function DisqusJS(config) {
     ((window, document, localStorage, fetch, Promise) => {
-        // 封装一下基于 Object.asign 的方法
+        // 封装一下基于 Object.assign 的方法
         function _extends(...args) {
             _extends = Object.assign || function (target) {
                 for (const source of arguments) {
@@ -536,7 +536,7 @@ function DisqusJS(config) {
                     el.innerHTML = msg;
                     const aTag = el.getElementsByTagName('a');
                     for (const i of aTag) {
-                        const link = decodeURIComponent(i.href.replace(/https:\/\/disq.us\/url\?url=/g, '')).replace(/(.*):.+cuid=.*/, '$1');
+                        const link = decodeURIComponent(i.href.replace(/https:\/\/disq\.us\/url\?url=/g, '')).replace(/(.*):.+cuid=.*/, '$1');
 
                         i.href = link;
                         i.innerHTML = link;
@@ -552,7 +552,7 @@ function DisqusJS(config) {
                  * @param {string} str - 字符串
                  * @return {string} - 替换后的字符串
                  */
-                const replaceDisquscdn = (str) => str.replace('/a.disquscdn.com/ig', 'c.disquscdn.com');
+                const replaceDisquscdn = (str) => str.replace(/a\.disquscdn\.com/g, 'c.disquscdn.com');
 
                 const renderPostItem = (s) => {
                     let authorEl = '';
