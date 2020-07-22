@@ -110,7 +110,7 @@ function DisqusJS(config) {
          * _get(url) - 对 Fetch 的一个封装
          *
          * @param {string} url
-         * @return {Object} - 一个 Promise 对象，返回请求结果
+         * @return {Promise} - 一个 Promise 对象，返回请求结果
          */
 
         const _get = (url) => fetch(url, { method: 'GET' })
@@ -197,53 +197,35 @@ function DisqusJS(config) {
         function checkDisqus() {
             $$(DISQUS_CONTAINER_EL_ID).innerHTML = `<div id="dsqjs"><section><div id="dsqjs-msg">正在检查 Disqus 能否访问...</div></section>${HTML_TPL_EL_FOOTER}</div>`;
 
+            const runcheck = (domain) => {
+                return new Promise((resolve, reject) => {
+                    const img = new Image;
+                    // 处理加载超时
+                    const timeout = setTimeout(() => {
+                        img.onerror = img.onload = null;
+                        reject();
+                    }, 3000);
+
+                    img.onerror = () => {
+                        clearTimeout(timeout);
+                        reject();
+                    }
+
+                    img.onload = () => {
+                        clearTimeout(timeout);
+                        resolve();
+                    }
+
+                    img.src = `https://${domain}/favicon.ico?${+(new Date)}=${+(new Date)}`;
+                })
+            }
+
             // 测试 Disqus 的域名
             // *.disquscdn.com 没有被墙所以不做检查
-            const domain = ['disqus.com', `${disqusjs.config.shortname}.disqus.com`];
-
-            let test = 0;
-            let success = 0;
-
-            const checker = () => {
-                if (domain.length === test && test === success) {
-                    // 测试域名数量 ==== 测试次数 === 成功次数
-                    // 如果 true 则认定可以 Disqus 可以连通
-                    useDisqus()
-                } else if (domain.length === test) {
-                    // 否则认为 Disqus 无法连通
-                    useDsqjs()
-                }
-                // 如果测试域名数量不等于测试次数则说明测试还没有完成，不执行任何操作
-            }
-
-            const runcheck = (domain) => {
-                const img = new Image;
-                // 处理加载超时
-                const timeout = setTimeout(() => {
-                    img.onerror = img.onload = null;
-                    test++;
-                    checker()
-                }, 3000);
-
-                img.onerror = () => {
-                    clearTimeout(timeout);
-                    test++;
-                    checker()
-                }
-
-                img.onload = () => {
-                    clearTimeout(timeout);
-                    test++;
-                    success++;
-                    checker()
-                }
-
-                img.src = `https://${domain}/favicon.ico?${+(new Date)}=${+(new Date)}`
-            }
-
-            for (const i of domain) {
-                runcheck(i);
-            }
+            return Promise.all([
+                runcheck('disqus.com'),
+                runcheck(`${disqusjs.config.shortname}.disqus.com`)
+            ]).then(useDisqus, useDsqjs);
         }
 
         function assignClickEventForAskForFulButton() {
@@ -436,7 +418,7 @@ function DisqusJS(config) {
                 }).catch(getCommentError);
             }
 
-            /*
+            /**
              * parseCommentData(data) - 解析评论列表
              *
              * @param {Array} data - 评论列表 JSON
