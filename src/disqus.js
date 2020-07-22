@@ -2,42 +2,43 @@
  * The variable used in DisqusJS
  *
  * DisqusJS Mode
- * @param {string} disqusjs.mode = dsqjs | disqus - Set which mode to use, should store and get in localStorage
- * @param {string} disqusjs.sortType = popular | asc(oldest first) | desc(latest first) - Set which sort type to use, should store and get in localStorage
+ * @param {String} disqusjs.mode = dsqjs | disqus - Set which mode to use, should store and get in localStorage
+ * @param {String} disqusjs.sortType = popular | asc(oldest first) | desc(latest first) - Set which sort type to use, should store and get in localStorage
  *
  * DisqusJS Config
- * @param {string} disqusjs.config.shortname - The disqus shortname
- * @param {string} disqusjs.config.siteName - The Forum Name
- * @param {string} disqusjs.config.identifier - The identifier of the page
- * @param {string} disqusjs.config.title - The title of the page
- * @param {string} disqusjs.config.url - The url of the page
- * @param {string} disqusjs.config.api - Where to get data
- * @param {string} disqusjs.config.apikey - The apikey used to request Disqus API
- * @param {number} disqusjs.config.nesting - The max nesting level of Disqus comment
- * @param {string} disqusjs.config.nocomment - The msg when there is no comment
- * @param {string} disqusjs.config.admin - The disqus forum admin username
- * @param {string} disqusjs.config.adminLabel - The disqus moderator badge text
+ * @param {String} disqusjs.config.shortname - The disqus shortname
+ * @param {String} disqusjs.config.siteName - The Forum Name
+ * @param {String} disqusjs.config.identifier - The identifier of the page
+ * @param {String} disqusjs.config.title - The title of the page
+ * @param {String} disqusjs.config.url - The url of the page
+ * @param {String} disqusjs.config.api - Where to get data
+ * @param {String} disqusjs.config.apikey - The apikey used to request Disqus API
+ * @param {Number} disqusjs.config.nesting - The max nesting level of Disqus comment
+ * @param {String} disqusjs.config.nocomment - The msg when there is no comment
+ * @param {String} disqusjs.config.admin - The disqus forum admin username
+ * @param {String} disqusjs.config.adminLabel - The disqus moderator badge text
  *
  * DisqusJS Info
- * @param {string} disqusjs.page.id = The thread id, used at next API call
- * @param {string} disqusjs.page.next = The cursor of next page of list
- * @param {boolean} disqusjs.page.isClosed - Whether the comment is closed
- * @param {number} disqusjs.page.length - How many comment in the thread
+ * @param {String} disqusjs.page.id = The thread id, used at next API call
+ * @param {String} disqusjs.page.next = The cursor of next page of list
+ * @param {Boolean} disqusjs.page.isClosed - Whether the comment is closed
+ * @param {Number} disqusjs.page.length - How many comment in the thread
  */
-
 
 function DisqusJS(config) {
     ((window, document, localStorage, fetch, Promise) => {
         // 封装一下基于 Object.assign 的方法
         function _extends(...args) {
             _extends = Object.assign || function (target) {
-                for (const source of arguments) {
+                for (let i = 0, len = arguments.length; i < len; i++) {
+                    const source = arguments[i];
                     for (const key in source) {
                         if (Object.prototype.hasOwnProperty.call(source, key)) {
                             target[key] = source[key];
                         }
                     }
                 }
+
                 return target;
             }
             return _extends.apply(this, args);
@@ -47,7 +48,7 @@ function DisqusJS(config) {
         /**
          * msg - 提示信息
          *
-         * @param {string} url
+         * @param {String} url
          */
         const msg = (str) => {
             const msgEl = $$('dsqjs-msg');
@@ -109,7 +110,7 @@ function DisqusJS(config) {
         /**
          * _get(url) - 对 Fetch 的一个封装
          *
-         * @param {string} url
+         * @param {String} url
          * @return {Promise} - 一个 Promise 对象，返回请求结果
          */
 
@@ -135,8 +136,8 @@ function DisqusJS(config) {
         /**
          * setLS(kwy, value) - 设置 localStorage
          *
-         * @param {string} key
-         * @param {string} value
+         * @param {String} key
+         * @param {String} value
          */
         const setLS = (key, value) => {
             try {
@@ -148,7 +149,7 @@ function DisqusJS(config) {
         /**
          * formatDate(date) - 解析 date 为 yyyy-MM-dd hh:mm:ss
          *
-         * @param {string} date - 传入评论创建日期（XML 格式）
+         * @param {String} date - 传入评论创建日期（XML 格式）
          * @return {string} - 格式化后的日期
          */
         const formatDate = (date) => {
@@ -235,7 +236,7 @@ function DisqusJS(config) {
 
         function loadDsqjs() {
             // DisqusJS 加载中信息
-            msg(`评论基础模式加载中... ${HTML_TPL_EL_ASK_FOR_FULL}`)
+            msg(`评论基础模式加载中... ${HTML_TPL_EL_ASK_FOR_FULL}`);
             assignClickEventForAskForFulButton();
 
             /*
@@ -271,10 +272,10 @@ function DisqusJS(config) {
                 }
             }).catch(loadError)
 
-            /*
+            /**
              * getComment(cursor) - 获取评论列表
              *
-             * @param {string} cursor - 传入 cursor 用于加载下一页的评论
+             * @param {String} cursor - 传入 cursor 用于加载下一页的评论
              */
             const getComment = (cursor = '') => {
                 const $loadMoreBtn = $$('dsqjs-load-more');
@@ -284,13 +285,9 @@ function DisqusJS(config) {
                 const unregisterListenerForSwitchTypeRadioAndGetMoreCommentBtn = () => {
                     // 为按钮们取消事件，避免重复绑定
                     // 重新 getComment() 时会重新绑定
-                    for (const i of $orderRadio) {
-                        i.removeEventListener('change', switchSortType);
-                    };
+                    [...$orderRadio].forEach(i => i.removeEventListener('change', switchSortType));
                     $loadMoreBtn.removeEventListener(CLICK, getMoreComment);
-                    for (const i of $loadHideCommentInDisqus) {
-                        i.removeEventListener(CLICK, checkDisqus);
-                    };
+                    [...$loadHideCommentInDisqus].forEach(i => i.removeEventListener(CLICK, checkDisqus));
                 }
 
                 const getMoreComment = () => {
@@ -335,7 +332,7 @@ function DisqusJS(config) {
                 const cursorParam = (cursor === '') ? '' : `&cursor=${cursor}`;
 
                 // 在发起请求前禁用 加载更多评论 按钮防止重复调用
-                $loadMoreBtn.classList.add('dsqjs-disabled')
+                $loadMoreBtn.classList.add('dsqjs-disabled');
                 /*
                  * 获取评论列表
                  *
@@ -384,13 +381,8 @@ function DisqusJS(config) {
                         renderComment(disqusjs.page.comment);
 
                         // 为排序按钮们委托事件
-                        for (const i of $orderRadio) {
-                            i.addEventListener('change', switchSortType);
-                        }
-
-                        for (const i of $loadHideCommentInDisqus) {
-                            i.addEventListener(CLICK, checkDisqus);
-                        };
+                        [...$orderRadio].forEach(i => i.addEventListener('change', switchSortType));
+                        [...$loadHideCommentInDisqus].forEach(i => i.addEventListener(CLICK, checkDisqus));
 
                         if (data.cursor.hasNext) {
                             // 将 cursor.next 存入 disqusjs 变量中供不能传参的不匿名函数使用
@@ -428,7 +420,7 @@ function DisqusJS(config) {
                 let topLevelComments = [];
                 let childComments = [];
 
-                let commentJSON = (comment) => ({
+                const commentJSON = (comment) => ({
                     comment,
                     author: comment.author.name,
 
@@ -451,21 +443,21 @@ function DisqusJS(config) {
                     if (childComments.length === 0) return null;
 
                     const list = [];
-                    for (const comment of childComments) {
+                    childComments.forEach(comment => {
                         if (comment.parent === id) {
                             list.unshift(commentJSON(comment));
                         }
-                    }
+                    })
 
-                    return (list.length) ? list : null
+                    return list.length ? list : null
                 }
 
-                data.forEach((comment) => {
+                data.forEach(comment => {
                     // 如果没有 comment.parent 说明是第一级评论
                     const c = comment.parent ? childComments : topLevelComments;
                     c.push(comment);
                 });
-                return topLevelComments.map(comment => commentJSON(comment));
+                return topLevelComments.map(commentJSON);
             }
 
             /*
@@ -509,29 +501,29 @@ function DisqusJS(config) {
                 }
 
                 /**
-                 * removeDisqUs(msg) - 将 comment 中的短链接 disq.us 去除
-                 * @param {string} msg - 评论信息
+                 * removeDisqUs(input) - 将 comment 中的短链接 disq.us 去除
+                 * @param {String} input - 评论信息
                  * @return {string} msg - 经过处理的评论信息
                  */
-                const removeDisqUs = (msg) => {
+                const removeDisqUs = (input) => {
                     const el = document.createElement('div');
-                    el.innerHTML = msg;
+                    el.innerHTML = input;
                     const aTag = el.getElementsByTagName('a');
-                    for (const i of aTag) {
+                    [...aTag].forEach(i => {
                         const link = decodeURIComponent(i.href.replace(/https:\/\/disq\.us\/url\?url=/g, '')).replace(/(.*):.+cuid=.*/, '$1');
 
                         i.href = link;
                         i.innerHTML = link;
                         i.rel = 'external noopener nofollow noreferrer';
                         i.target = '_blank';
-                    }
+                    });
 
                     return el.innerHTML;
                 }
 
                 /**
                  * replaceDisquscdn(str) - 将 a.disquscdn.com 替换为 c.disquscdn.com
-                 * @param {string} str - 字符串
+                 * @param {String} str - 字符串
                  * @return {string} - 替换后的字符串
                  */
                 const replaceDisquscdn = (str) => str.replace(/a\.disquscdn\.com/g, 'c.disquscdn.com');
@@ -571,10 +563,9 @@ function DisqusJS(config) {
                         comment.nesting = nesting + 1;
 
                         // 处理可能存在的隐藏回复
-                        let hasMoreEl = '';
-                        if (comment.hasMore) {
-                            hasMoreEl = `<p class="dsqjs-has-more">切换至 <a class="dsqjs-has-more-btn" id="load-more-${comment.comment.id}" data-more-id="comment-${comment.comment.id}">完整 Disqus 模式</a> 显示更多回复</p>`
-                        }
+                        const hasMoreEl = comment.hasMore
+                            ? `<p class="dsqjs-has-more">切换至 <a class="dsqjs-has-more-btn" id="load-more-${comment.comment.id}" data-more-id="comment-${comment.comment.id}">完整 Disqus 模式</a> 显示更多回复</p>`
+                            : '';
 
                         html += `<li data-id="comment-${comment.comment.id}" id="comment-${comment.comment.id}">${renderPostItem(comment.comment)}${childrenComments(comment)}${hasMoreEl}</li>`;
                     });
@@ -660,7 +651,7 @@ function DisqusJS(config) {
 
         // 通过 用户配置的 apikey 来判断是否需要使用随机取值
         const disqusJsApiKeys = disqusjs.config.apikey;
-        const apikey = () => (Array.isArray(disqusJsApiKeys)) ? disqusJsApiKeys[Math.floor(Math.random() * disqusJsApiKeys.length)] : disqusJsApiKeys;
+        const apikey = () => Array.isArray(disqusJsApiKeys) ? disqusJsApiKeys[Math.floor(Math.random() * disqusJsApiKeys.length)] : disqusJsApiKeys;
 
         /*
          * window.disqus_config - 从 disqusjs.config 获取 Disqus 所需的配置
