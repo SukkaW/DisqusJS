@@ -246,7 +246,7 @@ function DisqusJS(config) {
              * API Docs: https://disqus.com/api/docs/threads/list/
              * API URI: /3.0/threads/list.json?forum=[disqus_shortname]&thread=ident:[identifier]&api_key=[apikey]
              */
-            const url = `${disqusjs.config.api}3.0/threads/list.json?forum=${disqusjs.config.shortname}&thread=ident:${disqusjs.config.identifier}&api_key=${apikey()}`;
+            const url = `${disqusjs.config.api}3.0/threads/list.json?forum=${encodeURIComponent(disqusjs.config.shortname)}&thread=${encodeURIComponent(`ident:${disqusjs.config.identifier}`)}&api_key=${encodeURIComponent(apikey())}`;
 
             _get(url).then(({ data }) => {
                 if (data.code === 0 && data.response.length === 1) {
@@ -364,7 +364,7 @@ function DisqusJS(config) {
                     }
                 };
 
-                const url = `${disqusjs.config.api}3.0/threads/listPostsThreaded?forum=${disqusjs.config.shortname}&thread=${disqusjs.page.id}${cursorParam}&api_key=${apikey()}&order=${disqusjs.sortType}`;
+                const url = `${disqusjs.config.api}3.0/threads/listPostsThreaded?forum=${encodeURIComponent(disqusjs.config.shortname)}&thread=${encodeURIComponent(disqusjs.page.id)}${encodeURIComponent(cursorParam)}&api_key=${encodeURIComponent(apikey())}&order=${encodeURIComponent(disqusjs.sortType)}`;
 
                 _get(url).then(({ data }) => {
                     if (data.code === 0 && data.response.length > 0) {
