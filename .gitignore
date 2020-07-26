@@ -16,3 +16,5 @@ public
 src/index.html
 
 dist/index.html
+
+package-lock.json

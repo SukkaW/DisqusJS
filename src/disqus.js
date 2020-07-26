@@ -246,7 +246,7 @@ function DisqusJS(config) {
              * API Docs: https://disqus.com/api/docs/threads/list/
              * API URI: /3.0/threads/list.json?forum=[disqus_shortname]&thread=ident:[identifier]&api_key=[apikey]
              */
-            const url = `${disqusjs.config.api}3.0/threads/list.json?forum=${disqusjs.config.shortname}&thread=ident:${disqusjs.config.identifier}&api_key=${apikey()}`;
+            const url = `${disqusjs.config.api}3.0/threads/list.json?forum=${encodeURIComponent(disqusjs.config.shortname)}&thread=${encodeURIComponent(`ident:${disqusjs.config.identifier}`)}&api_key=${encodeURIComponent(apikey())}`;
 
             _get(url).then(({ data }) => {
                 if (data.code === 0 && data.response.length === 1) {
@@ -285,9 +285,9 @@ function DisqusJS(config) {
                 const unregisterListenerForSwitchTypeRadioAndGetMoreCommentBtn = () => {
                     // 为按钮们取消事件，避免重复绑定
                     // 重新 getComment() 时会重新绑定
-                    [...$orderRadio].forEach(i => i.removeEventListener('change', switchSortType));
+                    Array.from($orderRadio).forEach(i => i.removeEventListener('change', switchSortType));
                     $loadMoreBtn.removeEventListener(CLICK, getMoreComment);
-                    [...$loadHideCommentInDisqus].forEach(i => i.removeEventListener(CLICK, checkDisqus));
+                    Array.from($loadHideCommentInDisqus).forEach(i => i.removeEventListener(CLICK, checkDisqus));
                 }
 
                 const getMoreComment = () => {
@@ -364,7 +364,7 @@ function DisqusJS(config) {
                     }
                 };
 
-                const url = `${disqusjs.config.api}3.0/threads/listPostsThreaded?forum=${disqusjs.config.shortname}&thread=${disqusjs.page.id}${cursorParam}&api_key=${apikey()}&order=${disqusjs.sortType}`;
+                const url = `${disqusjs.config.api}3.0/threads/listPostsThreaded?forum=${encodeURIComponent(disqusjs.config.shortname)}&thread=${encodeURIComponent(disqusjs.page.id)}${encodeURIComponent(cursorParam)}&api_key=${encodeURIComponent(apikey())}&order=${encodeURIComponent(disqusjs.sortType)}`;
 
                 _get(url).then(({ data }) => {
                     if (data.code === 0 && data.response.length > 0) {
@@ -381,8 +381,8 @@ function DisqusJS(config) {
                         renderComment(disqusjs.page.comment);
 
                         // 为排序按钮们委托事件
-                        [...$orderRadio].forEach(i => i.addEventListener('change', switchSortType));
-                        [...$loadHideCommentInDisqus].forEach(i => i.addEventListener(CLICK, checkDisqus));
+                        Array.from($orderRadio).forEach(i => i.addEventListener('change', switchSortType));
+                        Array.from($loadHideCommentInDisqus).forEach(i => i.addEventListener(CLICK, checkDisqus));
 
                         if (data.cursor.hasNext) {
                             // 将 cursor.next 存入 disqusjs 变量中供不能传参的不匿名函数使用
@@ -509,7 +509,8 @@ function DisqusJS(config) {
                     const el = document.createElement('div');
                     el.innerHTML = input;
                     const aTag = el.getElementsByTagName('a');
-                    [...aTag].forEach(i => {
+                    // Use Array.from(aTag) instead of [...aTag] because when using gulp, [..aTag] may be replaced by [].concat(aTag), which is not the same meaning.
+                    Array.from(aTag).forEach(i => {
                         const link = decodeURIComponent(i.href.replace(/https:\/\/disq\.us\/url\?url=/g, '')).replace(/(.*):.+cuid=.*/, '$1');
 
                         i.href = link;
