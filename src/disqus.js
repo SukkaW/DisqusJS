@@ -285,9 +285,9 @@ function DisqusJS(config) {
                 const unregisterListenerForSwitchTypeRadioAndGetMoreCommentBtn = () => {
                     // 为按钮们取消事件，避免重复绑定
                     // 重新 getComment() 时会重新绑定
-                    Array.from($orderRadio).forEach(i => i.removeEventListener('change', switchSortType));
+                    Array.prototype.slice.call($orderRadio).forEach(i => i.removeEventListener('change', switchSortType));
                     $loadMoreBtn.removeEventListener(CLICK, getMoreComment);
-                    Array.from($loadHideCommentInDisqus).forEach(i => i.removeEventListener(CLICK, checkDisqus));
+                    Array.prototype.slice.call($loadHideCommentInDisqus).forEach(i => i.removeEventListener(CLICK, checkDisqus));
                 }
 
                 const getMoreComment = () => {
@@ -381,8 +381,8 @@ function DisqusJS(config) {
                         renderComment(disqusjs.page.comment);
 
                         // 为排序按钮们委托事件
-                        Array.from($orderRadio).forEach(i => i.addEventListener('change', switchSortType));
-                        Array.from($loadHideCommentInDisqus).forEach(i => i.addEventListener(CLICK, checkDisqus));
+                        Array.prototype.slice.call($orderRadio).forEach(i => i.addEventListener('change', switchSortType));
+                        Array.prototype.slice.call($loadHideCommentInDisqus).forEach(i => i.addEventListener(CLICK, checkDisqus));
 
                         if (data.cursor.hasNext) {
                             // 将 cursor.next 存入 disqusjs 变量中供不能传参的不匿名函数使用
@@ -509,8 +509,8 @@ function DisqusJS(config) {
                     const el = document.createElement('div');
                     el.innerHTML = input;
                     const aTag = el.getElementsByTagName('a');
-                    // Use Array.from(aTag) instead of [...aTag] because when using gulp, [..aTag] may be replaced by [].concat(aTag), which is not the same meaning.
-                    Array.from(aTag).forEach(i => {
+                    // Use Array.prototype.slice.call(aTag) instead of [...aTag] because when using gulp, [..aTag] may be replaced by [].concat(aTag), which is not the same meaning.
+                    Array.prototype.slice.call(aTag).forEach(i => {
                         const link = decodeURIComponent(i.href.replace(/https:\/\/disq\.us\/url\?url=/g, '')).replace(/(.*):.+cuid=.*/, '$1');
 
                         i.href = link;
