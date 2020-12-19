@@ -239,7 +239,7 @@ DisqusJS v1.2.6 开始支持检测是否存在 Disqus 实例，并在加载 Disq
 - DIYgod: [Hi, DIYgod](https://diygod.me) ([source](https://github.com/DIYgod/diygod.me))
 - imlonghao: [Imlonghao](https://imlonghao.com/)
 - Yrom Wang: [Yrom's](https://yrom.net/) (Still using DisqusJS v0.2.5)
-- h404bi: [Chawye Hsu's Blog](https://www.h404bi.com/blog/) ([source](https://github.com/h404bi/www.h404bi.com))
+- chawyehsu: [The Art of Chawye Hsu](https://chawyehsu.com) ([source](https://github.com/chawyehsu/chawyehsu.com))
 - ysc3839: [YSC's blog](https://blog.ysc3839.com/)
 
 如果你的站点或者个人博客在使用 DisqusJS，来 [把你的网站分享给其他人吧](https://github.com/SukkaW/DisqusJS/issues/12)！
