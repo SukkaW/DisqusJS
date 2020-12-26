@@ -484,7 +484,7 @@ function DisqusJS(config) {
                             <a href="${data.comment.author.profileUrl}" ${HTML_TPL_A_ATTR}>${data.comment.author.name}</a>
                         </span>
                         */
-                        data.comment.avatarEl = `<a href="${data.comment.author.profileUrl}"><img src="${replaceDisquscdn(data.comment.author.avatar.cache)}" ${HTML_TPL_A_ATTR}></a>`
+                        data.comment.avatarEl = `<a href="${data.comment.author.profileUrl}" ${HTML_TPL_A_ATTR}><img src="${replaceDisquscdn(data.comment.author.avatar.cache)}"></a>`
                         data.comment.authorEl = `<span class="dsqjs-post-author"><a href="${data.comment.author.profileUrl}" ${HTML_TPL_A_ATTR}>${data.comment.author.name}</a></span>`
                     } else {
                         data.comment.avatarEl = `<img src="${replaceDisquscdn(data.comment.author.avatar.cache)}">`
