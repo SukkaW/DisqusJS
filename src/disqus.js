@@ -241,12 +241,14 @@ function DisqusJS(config) {
 
             /*
              * 获取 Thread 信息
-             * Disqus API 只支持通过 Thread ID 获取评论列表，所以必须先通过 identifier 获取当前页面 Thread ID
+             * Disqus API 只支持通过 Thread ID 获取评论列表，所以必须先通过 identifier 或 url 获取当前页面 Thread ID
              *
              * API Docs: https://disqus.com/api/docs/threads/list/
              * API URI: /3.0/threads/list.json?forum=[disqus_shortname]&thread=ident:[identifier]&api_key=[apikey]
              */
-            const url = `${disqusjs.config.api}3.0/threads/list.json?forum=${encodeURIComponent(disqusjs.config.shortname)}&thread=${encodeURIComponent(`ident:${disqusjs.config.identifier}`)}&api_key=${encodeURIComponent(apikey())}`;
+            const url = `${disqusjs.config.api}3.0/threads/list.json?forum=${encodeURIComponent(disqusjs.config.shortname)}&thread=` +
+                  encodeURIComponent(disqusjs.config.identifier ? `ident:${disqusjs.config.identifier}` : `link:${disqusjs.config.url}`) +
+                  `&api_key=${encodeURIComponent(apikey())}`;
 
             _get(url).then(({ data }) => {
                 if (data.code === 0 && data.response.length === 1) {
