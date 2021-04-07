@@ -366,7 +366,7 @@ function DisqusJS(config) {
                     }
                 };
 
-                const url = `${disqusjs.config.api}3.0/threads/listPostsThreaded?forum=${encodeURIComponent(disqusjs.config.shortname)}&thread=${encodeURIComponent(disqusjs.page.id)}${encodeURIComponent(cursorParam)}&api_key=${encodeURIComponent(apikey())}&order=${encodeURIComponent(disqusjs.sortType)}`;
+                const url = `${disqusjs.config.api}3.0/forums/listThreads.json?forum=${encodeURIComponent(disqusjs.config.shortname)}&thread=${encodeURIComponent(disqusjs.page.id)}${encodeURIComponent(cursorParam)}&api_key=${encodeURIComponent(apikey())}&order=${encodeURIComponent(disqusjs.sortType)}`;
 
                 _get(url).then(({ data }) => {
                     if (data.code === 0 && data.response.length > 0) {
