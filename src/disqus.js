@@ -330,9 +330,6 @@ function DisqusJS(config) {
                     getComment();
                 }
 
-                // 处理传入的 cursor
-                const cursorParam = (cursor === '') ? '' : `&cursor=${cursor}`;
-
                 // 在发起请求前禁用 加载更多评论 按钮防止重复调用
                 $loadMoreBtn.classList.add('dsqjs-disabled');
                 /*
@@ -366,7 +363,9 @@ function DisqusJS(config) {
                     }
                 };
 
-                const url = `${disqusjs.config.api}3.0/threads/listPosts.json?forum=${encodeURIComponent(disqusjs.config.shortname)}&thread=${encodeURIComponent(disqusjs.page.id)}${encodeURIComponent(cursorParam)}&api_key=${encodeURIComponent(apikey())}&order=${encodeURIComponent(disqusjs.sortType)}`;
+                const url = `${disqusjs.config.api}3.0/threads/listPosts.json?forum=${encodeURIComponent(disqusjs.config.shortname)}&thread=${encodeURIComponent(disqusjs.page.id)}` +
+                      (cursor === '' ? '' : `&cursor=${encodeURIComponent(cursor)}`) +
+                      `&api_key=${encodeURIComponent(apikey())}&order=${encodeURIComponent(disqusjs.sortType)}`;
 
                 _get(url).then(({ data }) => {
                     if (data.code === 0 && data.response.length > 0) {
