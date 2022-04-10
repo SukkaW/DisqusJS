@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "es2018",
+    "lib": ["esnext", "dom"],
+    "module": "commonjs",
+    "declaration": true,
+    "moduleResolution": "node",
+    "outDir": "./dist",
+    "strict": true,
+    "jsx":"react-jsx",
+    "jsxImportSource": "react",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": false
+  },
+  "include": ["src/**/*", "rollup.config.ts"],
+  "exclude": ["dist/**/*", "node_modules/**/*"]
+}

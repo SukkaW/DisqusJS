@@ -1,0 +1,20 @@
+{
+  "root": true,
+  "overrides": [
+    {
+      "files": ["**/*.ts", "**/*.tsx"],
+      "extends": [
+        "sukka/typescript",
+        "plugin:react-hooks/recommended"
+      ],
+      "plugins": [
+        "react-hooks"
+      ],
+      "parserOptions": {
+        "project": [
+          "./tsconfig.json"
+        ]
+      }
+    }
+  ]
+}
