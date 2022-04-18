@@ -65,7 +65,6 @@
   "dependencies": {
     "@rollup/plugin-commonjs": "^21.0.3",
     "@swc/helpers": "^0.3.8",
-    "jotai": "^1.6.3",
-    "swr": "^1.2.2"
+    "jotai": "^1.6.3"
   }
 }
