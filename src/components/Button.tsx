@@ -2,11 +2,14 @@ import { useSetAtom } from 'jotai';
 import { memo, useCallback } from 'react';
 import { disqusjsHasErrorAtom, disqusjsModeAtom } from '../state';
 
-export const DisqusJSLoadMoreCommentsButton = memo((props: JSX.IntrinsicElements['a']) => (
-  <a {...props} id="dsqjs-load-more" className="dsqjs-load-more" role="button">
-    加载更多评论
-  </a>
-));
+export const DisqusJSLoadMoreCommentsButton = memo((props: JSX.IntrinsicElements['a'] & { isError?: boolean }) => {
+  const { isError, ...restProps } = props;
+  return (
+    <a {...restProps} id="dsqjs-load-more" className={`dsqjs-load-more ${isError ? 'is-error' : ''}`} role="button">
+      {isError ? '加载失败，请重试' : '加载更多评论'}
+    </a>
+  );
+});
 
 if (process.env.NODE_ENV !== 'production') {
   DisqusJSLoadMoreCommentsButton.displayName = 'DisqusJSLoadMoreCommentsButton';

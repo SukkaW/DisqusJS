@@ -77,7 +77,7 @@ const DisqusJSPosts = (props: DisqusJSConfig & { id: string, isNexted?: boolean 
     Array.isArray(props.apikey) ? props.apikey : [props.apikey]
   ), [props.apikey]);
 
-  const { data, error, setSize } = useDisqusPosts(props.shortname, props.id, apiKeys, props.api);
+  const { data, error, setSize, size } = useDisqusPosts(props.shortname, props.id, apiKeys, props.api);
 
   const loadMoreCommentsButtonClickHandler = useCallback(() => {
     setSize(size => size + 1);
@@ -85,17 +85,19 @@ const DisqusJSPosts = (props: DisqusJSConfig & { id: string, isNexted?: boolean 
 
   const setDisqusJsHasError = useSetAtom(disqusjsHasErrorAtom);
   useEffect(() => {
-    if (error || (data && data.some(i => i.code !== 0))) {
-      return setDisqusJsHasError(true);
+    if (size < 1) {
+      if (error || (data && data.some(i => i.code !== 0))) {
+        setDisqusJsHasError(true);
+      }
     }
-  }, [setDisqusJsHasError, error, data]);
+  }, [setDisqusJsHasError, error, data, size]);
 
   if (data) {
     return (
       <>
-        <DisqusJSCommentsList comments={data.map(i => i.response).flat()} admin={props.admin} adminLabel={props.adminLabel} />
+        <DisqusJSCommentsList comments={data.filter(Boolean).map(i => i.response).flat()} admin={props.admin} adminLabel={props.adminLabel} />
         {
-          data[data.length - 1].cursor.hasNext && <DisqusJSLoadMoreCommentsButton onClick={loadMoreCommentsButtonClickHandler} />
+          data[data.length - 1].cursor.hasNext && <DisqusJSLoadMoreCommentsButton isError={error && size >= 1} onClick={loadMoreCommentsButtonClickHandler} />
         }
       </>
     );
@@ -109,7 +111,7 @@ export const DisqusJSThread = (props: DisqusJSConfig) => {
     Array.isArray(props.apikey) ? props.apikey : [props.apikey]
   ), [props.apikey]);
 
-  const { data, error } = useDisqusThread(props.shortname, props.identifier!, apiKeys);
+  const { data, error } = useDisqusThread(props.shortname, props.identifier, apiKeys);
   const setDisqusJsHasError = useSetAtom(disqusjsHasErrorAtom);
   const setDisqusJsMessage = useSetAtom(disqusjsMessageAtom);
 
