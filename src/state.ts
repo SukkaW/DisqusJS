@@ -1,6 +1,5 @@
 import { isBrowser } from './lib/util';
 import { atom } from 'jotai';
-import React from 'react';
 import { DisqusJsMode, DisqusJsSortType } from './types';
 
 const getDisqusJsModeDefaultValue = () => {
@@ -29,4 +28,4 @@ export const disqusjsHasErrorAtom = atom(false);
 export const disqusjsModeAtom = atom<DisqusJsMode>(getDisqusJsModeDefaultValue());
 export const disqusjsSortTypeAtom = atom<DisqusJsSortType>(getDisqusJsSortTypeDefaultValue());
 
-export const disqusjsMessageAtom = atom<React.ReactChild | null>(null);
+export const disqusjsMessageAtom = atom<JSX.Element | string | number | null>(null);

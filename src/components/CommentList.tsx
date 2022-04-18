@@ -22,7 +22,7 @@ function DisqusJSPostItem(props: DisqusJSCommentASTItem & PassedDownDisqusJSConf
   const avatarUrl = replaceDisqusCdn(props.comment.author.avatar.cache);
 
   return (
-    <li data-id="comment-${$comment.comment.id}" id="comment-${$comment.comment.id}">
+    <li id={`comment-${props.comment.id}`}>
       <div className="dsqjs-post-item dsqjs-clearfix">
         <div className="dsqjs-post-avatar">
           {profileUrl
@@ -46,7 +46,9 @@ function DisqusJSPostItem(props: DisqusJSCommentASTItem & PassedDownDisqusJSConf
             }
             {
               // authorEl admin label
-              props.admin === props.username && (<span className="dsqjs-admin-badge">{props.adminLabel}</span>)
+              props.admin === props.username && (
+                <span className="dsqjs-admin-badge">{props.adminLabel}</span>
+              )
             }
             {' '}
             <span className="dsqjs-bullet"></span>
@@ -78,7 +80,7 @@ function DisqusJSChildrenPostItems(props: { children: DisqusJSCommentASTItem[] |
   return (
     <ul className={`dsqjs-post-list ${(props.currentNesting ?? 1) < (props.nestingSetting ?? 4) ? 'dsqjs-children' : ''}`}>
       {props.children.map(comment => (
-        <DisqusJSPostItem {...comment} key={comment.comment.id} />
+        <DisqusJSPostItem {...comment} admin={props.admin} adminLabel={props.adminLabel} key={comment.comment.id} />
       ))}
     </ul>
   );
