@@ -8,6 +8,8 @@ const getElementFromConfig = (el?: string | Element) => (el
   ? (typeof el === 'string' ? document.querySelector(el) : el)
   : document.getElementById('disqus_thread'));
 
+export type { DisqusJSConfig };
+
 export default class DisqusJS {
   private config: DisqusJSConfig;
   private container?: Element;

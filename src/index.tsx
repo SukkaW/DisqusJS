@@ -1,7 +1,7 @@
 import { useAtomValue } from 'jotai';
 import { useDisqusJsMode } from './hooks/useDisqusJsMode';
 import { disqusjsModeAtom, disqusjsMessageAtom, disqusjsHasErrorAtom } from './state';
-import { DisqusJSConfig } from './types';
+import type { DisqusJSConfig } from './types';
 import { Disqus } from './components/Disqus';
 import { DisqusJSThread } from './components/Disscussion';
 import { DisqusJSFooter } from './components/Footer';
@@ -9,6 +9,8 @@ import { useEffect, useState } from 'react';
 
 import styles from './styles/disqusjs.module.sass';
 import { DisqusJSError } from './components/Error';
+
+export type { DisqusJSConfig };
 
 const DisqusJSEntry = (props: DisqusJSConfig) => {
   const disqusJsMode = useAtomValue(disqusjsModeAtom);
