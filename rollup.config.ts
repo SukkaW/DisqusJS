@@ -12,18 +12,20 @@ import type { JscTarget } from '@swc/core';
 
 let cache: RollupCache;
 
+const dtsOutput: Record<string, Set<string>> = {};
+
 const outputMatrix = (config: {
   input: string;
   format: 'iife' | 'umd' | 'es' | 'cjs';
   minify: boolean,
   target: JscTarget,
   bundle: boolean,
-  dev: boolean,
+  prod: boolean,
   browser: boolean,
   dts: boolean,
   dir?: string,
   preact: boolean,
-  visualizer?: boolean,
+  visualizer?: boolean
 }): RollupOptions[] => {
   const filenameBase = `${config.dir ?? 'dist'}/disqusjs${config.browser ? '.browser' : ''}.${config.target}.${config.format}${config.minify ? '.min' : ''}`;
   const ext = config.format === 'es' ? 'mjs' : 'js';
@@ -40,7 +42,6 @@ const outputMatrix = (config: {
           name: 'DisqusJS'
         })
       },
-      external: config.bundle ? undefined : ['react', 'react/jsx-runtime', 'react-dom', 'swr/immutable', 'swr/infinite', 'preact', 'preact/compat', 'preact/jsx-runtime', 'jotai'],
       plugins: [
         config.preact && alias({
           entries: {
@@ -52,18 +53,24 @@ const outputMatrix = (config: {
         }),
         nodeResolve(),
         commonjs(),
-        replace({
+        (config.prod || config.browser) && replace({
           preventAssignment: true,
-          'process.env.NODE_ENV': config.dev ? JSON.stringify('development') : JSON.stringify('production'),
+          ...(config.prod && {
+            'process.env.NODE_ENV': JSON.stringify('production'),
+            'import.meta.env && import.meta.env.MODE': JSON.stringify('production')
+          }),
           ...(config.browser && {
             'typeof window': JSON.stringify('object')
           })
         }),
         postcss({
-          modules: true,
-          extract: !config.bundle,
-          minimize: true,
-          plugins: []
+          modules: {
+            generateScopedName(name: string, filename: string, css: string) {
+              return `__${name}_${stringHash(css).toString(36).slice(0, 6)}`;
+            }
+          },
+          extract: 'styles/disqusjs.css',
+          minimize: true
         }),
         swc(defineRollupSwcOption({
           jsc: {
@@ -74,43 +81,45 @@ const outputMatrix = (config: {
             transform: {
               react: {
                 runtime: 'automatic',
-                importSource: config.preact ? 'preact' : 'react'
+                importSource: 'react'
               },
-              optimizer: {
-                globals: {
-                  vars: {
-                    'process.env.NODE_ENV': JSON.stringify('production')
-                  }
-                }
-              }
+              optimizer: {}
             },
             externalHelpers: true,
-            target: 'es2015',
+            target: config.target,
             minify: config.minify
-              ? { module: false }
+              ? { compress: {}, mangle: {} }
               : undefined
           },
           minify: config.minify
         })),
         process.env.ANALYZE === 'true' && config.visualizer && visualizer()
-      ]
+      ],
+      external: config.bundle ? undefined : ['react', 'react/jsx-runtime', 'react-dom', 'preact', 'preact/compat', 'preact/jsx-runtime', 'jotai']
     }
   ];
 
   if (config.dts) {
-    rollupOpts.push({
-      input: config.input,
-      cache,
-      output: {
-        file: `${filenameBase}.d.ts`
-      },
-      plugins: [
-        dts()
-      ]
-    });
+    dtsOutput[config.input] ??= new Set();
+    dtsOutput[config.input].add(`${filenameBase}.d.ts`);
   }
 
   return rollupOpts;
+};
+
+const dtsMatrix = (): RollupOptions[] => {
+  return Object.keys(dtsOutput).map(input => {
+    return {
+      input,
+      cache,
+      output: [...dtsOutput[input]].map(file => ({
+        file
+      })),
+      plugins: [
+        dts()
+      ]
+    };
+  });
 };
 
 const buildConfig: RollupOptions[] = [
@@ -120,7 +129,7 @@ const buildConfig: RollupOptions[] = [
     format: 'iife',
     minify: true,
     target,
-    dev: false,
+    prod: true,
     bundle: true,
     browser: true,
     dts: false,
@@ -134,7 +143,7 @@ const buildConfig: RollupOptions[] = [
         format: 'umd',
         minify: false,
         target,
-        dev: false,
+        prod: true,
         bundle: true,
         browser,
         dts: true,
@@ -149,7 +158,7 @@ const buildConfig: RollupOptions[] = [
     format: 'es',
     minify: true,
     target: 'es2018',
-    dev: false,
+    prod: true,
     bundle: true,
     browser: true,
     dts: false,
@@ -161,7 +170,7 @@ const buildConfig: RollupOptions[] = [
     format: 'es',
     minify: false,
     target: 'es2022',
-    dev: false,
+    prod: true,
     bundle: true,
     browser: false,
     dts: true,
@@ -175,28 +184,33 @@ const buildConfig: RollupOptions[] = [
           format,
           minify: false,
           target,
-          dev: false,
+          prod: false,
           bundle: false,
           browser: false,
           dts: true,
           dir: 'dist/react',
           preact: false
-        }),
-        outputMatrix({
-          input: 'src/index.tsx',
-          format,
-          minify: false,
-          target,
-          dev: false,
-          bundle: false,
-          browser: false,
-          dts: true,
-          dir: 'dist/preact',
-          preact: true
         })
       ]
     )
-  )
+  ),
+  dtsMatrix()
 ].flat();
+
+function stringHash(str: string) {
+  let hash = 5381;
+  let i = str.length;
+
+  while (i) {
+    // eslint-disable-next-line no-bitwise
+    hash = (hash * 33) ^ str.charCodeAt(--i);
+  }
+
+  /* JavaScript does bitwise operations (like XOR, above) on 32-bit signed
+   * integers. Since we want the results to be always positive, convert the
+   * signed int to an unsigned by doing an unsigned bitshift. */
+  // eslint-disable-next-line no-bitwise
+  return hash >>> 0;
+}
 
 export default buildConfig;
