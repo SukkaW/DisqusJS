@@ -26,21 +26,29 @@ const outputMatrix = (config: {
   dir?: string,
   preact: boolean,
 }): RollupOptions[] => {
-  const filenameBase = `${config.dir ?? 'dist'}/disqusjs${config.browser ? '.browser' : ''}.${config.target}.${config.format}${config.minify ? '.min' : ''}`;
-  const ext = config.format === 'es' ? 'mjs' : 'js';
+  const filenameBase = `${config.dir ?? 'dist'}${config.browser ? '/browser' : ''}/disqusjs.${config.target}.${config.format}${config.minify ? '.min' : ''}`;
 
   const rollupOpts: RollupOptions[] = [
     {
       input: config.input,
       cache,
-      output: {
-        format: config.format,
-        file: `${filenameBase}.${ext}`,
-        sourcemap: false,
-        ...((config.format === 'iife' || config.format === 'umd') && {
-          name: 'DisqusJS'
-        })
-      },
+      output: config.format === 'es'
+        ? ([`${filenameBase}.js`, `${filenameBase}.mjs`] as const).map(file => ({
+          format: config.format,
+          file,
+          sourcemap: false,
+          ...((config.format === 'iife' || config.format === 'umd') && {
+            name: 'DisqusJS'
+          })
+        }))
+        : {
+          format: config.format,
+          file: `${filenameBase}.js`,
+          sourcemap: false,
+          ...((config.format === 'iife' || config.format === 'umd') && {
+            name: 'DisqusJS'
+          })
+        },
       plugins: [
         config.preact && alias({
           entries: [
@@ -89,7 +97,7 @@ const outputMatrix = (config: {
             externalHelpers: true,
             target: config.target,
             minify: config.minify
-              ? { compress: {}, mangle: {} }
+              ? { compress: { unsafe: true }, mangle: {} }
               : undefined
           },
           minify: config.minify,
@@ -129,7 +137,7 @@ const dtsMatrix = (): RollupOptions[] => {
 const buildConfig: RollupOptions[] = process.env.ANALYZE === 'true'
   ? outputMatrix({
     input: './src/browser.tsx',
-    format: 'iife',
+    format: 'umd',
     minify: true,
     target: 'es2015',
     prod: true,
@@ -140,32 +148,43 @@ const buildConfig: RollupOptions[] = process.env.ANALYZE === 'true'
   })
   : [
     // For browser script tag only, no dts
-    ...(['es2015', 'es2017'] as const).map(target => outputMatrix({
+    outputMatrix({
       input: './src/browser.tsx',
-      format: 'iife',
+      format: 'umd',
       minify: true,
-      target,
+      target: 'es2015',
       prod: true,
       bundle: true,
       browser: true,
       dts: false,
       preact: true
-    })),
+    }),
     // For browserify, webpack, Node.js SSR library in CJS environment
     ...(['es2015', 'es2017', 'es2022'] as const).flatMap(
-      target => [true, false].map(
-        browser => outputMatrix({
-          input: './src/browser.tsx',
-          format: 'umd',
-          minify: false,
-          target,
-          prod: true,
-          bundle: true,
-          browser,
-          dts: true,
-          preact: true
-        })
-      )
+      target => (['es', 'umd'] as const).map(format => outputMatrix({
+        input: './src/browser.tsx',
+        format,
+        minify: false,
+        target,
+        prod: true,
+        bundle: true,
+        browser: false,
+        dts: true,
+        preact: true
+      }))
+    ),
+    ...(['es2015', 'es2017', 'es2022'] as const).map(
+      target => outputMatrix({
+        input: './src/browser.tsx',
+        format: 'es',
+        minify: false,
+        target,
+        prod: true,
+        bundle: true,
+        browser: false,
+        dts: true,
+        preact: true
+      })
     ),
     // For browser script[module] tag only, no dts
     outputMatrix({
