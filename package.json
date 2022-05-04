@@ -1,6 +1,6 @@
 {
   "name": "disqusjs",
-  "version": "3.0.0-experimental.3",
+  "version": "3.0.0-experimental.4",
   "description": "Alternative DISQUS - Render comments components from Disqus API",
   "main": "dist/disqusjs.es2015.umd.js",
   "types": "dist/disqusjs.es2015.umd.d.ts",
@@ -37,6 +37,12 @@
       "default": "./dist/disqusjs.es2022.umd.js"
     },
     "./react/styles/disqusjs.css": "./dist/react/styles/disqusjs.css",
+    "./react": {
+      "types": "./dist/react/disqusjs.es2015.cjs.d.ts",
+      "module": "./dist/react/disqusjs.es2015.es.js",
+      "import": "./dist/react/disqusjs.es2015.es.mjs",
+      "default": "./dist/react/disqusjs.es2015.cjs.js"
+    },
     "./react/es2015": {
       "types": "./dist/react/disqusjs.es2015.cjs.d.ts",
       "module": "./dist/react/disqusjs.es2015.es.js",
