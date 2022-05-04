@@ -1,9 +1,9 @@
-import ReactDOM from 'react-dom/client';
-import { DisqusJS } from '../../src'
+import { createRoot } from 'react-dom/client';
+import { DisqusJS } from '../../src';
 
 const container = document.getElementById('app');
 if (container) {
-  const root = ReactDOM.createRoot(container);
+  const root = createRoot(container);
   root.render(
     <DisqusJS
       shortname="sukas-blog"
