@@ -27,30 +27,49 @@ const getDisqusJsSortTypeDefaultValue = () => {
 
 interface State {
   mode: DisqusJsMode;
-  setMode: (mode: DisqusJsMode) => void;
-  checkMode: (shortname: string) => void;
   sortType: DisqusJsSortType;
-  setSortType: (sortType: DisqusJsSortType) => void;
   error: boolean;
-  setError: (error: boolean) => void;
   msg: JSX.Element | string | number | null;
-  setMsg: (msg: JSX.Element | string | number | null) => void;
   thread: null | DisqusAPI.Thread;
-  fetchThread: (shortname: string, identifier: string, apiKeys: string[], api?: string) => Promise<void>;
   posts: DisqusAPI.Posts[];
   loadingPosts: boolean;
   morePostsError: boolean;
-  fetchMorePosts: (shortname: string, identifier: string, apiKeys: string[], api?: string) => Promise<void>;
 }
 
-export const useStore = create<State>((set, get) => ({
+interface StateActions {
+  setMode: (mode: DisqusJsMode) => void;
+  checkMode: (shortname: string) => void;
+  setSortType: (sortType: DisqusJsSortType) => void;
+  setError: (error: boolean) => void;
+  setMsg: (msg: JSX.Element | string | number | null) => void;
+  fetchThread: (shortname: string, identifier: string, apiKeys: string[], api?: string) => Promise<void>;
+  fetchMorePosts: (shortname: string, identifier: string, apiKeys: string[], api?: string) => Promise<void>;
+  resetPosts: () => void;
+
+  reset: () => void;
+}
+
+const initialState: State = {
   mode: getDisqusJsModeDefaultValue(),
+  sortType: getDisqusJsSortTypeDefaultValue(),
+  error: false,
+  msg: null,
+  thread: null,
+  posts: [],
+  loadingPosts: false,
+  morePostsError: false
+};
+
+export const useStore = create<State & StateActions>((set, get) => ({
+  ...initialState,
+
   setMode(mode: DisqusJsMode) {
     set({ mode });
     if (isBrowser && mode) {
       localStorage.setItem('dsqjs_mode', mode);
     }
   },
+
   checkMode(shortname: string) {
     set({ msg: '正在检查 Disqus 能否访问...' });
     Promise.all((['disqus.com', `${shortname}.disqus.com`]).map(checkDomainAccessiblity))
@@ -63,7 +82,6 @@ export const useStore = create<State>((set, get) => ({
       });
   },
 
-  sortType: getDisqusJsSortTypeDefaultValue(),
   setSortType(sortType: DisqusJsSortType) {
     set({ sortType });
     if (isBrowser && sortType) {
@@ -71,17 +89,14 @@ export const useStore = create<State>((set, get) => ({
     }
   },
 
-  error: false,
   setError(error: boolean) {
     set({ error });
   },
 
-  msg: null,
-  setMsg: (msg: JSX.Element | string | number | null) => {
+  setMsg(msg: JSX.Element | string | number | null) {
     set({ msg });
   },
 
-  thread: null,
   async fetchThread(shortname: string, identifier: string, apiKeys: string[], api = 'https://disqus.com/api/') {
     try {
       const thread = await disqusJsApiFetcher<DisqusAPI.Thread>(apiKeys)(`${api}3.0/threads/list.json?forum=${encodeURIComponent(shortname)}&thread=${encodeURIComponent(`ident:${identifier}`)}`);
@@ -95,9 +110,10 @@ export const useStore = create<State>((set, get) => ({
     }
   },
 
-  posts: [],
-  loadingPosts: false,
-  morePostsError: false,
+  resetPosts() {
+    set({ posts: [], loadingPosts: false, morePostsError: false });
+  },
+
   async fetchMorePosts(shortname: string, id: string | null, apiKeys: string[], api = 'https://disqus.com/api/') {
     set({ loadingPosts: true, morePostsError: false });
     if (!id) return;
@@ -130,5 +146,9 @@ export const useStore = create<State>((set, get) => ({
     } catch {
       handleError();
     }
+  },
+
+  reset() {
+    set({ ...initialState });
   }
 }));

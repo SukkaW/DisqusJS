@@ -71,17 +71,18 @@ if (process.env.NODE_ENV !== 'production') {
   DisqusJSHeader.displayName = 'DisqusJSHeader';
 }
 
-const DisqusJSPosts = (props: DisqusJSConfig & { id: string, isNexted?: boolean }) => {
+const DisqusJSPosts = (props: DisqusJSConfig & { id: string }) => {
   const apiKeys = useMemo(() => (
     Array.isArray(props.apikey) ? props.apikey : [props.apikey]
   ), [props.apikey]);
 
   const posts = useStore(state => state.posts);
+  const resetPosts = useStore(state => state.resetPosts);
   const errorWhenLoadMorePosts = useStore(state => state.morePostsError);
   const isLoadingMorePosts = useStore(state => state.loadingPosts);
   const fetchMorePosts = useStore(state => state.fetchMorePosts);
 
-  const fetchFirstPageRef = useRef(false);
+  const fetchFirstPageRef = useRef<string | null>(null);
 
   const fetchNextPageOfPosts = useCallback(
     () => fetchMorePosts(props.shortname, props.id, apiKeys, props.api),
@@ -90,11 +91,12 @@ const DisqusJSPosts = (props: DisqusJSConfig & { id: string, isNexted?: boolean 
 
   useEffect(() => {
     // When there is no posts at all, load the first pagination of posts.
-    if (posts.length === 0 && !fetchFirstPageRef.current) {
-      fetchFirstPageRef.current = true;
+    if (fetchFirstPageRef.current !== props.id) {
+      resetPosts();
+      fetchFirstPageRef.current = props.id;
       fetchNextPageOfPosts();
     }
-  }, [posts, fetchNextPageOfPosts]);
+  }, [posts, fetchNextPageOfPosts, props.id, resetPosts]);
 
   const loadMoreCommentsButtonClickHandler = useCallback(() => {
     fetchNextPageOfPosts();
@@ -129,17 +131,19 @@ export const DisqusJSThread = (props: DisqusJSConfig) => {
   const fetchThread = useStore(state => state.fetchThread);
   const setDisqusJsMessage = useStore(state => state.setMsg);
 
-  const fetchThreadRef = useRef(false);
+  const fetchThreadRef = useRef<string | null>(null);
+
+  const identifier = props.identifier ?? document.location.origin + document.location.pathname + document.location.search;
 
   useEffect(() => {
-    if (!thread && !fetchThreadRef.current) {
+    if (fetchThreadRef.current !== identifier) {
       setDisqusJsMessage(
         <>
           评论基础模式加载中... 如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并 <DisqusJSReTestModeButton>尝试完整 Disqus 模式</DisqusJSReTestModeButton> | <DisqusJSForceDisqusModeButton>强制完整 Disqus 模式</DisqusJSForceDisqusModeButton>
         </>
       );
-      fetchThreadRef.current = true;
-      fetchThread(props.shortname, props.identifier ?? document.location.origin + document.location.pathname + document.location.search, apiKeys, props.api);
+      fetchThreadRef.current = identifier;
+      fetchThread(props.shortname, identifier, apiKeys, props.api);
     } else {
       setDisqusJsMessage(
         <>
@@ -147,7 +151,7 @@ export const DisqusJSThread = (props: DisqusJSConfig) => {
         </>
       );
     }
-  }, [thread, fetchThread, setDisqusJsMessage, props.shortname, props.identifier, props.api, apiKeys]);
+  }, [thread, fetchThread, identifier, setDisqusJsMessage, props.shortname, props.api, apiKeys]);
 
   if (!thread) {
     return null;
