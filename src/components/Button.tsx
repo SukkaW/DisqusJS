@@ -1,6 +1,5 @@
-import { useSetAtom } from 'jotai';
 import { memo, useCallback } from 'react';
-import { disqusjsHasErrorAtom, disqusjsModeAtom } from '../state';
+import { useStore } from '../state';
 
 export const DisqusJSLoadMoreCommentsButton = memo((props: JSX.IntrinsicElements['a'] & { isError?: boolean }) => {
   const { isError, ...restProps } = props;
@@ -16,7 +15,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 export const DisqusJSForceDisqusModeButton = memo((props: { children: React.ReactChild }) => {
-  const setDisqusJsMode = useSetAtom(disqusjsModeAtom);
+  const setDisqusJsMode = useStore(state => state.setMode);
   const onClickHandler = useCallback(() => {
     setDisqusJsMode('disqus');
     localStorage.setItem('dsqjs_mode', 'disqus');
@@ -32,7 +31,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 export const DisqusJSReTestModeButton = memo((props: { children: React.ReactChild }) => {
-  const setDisqusJsMode = useSetAtom(disqusjsModeAtom);
+  const setDisqusJsMode = useStore(state => state.setMode);
   const onClickHandler = useCallback(() => {
     setDisqusJsMode(null);
     localStorage.removeItem('dsqjs_mode');
@@ -48,7 +47,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 export const DisqusJSForceDisqusJsModeButton = memo((props: { children: React.ReactChild }) => {
-  const setDisqusJsMode = useSetAtom(disqusjsModeAtom);
+  const setDisqusJsMode = useStore(state => state.setMode);
   const onClickHandler = useCallback(() => {
     setDisqusJsMode('dsqjs');
     localStorage.setItem('dsqjs_mode', 'dsqjs');
@@ -64,7 +63,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 export const DisqusJSRetryButton = memo((props: { children: React.ReactChild }) => {
-  const setDisqusJsHasError = useSetAtom(disqusjsHasErrorAtom);
+  const setDisqusJsHasError = useStore(state => state.setError);
   const handleClick = useCallback(() => {
     setDisqusJsHasError(false);
   }, [setDisqusJsHasError]);

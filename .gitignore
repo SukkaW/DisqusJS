@@ -4,7 +4,6 @@ node_modules
 .idea
 .directory
 _build
-public
 dist
 package-lock.json
 stats.html

@@ -1,8 +1,7 @@
 import { memo, useEffect, useState } from 'react';
 import { isBrowser } from '../lib/util';
 import { DisqusConfig } from '../types';
-import { useSetAtom } from 'jotai';
-import { disqusjsMessageAtom } from '../state';
+import { useStore } from '../state';
 import { DisqusJSForceDisqusJsModeButton } from './Button';
 
 const THREAD_ID = 'disqus_thread';
@@ -22,7 +21,7 @@ declare global {
 }
 
 export const Disqus = memo((props: DisqusConfig) => {
-  const setDisqusJsMessage = useSetAtom(disqusjsMessageAtom);
+  const setDisqusJsMessage = useStore(state => state.setMsg);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {

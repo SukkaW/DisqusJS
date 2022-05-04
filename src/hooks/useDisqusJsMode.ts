@@ -2,8 +2,7 @@ import { useEffect } from 'react';
 import { isBrowser } from '../lib/util';
 
 import type { DisqusJsMode } from '../types';
-import { disqusjsModeAtom, disqusjsMessageAtom } from '../state';
-import { useSetAtom } from 'jotai';
+import { useStore } from '../state';
 
 const checkDomainAccessiblity = (domain: string) => {
   return new Promise<void>((resolve, reject) => {
@@ -30,8 +29,8 @@ const checkDomainAccessiblity = (domain: string) => {
 };
 
 export const useDisqusJsMode = (initialValue: DisqusJsMode, shortname: string) => {
-  const setDisqusjsMode = useSetAtom(disqusjsModeAtom);
-  const setDisqusJsMessage = useSetAtom(disqusjsMessageAtom);
+  const setDisqusjsMode = useStore(state => state.setMode);
+  const setDisqusJsMessage = useStore(state => state.setMsg);
 
   useEffect(() => {
     if (isBrowser) {

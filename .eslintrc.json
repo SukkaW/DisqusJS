@@ -3,6 +3,18 @@
   "ignorePatterns": "dist/**",
   "overrides": [
     {
+      "files": ["**/*.js"],
+      "extends": [
+        "sukka/node"
+      ],
+      "env": {
+        "es6": true
+      },
+      "parserOptions": {
+        "ecmaVersion": 2021
+      }
+    },
+    {
       "files": ["**/*.ts", "**/*.tsx"],
       "extends": [
         "sukka/typescript",

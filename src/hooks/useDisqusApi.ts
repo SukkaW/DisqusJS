@@ -1,6 +1,5 @@
-import { useAtomValue } from 'jotai';
 import { disqusJsApiFetcher } from '../lib/util';
-import { disqusjsSortTypeAtom } from '../state';
+import { useStore } from '../state';
 import type { DisqusAPI } from '../types';
 import { useFetch, useFetchInfinite } from './useFetch';
 
@@ -16,7 +15,7 @@ export const useDisqusThread = (shortname: string, identifier: string | undefine
 };
 
 export const useDisqusPosts = (shortname: string, id: string | null, apiKeys: string[], api = 'https://disqus.com/api/') => {
-  const sortType = useAtomValue(disqusjsSortTypeAtom);
+  const sortType = useStore(state => state.sortType);
 
   const getKey = (pageIndex: number, previousData: DisqusAPI.Posts | undefined) => {
     if (!id) return null;

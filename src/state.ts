@@ -1,6 +1,7 @@
 import { isBrowser } from './lib/util';
-import { atom } from 'jotai';
 import { DisqusJsMode, DisqusJsSortType } from './types';
+
+import create from 'zustand';
 
 const getDisqusJsModeDefaultValue = () => {
   if (isBrowser) {
@@ -24,8 +25,38 @@ const getDisqusJsSortTypeDefaultValue = () => {
   return null;
 };
 
-export const disqusjsHasErrorAtom = atom(false);
-export const disqusjsModeAtom = atom<DisqusJsMode>(getDisqusJsModeDefaultValue());
-export const disqusjsSortTypeAtom = atom<DisqusJsSortType>(getDisqusJsSortTypeDefaultValue());
+interface State {
+  mode: DisqusJsMode;
+  setMode: (mode: DisqusJsMode) => void;
+  sortType: DisqusJsSortType;
+  setSortType: (sortType: DisqusJsSortType) => void;
+  error: boolean;
+  setError: (error: boolean) => void;
+  msg: JSX.Element | string | number | null;
+  setMsg: (msg: JSX.Element | string | number | null) => void;
+}
 
-export const disqusjsMessageAtom = atom<JSX.Element | string | number | null>(null);
+export const useStore = create<State>(set => ({
+  mode: getDisqusJsModeDefaultValue(),
+  setMode: (mode: DisqusJsMode) => {
+    set({ mode });
+    if (isBrowser && mode) {
+      localStorage.setItem('dsqjs_mode', mode);
+    }
+  },
+  sortType: getDisqusJsSortTypeDefaultValue(),
+  setSortType: (sortType: DisqusJsSortType) => {
+    set({ sortType });
+    if (isBrowser && sortType) {
+      localStorage.setItem('dsqjs_sort', sortType);
+    }
+  },
+  error: false,
+  setError: (error: boolean) => {
+    set({ error });
+  },
+  msg: null,
+  setMsg: (msg: JSX.Element | string | number | null) => {
+    set({ msg });
+  }
+}));

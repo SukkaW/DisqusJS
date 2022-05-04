@@ -95,7 +95,7 @@ const outputMatrix = (config: {
         })),
         process.env.ANALYZE === 'true' && config.visualizer && visualizer()
       ],
-      external: config.bundle ? undefined : ['react', 'react/jsx-runtime', 'react-dom', 'preact', 'preact/compat', 'preact/jsx-runtime', 'jotai']
+      external: config.bundle ? undefined : ['react', 'react/jsx-runtime', 'react-dom', 'preact', 'preact/compat', 'preact/jsx-runtime', 'jotai', 'zustand']
     }
   ];
 

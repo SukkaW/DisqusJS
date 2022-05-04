@@ -1,6 +1,5 @@
-import { useAtomValue } from 'jotai';
 import { useDisqusJsMode } from './hooks/useDisqusJsMode';
-import { disqusjsModeAtom, disqusjsMessageAtom, disqusjsHasErrorAtom } from './state';
+import { useStore } from './state';
 import type { DisqusJSConfig } from './types';
 import { Disqus } from './components/Disqus';
 import { DisqusJSThread } from './components/Disscussion';
@@ -13,7 +12,7 @@ import { DisqusJSError } from './components/Error';
 export type { DisqusJSConfig };
 
 const DisqusJSEntry = (props: DisqusJSConfig) => {
-  const disqusJsMode = useAtomValue(disqusjsModeAtom);
+  const disqusJsMode = useStore(state => state.mode);
   useDisqusJsMode(disqusJsMode, props.shortname);
 
   if (disqusJsMode === 'disqus') {
@@ -30,8 +29,8 @@ const DisqusJSEntry = (props: DisqusJSConfig) => {
 };
 
 export const DisqusJS = (props: DisqusJSConfig) => {
-  const msg = useAtomValue(disqusjsMessageAtom);
-  const disqusJsHasError = useAtomValue(disqusjsHasErrorAtom);
+  const msg = useStore(state => state.msg);
+  const disqusJsHasError = useStore(state => state.error);
 
   const [startClientSideRender, setStartClientSideRender] = useState(false);
   useEffect(() => {

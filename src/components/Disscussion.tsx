@@ -4,11 +4,11 @@ import { memo, useCallback, useEffect, useMemo } from 'react';
 import { DisqusJSCreateThread, DisqusJSNoComment } from './Error';
 import { DisqusJSCommentsList } from './CommentList';
 import { DisqusJSForceDisqusModeButton, DisqusJSLoadMoreCommentsButton, DisqusJSReTestModeButton } from './Button';
-import { useAtom, useSetAtom } from 'jotai';
-import { disqusjsHasErrorAtom, disqusjsMessageAtom, disqusjsSortTypeAtom } from '../state';
+import { useStore } from '../state';
 
 const DisqusJSSortTypeRadio = memo(() => {
-  const [sortType, setSortType] = useAtom(disqusjsSortTypeAtom);
+  const sortType = useStore(state => state.sortType);
+  const setSortType = useStore(state => state.setSortType);
 
   const onChangeHandler = useCallback((value: DisqusJsSortType) => () => {
     setSortType(value);
@@ -83,7 +83,7 @@ const DisqusJSPosts = (props: DisqusJSConfig & { id: string, isNexted?: boolean 
     setSize(size => size + 1);
   }, [setSize]);
 
-  const setDisqusJsHasError = useSetAtom(disqusjsHasErrorAtom);
+  const setDisqusJsHasError = useStore(state => state.setError);
   useEffect(() => {
     if (size < 1) {
       if (error || (data && data.some(i => i.code !== 0))) {
@@ -112,8 +112,8 @@ export const DisqusJSThread = (props: DisqusJSConfig) => {
   ), [props.apikey]);
 
   const { data, error } = useDisqusThread(props.shortname, props.identifier, apiKeys);
-  const setDisqusJsHasError = useSetAtom(disqusjsHasErrorAtom);
-  const setDisqusJsMessage = useSetAtom(disqusjsMessageAtom);
+  const setDisqusJsHasError = useStore(state => state.setError);
+  const setDisqusJsMessage = useStore(state => state.setMsg);
 
   useEffect(() => {
     if (error || (data && data.code !== 0)) {
