@@ -7,7 +7,7 @@ const staticFiles = require('rollup-plugin-static-files');
 const refresh = require('rollup-plugin-react-refresh');
 
 const config = {
-  input: './docs/src/main.tsx',
+  input: './example/src/main.tsx',
   output: {
     dir: 'dist',
     format: 'esm',
@@ -54,7 +54,7 @@ const config = {
 if (process.env.NODE_ENV === 'production') {
   config.plugins = config.plugins.concat([
     staticFiles({
-      include: ['./public']
+      include: ['./example/public']
     })
   ]);
 }

@@ -13,6 +13,6 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": false
   },
-  "include": ["src/**/*", "docs/**/*", "rollup.config.ts"],
+  "include": ["src/**/*", "example/**/*", "rollup.config.ts"],
   "exclude": ["dist/**/*", "node_modules/**/*"]
 }

@@ -1,5 +1,5 @@
 module.exports = {
-    contentBase: './docs/public',
+    contentBase: './example/public',
     port: 9001,
     hot: true
 };

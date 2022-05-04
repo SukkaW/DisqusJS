@@ -66,7 +66,7 @@
     "build": "NODE_ENV=production rollup --configPlugin swc3 -c rollup.config.ts",
     "prepublishOnly": "npm run build",
     "build:analyze": "NODE_ENV=production ANALYZE=true rollup --configPlugin swc3 -c rollup.config.ts",
-    "dev": "nollup -c ./docs/rollup.config.js --rc ./docs/.nolluprc.js --environment NODE_ENV:development"
+    "dev": "nollup -c ./example/rollup.config.js --rc ./example/.nolluprc.js --environment NODE_ENV:development"
   },
   "repository": {
     "type": "git",
