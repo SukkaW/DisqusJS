@@ -3,7 +3,8 @@ import type { DisqusJSConfig } from './types';
 import { Disqus } from './components/Disqus';
 import { DisqusJSThread } from './components/Disscussion';
 import { DisqusJSFooter } from './components/Footer';
-import React, { forwardRef, useEffect, useState } from 'react';
+import { forwardRef, useEffect, useState } from 'react';
+import type React from 'react';
 
 import styles from './styles/disqusjs.module.sass';
 import { DisqusJSError } from './components/Error';
