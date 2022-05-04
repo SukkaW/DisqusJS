@@ -1,11 +1,70 @@
 {
   "name": "disqusjs",
-  "version": "2.0.0",
+  "version": "3.0.0-experimental.3",
   "description": "Alternative DISQUS - Render comments components from Disqus API",
-  "main": "dist/disqus.umd.es2015.js",
-  "types": "dist/disqusjs.d.ts",
+  "main": "dist/disqusjs.es2015.umd.js",
+  "types": "dist/disqusjs.es2015.umd.d.ts",
+  "module": "dist/disqusjs.es2015.es.mjs",
+  "files": [
+    "dist/**/*",
+    "LICENSE"
+  ],
+  "exports": {
+    "./package.json": "./package.json",
+    "./styles/disqusjs.css": "./dist/styles/disqusjs.css",
+    ".": {
+      "types": "./dist/disqusjs.es2015.umd.d.ts",
+      "module": "./dist/disqusjs.es2015.es.js",
+      "import": "./dist/disqusjs.es2015.es.mjs",
+      "default": "./dist/disqusjs.es2015.umd.js"
+    },
+    "./es2015": {
+      "types": "./dist/disqusjs.es2015.umd.d.ts",
+      "module": "./dist/disqusjs.es2015.es.js",
+      "import": "./dist/disqusjs.es2015.es.mjs",
+      "default": "./dist/disqusjs.es2015.umd.js"
+    },
+    "./es2017": {
+      "types": "./dist/disqusjs.es2017.umd.d.ts",
+      "module": "./dist/disqusjs.es2017.es.js",
+      "import": "./dist/disqusjs.es2017.es.mjs",
+      "default": "./dist/disqusjs.es2017.umd.js"
+    },
+    "./es2022": {
+      "types": "./dist/disqusjs.es2022.umd.d.ts",
+      "module": "./dist/disqusjs.es2022.es.js",
+      "import": "./dist/disqusjs.es2022.es.mjs",
+      "default": "./dist/disqusjs.es2022.umd.js"
+    },
+    "./react/styles/disqusjs.css": "./dist/react/styles/disqusjs.css",
+    "./react/es2015": {
+      "types": "./dist/react/disqusjs.es2015.cjs.d.ts",
+      "module": "./dist/react/disqusjs.es2015.es.js",
+      "import": "./dist/react/disqusjs.es2015.es.mjs",
+      "default": "./dist/react/disqusjs.es2015.cjs.js"
+    },
+    "./react/es2017": {
+      "types": "./dist/react/disqusjs.es2017.cjs.d.ts",
+      "module": "./dist/react/disqusjs.es2017.es.js",
+      "import": "./dist/react/disqusjs.es2017.es.mjs",
+      "default": "./dist/react/disqusjs.es2017.cjs.js"
+    },
+    "./react/es2022": {
+      "types": "./dist/react/disqusjs.es2022.cjs.d.ts",
+      "module": "./dist/react/disqusjs.es2022.es.js",
+      "import": "./dist/react/disqusjs.es2022.es.mjs",
+      "default": "./dist/react/disqusjs.es2022.cjs.js"
+    },
+    "./browser": {
+      "module": "./dist/browser/disqusjs.es2018.es.min.js",
+      "import": "./dist/browser/disqusjs.es2018.es.min.mjs",
+      "default": "./dist/browser/disqusjs.es2015.umd.min.js"
+    }
+  },
   "scripts": {
+    "prebuild": "rimraf dist",
     "build": "NODE_ENV=production rollup --configPlugin swc3 -c rollup.config.ts",
+    "prepublishOnly": "npm run build",
     "build:analyze": "NODE_ENV=production ANALYZE=true rollup --configPlugin swc3 -c rollup.config.ts",
     "dev": "nollup -c ./docs/rollup.config.js --rc ./docs/.nolluprc.js --environment NODE_ENV:development"
   },
@@ -44,6 +103,7 @@
     "@rollup/plugin-node-resolve": "^13.3.0",
     "@rollup/plugin-replace": "^4.0.0",
     "@swc/core": "^1.2.176",
+    "@swc/helpers": "^0.3.13",
     "@types/node": "^17.0.31",
     "@types/react": "^18.0.8",
     "@types/react-dom": "^18.0.3",
@@ -60,6 +120,7 @@
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "react-refresh": "^0.9.0",
+    "rimraf": "^3.0.2",
     "rollup": "^2.71.1",
     "rollup-plugin-commonjs-alternate": "^0.8.0",
     "rollup-plugin-dts": "^4.2.1",
@@ -72,7 +133,6 @@
     "sass": "^1.51.0"
   },
   "dependencies": {
-    "@swc/helpers": "^0.3.13",
     "zustand": "^4.0.0-rc.1"
   }
 }
