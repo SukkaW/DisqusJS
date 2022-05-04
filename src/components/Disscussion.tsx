@@ -1,5 +1,5 @@
 import type { DisqusJSConfig, DisqusJsSortType } from '../types';
-import { memo, useCallback, useEffect, useMemo } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import { DisqusJSCreateThread, DisqusJSNoComment } from './Error';
 import { DisqusJSCommentsList } from './CommentList';
 import { DisqusJSForceDisqusModeButton, DisqusJSLoadMoreCommentsButton, DisqusJSReTestModeButton } from './Button';
@@ -81,6 +81,8 @@ const DisqusJSPosts = (props: DisqusJSConfig & { id: string, isNexted?: boolean 
   const isLoadingMorePosts = useStore(state => state.loadingPosts);
   const fetchMorePosts = useStore(state => state.fetchMorePosts);
 
+  const fetchFirstPageRef = useRef(false);
+
   const fetchNextPageOfPosts = useCallback(
     () => fetchMorePosts(props.shortname, props.id, apiKeys, props.api),
     [apiKeys, fetchMorePosts, props.api, props.id, props.shortname]
@@ -88,7 +90,8 @@ const DisqusJSPosts = (props: DisqusJSConfig & { id: string, isNexted?: boolean 
 
   useEffect(() => {
     // When there is no posts at all, load the first pagination of posts.
-    if (posts.length === 0) {
+    if (posts.length === 0 && !fetchFirstPageRef.current) {
+      fetchFirstPageRef.current = true;
       fetchNextPageOfPosts();
     }
   }, [posts, fetchNextPageOfPosts]);
@@ -126,13 +129,16 @@ export const DisqusJSThread = (props: DisqusJSConfig) => {
   const fetchThread = useStore(state => state.fetchThread);
   const setDisqusJsMessage = useStore(state => state.setMsg);
 
+  const fetchThreadRef = useRef(false);
+
   useEffect(() => {
-    if (!thread) {
+    if (!thread && !fetchThreadRef.current) {
       setDisqusJsMessage(
         <>
           评论基础模式加载中... 如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并 <DisqusJSReTestModeButton>尝试完整 Disqus 模式</DisqusJSReTestModeButton> | <DisqusJSForceDisqusModeButton>强制完整 Disqus 模式</DisqusJSForceDisqusModeButton>
         </>
       );
+      fetchThreadRef.current = true;
       fetchThread(props.shortname, props.identifier ?? document.location.origin + document.location.pathname + document.location.search, apiKeys, props.api);
     } else {
       setDisqusJsMessage(
