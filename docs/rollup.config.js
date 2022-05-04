@@ -34,8 +34,7 @@ const config = {
                     optimizer: {
                         globals: {
                             vars: {
-                                'import.meta.env.MODE': JSON.stringify(process.env.NODE_ENV),
-                                'import.meta.env': '{}'
+                                'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
                             }
                         }
                     }
@@ -44,8 +43,6 @@ const config = {
         })),
         commonjs({
             define: {
-                'import.meta.env.MODE': JSON.stringify(process.env.NODE_ENV),
-                'import.meta.env': '{}',
                 'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
             }
         }),

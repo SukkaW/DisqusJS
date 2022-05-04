@@ -1,5 +1,4 @@
 import type { DisqusJSConfig, DisqusJsSortType } from '../types';
-import { useDisqusPosts, useDisqusThread } from '../hooks/useDisqusApi';
 import { memo, useCallback, useEffect, useMemo } from 'react';
 import { DisqusJSCreateThread, DisqusJSNoComment } from './Error';
 import { DisqusJSCommentsList } from './CommentList';
@@ -77,27 +76,39 @@ const DisqusJSPosts = (props: DisqusJSConfig & { id: string, isNexted?: boolean 
     Array.isArray(props.apikey) ? props.apikey : [props.apikey]
   ), [props.apikey]);
 
-  const { data, error, setSize, size } = useDisqusPosts(props.shortname, props.id, apiKeys, props.api);
+  const posts = useStore(state => state.posts);
+  const errorWhenLoadMorePosts = useStore(state => state.morePostsError);
+  const isLoadingMorePosts = useStore(state => state.loadingPosts);
+  const fetchMorePosts = useStore(state => state.fetchMorePosts);
+
+  const fetchNextPageOfPosts = useCallback(
+    () => fetchMorePosts(props.shortname, props.id, apiKeys, props.api),
+    [apiKeys, fetchMorePosts, props.api, props.id, props.shortname]
+  );
+
+  useEffect(() => {
+    // When there is no posts at all, load the first pagination of posts.
+    if (posts.length === 0) {
+      fetchNextPageOfPosts();
+    }
+  }, [posts, fetchNextPageOfPosts]);
 
   const loadMoreCommentsButtonClickHandler = useCallback(() => {
-    setSize(size => size + 1);
-  }, [setSize]);
+    fetchNextPageOfPosts();
+  }, [fetchNextPageOfPosts]);
 
-  const setDisqusJsHasError = useStore(state => state.setError);
-  useEffect(() => {
-    if (size < 1) {
-      if (error || (data && data.some(i => i.code !== 0))) {
-        setDisqusJsHasError(true);
-      }
-    }
-  }, [setDisqusJsHasError, error, data, size]);
-
-  if (data) {
+  if (posts.length > 0) {
     return (
       <>
-        <DisqusJSCommentsList comments={data.filter(Boolean).map(i => i.response).flat()} admin={props.admin} adminLabel={props.adminLabel} />
+        <DisqusJSCommentsList comments={posts.filter(Boolean).map(i => i.response).flat()} admin={props.admin} adminLabel={props.adminLabel} />
         {
-          data[data.length - 1].cursor.hasNext && <DisqusJSLoadMoreCommentsButton isError={error && size >= 1} onClick={loadMoreCommentsButtonClickHandler} />
+          posts.at(-1)?.cursor.hasNext && (
+            <DisqusJSLoadMoreCommentsButton
+              isLoading={isLoadingMorePosts}
+              isError={errorWhenLoadMorePosts}
+              onClick={isLoadingMorePosts ? undefined : loadMoreCommentsButtonClickHandler}
+            />
+          )
         }
       </>
     );
@@ -111,55 +122,48 @@ export const DisqusJSThread = (props: DisqusJSConfig) => {
     Array.isArray(props.apikey) ? props.apikey : [props.apikey]
   ), [props.apikey]);
 
-  const { data, error } = useDisqusThread(props.shortname, props.identifier, apiKeys);
-  const setDisqusJsHasError = useStore(state => state.setError);
+  const thread = useStore(state => state.thread);
+  const fetchThread = useStore(state => state.fetchThread);
   const setDisqusJsMessage = useStore(state => state.setMsg);
 
   useEffect(() => {
-    if (error || (data && data.code !== 0)) {
-      return setDisqusJsHasError(true);
-    }
-    if (!data && !error) {
+    if (!thread) {
       setDisqusJsMessage(
         <>
           评论基础模式加载中... 如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并 <DisqusJSReTestModeButton>尝试完整 Disqus 模式</DisqusJSReTestModeButton> | <DisqusJSForceDisqusModeButton>强制完整 Disqus 模式</DisqusJSForceDisqusModeButton>
         </>
       );
-    }
-    if (data) {
+      fetchThread(props.shortname, props.identifier ?? document.location.origin + document.location.pathname + document.location.search, apiKeys, props.api);
+    } else {
       setDisqusJsMessage(
         <>
           你可能无法访问 Disqus，已启用评论基础模式。如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并 <DisqusJSReTestModeButton>尝试完整 Disqus 模式</DisqusJSReTestModeButton> | <DisqusJSForceDisqusModeButton>强制完整 Disqus 模式</DisqusJSForceDisqusModeButton>
         </>
       );
     }
-  }, [setDisqusJsHasError, setDisqusJsMessage, error, data]);
+  }, [thread, fetchThread, setDisqusJsMessage, props.shortname, props.identifier, props.api, apiKeys]);
 
-  if (error || (data && data.code !== 0)) {
+  if (!thread) {
     return null;
   }
 
-  if (data) {
-    if (data.response.length === 1) {
-      if (data.response[0].posts === 0) {
-        return (
-          <>
-            <DisqusJSHeader totalComments={0} siteName={props.siteName ?? ''} />
-            <DisqusJSNoComment text={props.nocomment ?? '这里空荡荡的，一个人都没有'} />
-          </>
-        );
-      }
-
+  if (thread.response.length === 1) {
+    if (thread.response[0].posts === 0) {
       return (
         <>
-          <DisqusJSHeader totalComments={data.response[0].posts} siteName={props.siteName ?? ''} />
-          <DisqusJSPosts {...props} id={data.response[0].id} />
+          <DisqusJSHeader totalComments={0} siteName={props.siteName ?? ''} />
+          <DisqusJSNoComment text={props.nocomment ?? '这里空荡荡的，一个人都没有'} />
         </>
       );
     }
 
-    return <DisqusJSCreateThread />;
+    return (
+      <>
+        <DisqusJSHeader totalComments={thread.response[0].posts} siteName={props.siteName ?? ''} />
+        <DisqusJSPosts {...props} id={thread.response[0].id} />
+      </>
+    );
   }
 
-  return null;
+  return <DisqusJSCreateThread />;
 };

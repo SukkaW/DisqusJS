@@ -1,7 +1,7 @@
 import { DisqusJSConfig } from './types';
 import { DisqusJS as DisqusJSComponent } from './';
 
-import { render, unmountComponentAtNode } from 'preact/compat';
+import { render } from 'preact';
 
 // eslint-disable-next-line no-nested-ternary
 const getElementFromConfig = (el?: string | Element) => (el
@@ -29,7 +29,7 @@ export default class DisqusJS {
 
   destroy() {
     if (this.container) {
-      unmountComponentAtNode(this.container);
+      render(null, this.container);
     }
   }
 }

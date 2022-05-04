@@ -25,7 +25,6 @@ const outputMatrix = (config: {
   dts: boolean,
   dir?: string,
   preact: boolean,
-  visualizer?: boolean
 }): RollupOptions[] => {
   const filenameBase = `${config.dir ?? 'dist'}/disqusjs${config.browser ? '.browser' : ''}.${config.target}.${config.format}${config.minify ? '.min' : ''}`;
   const ext = config.format === 'es' ? 'mjs' : 'js';
@@ -44,24 +43,27 @@ const outputMatrix = (config: {
       },
       plugins: [
         config.preact && alias({
-          entries: {
-            react: 'preact/compat',
-            'react-dom/test-utils': 'preact/test-utils',
-            'react-dom': 'preact/compat',
-            'react/jsx-runtime': 'preact/jsx-runtime'
-          }
+          entries: [
+            { find: 'react', replacement: 'preact/compat' },
+            { find: 'react-dom/test-utils', replacement: 'preact/test-utils' },
+            { find: 'react-dom', replacement: 'preact/compat' },
+            { find: 'react/jsx-runtime', replacement: 'preact/jsx-runtime' }
+          ]
         }),
-        nodeResolve(),
         commonjs(),
+        nodeResolve({
+          exportConditions: ['module', 'import', 'require', 'default']
+        }),
         (config.prod || config.browser) && replace({
           preventAssignment: true,
           ...(config.prod && {
-            'process.env.NODE_ENV': JSON.stringify('production'),
-            'import.meta.env && import.meta.env.MODE': JSON.stringify('production')
+            'process.env.NODE_ENV': JSON.stringify('production')
+            // 'import.meta.env && import.meta.env.MODE': JSON.stringify('production')
           }),
           ...(config.browser && {
             'typeof window': JSON.stringify('object')
-          })
+          }),
+          'use-sync-external-store/shim/with-selector': 'use-sync-external-store/shim/with-selector.js'
         }),
         postcss({
           modules: {
@@ -82,8 +84,7 @@ const outputMatrix = (config: {
               react: {
                 runtime: 'automatic',
                 importSource: 'react'
-              },
-              optimizer: {}
+              }
             },
             externalHelpers: true,
             target: config.target,
@@ -91,11 +92,14 @@ const outputMatrix = (config: {
               ? { compress: {}, mangle: {} }
               : undefined
           },
-          minify: config.minify
+          minify: config.minify,
+          module: {
+            type: 'es6'
+          }
         })),
-        process.env.ANALYZE === 'true' && config.visualizer && visualizer()
+        process.env.ANALYZE === 'true' && visualizer()
       ],
-      external: config.bundle ? undefined : ['react', 'react/jsx-runtime', 'react-dom', 'preact', 'preact/compat', 'preact/jsx-runtime', 'jotai', 'zustand']
+      external: config.bundle ? undefined : ['react', 'react/jsx-runtime', 'react-dom', 'preact', 'preact/compat', 'preact/jsx-runtime', 'zustand']
     }
   ];
 
@@ -122,80 +126,91 @@ const dtsMatrix = (): RollupOptions[] => {
   });
 };
 
-const buildConfig: RollupOptions[] = [
-  // For browser script tag only, no dts
-  ...(['es2015', 'es2017'] as const).map(target => outputMatrix({
-    input: 'src/browser.tsx',
+const buildConfig: RollupOptions[] = process.env.ANALYZE === 'true'
+  ? outputMatrix({
+    input: './src/browser.tsx',
     format: 'iife',
     minify: true,
-    target,
+    target: 'es2015',
     prod: true,
     bundle: true,
     browser: true,
     dts: false,
     preact: true
-  })),
-  // For browserify, webpack, Node.js SSR library in CJS environment
-  ...(['es2015', 'es2017', 'es2022'] as const).flatMap(
-    target => [true, false].map(
-      browser => outputMatrix({
-        input: 'src/browser.tsx',
-        format: 'umd',
-        minify: false,
-        target,
-        prod: true,
-        bundle: true,
-        browser,
-        dts: true,
-        preact: true,
-        visualizer: target === 'es2015' && browser
-      })
-    )
-  ),
-  // For browser script[module] tag only, no dts
-  outputMatrix({
-    input: 'src/browser.tsx',
-    format: 'es',
-    minify: true,
-    target: 'es2018',
-    prod: true,
-    bundle: true,
-    browser: true,
-    dts: false,
-    preact: true
-  }),
-  // For rollup, webpack, Node.js, Deno. ESM, dts, es2022
-  outputMatrix({
-    input: 'src/browser.tsx',
-    format: 'es',
-    minify: false,
-    target: 'es2022',
-    prod: true,
-    bundle: true,
-    browser: false,
-    dts: true,
-    preact: true
-  }),
-  ...(['cjs', 'es'] as const).flatMap(
-    format => (['es2015', 'es2017', 'es2022'] as const).flatMap(
-      target => [
-        outputMatrix({
-          input: 'src/index.tsx',
-          format,
+  })
+  : [
+    // For browser script tag only, no dts
+    ...(['es2015', 'es2017'] as const).map(target => outputMatrix({
+      input: './src/browser.tsx',
+      format: 'iife',
+      minify: true,
+      target,
+      prod: true,
+      bundle: true,
+      browser: true,
+      dts: false,
+      preact: true
+    })),
+    // For browserify, webpack, Node.js SSR library in CJS environment
+    ...(['es2015', 'es2017', 'es2022'] as const).flatMap(
+      target => [true, false].map(
+        browser => outputMatrix({
+          input: './src/browser.tsx',
+          format: 'umd',
           minify: false,
           target,
-          prod: false,
-          bundle: false,
-          browser: false,
+          prod: true,
+          bundle: true,
+          browser,
           dts: true,
-          dir: 'dist/react',
-          preact: false
+          preact: true
         })
-      ]
-    )
-  ),
-  dtsMatrix()
-].flat();
+      )
+    ),
+    // For browser script[module] tag only, no dts
+    outputMatrix({
+      input: './src/browser.tsx',
+      format: 'es',
+      minify: true,
+      target: 'es2018',
+      prod: true,
+      bundle: true,
+      browser: true,
+      dts: false,
+      preact: true
+    }),
+    // For rollup, webpack, Node.js, Deno. ESM, dts, es2022
+    outputMatrix({
+      input: './src/browser.tsx',
+      format: 'es',
+      minify: false,
+      target: 'es2022',
+      prod: true,
+      bundle: true,
+      browser: false,
+      dts: true,
+      preact: true
+    }),
+    ...(['cjs', 'es'] as const).flatMap(
+      format => (['es2015', 'es2017', 'es2022'] as const).flatMap(
+        target => [
+          outputMatrix({
+            input: './src/index.tsx',
+            format,
+            minify: false,
+            target,
+            prod: false,
+            bundle: false,
+            browser: false,
+            dts: true,
+            dir: 'dist/react',
+            preact: false
+          })
+        ]
+      )
+    ),
+    dtsMatrix()
+  ].flat();
 
 function stringHash(str: string) {
   let hash = 5381;

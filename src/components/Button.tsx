@@ -1,11 +1,18 @@
 import { memo, useCallback } from 'react';
 import { useStore } from '../state';
 
-export const DisqusJSLoadMoreCommentsButton = memo((props: JSX.IntrinsicElements['a'] & { isError?: boolean }) => {
-  const { isError, ...restProps } = props;
+export const DisqusJSLoadMoreCommentsButton = memo((props: JSX.IntrinsicElements['a'] & { isError?: boolean, isLoading: boolean }) => {
+  const { isError, isLoading, ...restProps } = props;
   return (
     <a {...restProps} id="dsqjs-load-more" className={`dsqjs-load-more ${isError ? 'is-error' : ''}`} role="button">
-      {isError ? '加载失败，请重试' : '加载更多评论'}
+      {
+        // eslint-disable-next-line no-nested-ternary
+        isError
+          ? '加载失败，请重试'
+          : isLoading
+            ? '正在加载...'
+            : '加载更多评论'
+      }
     </a>
   );
 });
