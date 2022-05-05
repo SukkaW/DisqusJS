@@ -7,7 +7,7 @@ export const DisqusJSFooter = memo(() => (
       {' '}
       <a className="dsqjs-disqus-logo" href="https://disqus.com" target="_blank" rel="external nofollow noopener noreferrer" />
       {' '}&amp;{' '}
-      <a href="https://disqusjs.skk.moe" target="_blank" rel="noreferrer">DisqusJS</a>
+      <a className="dsqjs-dsqjs-logo" href="https://disqusjs.skk.moe" target="_blank" rel="noreferrer">DisqusJS</a>
     </p>
   </footer>
 ));
