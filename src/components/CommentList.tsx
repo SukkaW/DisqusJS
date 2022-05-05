@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { formatDate, getTimeStampFromString, replaceDisqUs, replaceDisquscdn as replaceDisqusCdn } from '../lib/util';
+import { formatDate, getTimeStampFromString, processCommentMessage, processCommentMessage as replaceDisqusCdn } from '../lib/util';
 import { DisqusAPI } from '../types';
 import { DisqusJSForceDisqusModeButton } from './Button';
 
@@ -64,7 +64,7 @@ function DisqusJSPostItem(props: DisqusJSCommentASTItem & PassedDownDisqusJSConf
           {
             props.comment.isDeleted
               ? <div className="dsqjs-post-content"><small>此评论已被删除</small></div>
-              : <div className="dsqjs-post-content" dangerouslySetInnerHTML={{ __html: replaceDisqUs(replaceDisqusCdn(props.comment.message)) }} />
+              : <div className="dsqjs-post-content" dangerouslySetInnerHTML={{ __html: processCommentMessage(props.comment.message) }} />
           }
         </div>
       </div>

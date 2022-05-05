@@ -16,7 +16,24 @@ export const parseDateFromString = (dateString: string) => new Date(dateString);
 export const getTimeStampFromString = (dateString: string) => parseDateFromString(dateString).getTime();
 
 export const replaceDisquscdn = (str: string) => str.replace(/a\.disquscdn\.com/g, 'c.disquscdn.com');
-export const replaceDisqUs = (str: string) => str.replace(/https?:\/\/disq.us\/url\?url=(.+)%3A[\w-]+&amp;cuid=\d+/gm, (_, $1) => decodeURIComponent($1));
+
+let domParser: DOMParser | null = null;
+
+export const processCommentMessage = (str: string) => {
+  const rawHtml = replaceDisquscdn(str)
+    .replace(/https?:\/\/disq.us\/url\?url=(.+)%3A[\w-]+&amp;cuid=\d+/gm, (_, $1) => decodeURIComponent($1));
+
+  domParser ||= new DOMParser();
+  const doc = domParser.parseFromString(rawHtml, 'text/html');
+  // Very basic, but it will do.
+  // Any attempt to bypass XSS limitation will be blocked by Disqus' WAF.
+  doc.querySelectorAll('script').forEach(script => script.remove());
+  doc.querySelectorAll('a').forEach(a => {
+    a.target = '_blank';
+    a.rel = 'external noopener nofollow noreferrer';
+  });
+  return doc.body.innerHTML;
+};
 
 const timezoneOffset = new Date().getTimezoneOffset();
 const numberPadstart = (num: number) => String(num).padStart(2, '0');
