@@ -58,9 +58,11 @@ const outputMatrix = (config: {
             { find: 'react/jsx-runtime', replacement: 'preact/jsx-runtime' }
           ]
         }),
-        commonjs(),
+        commonjs({
+          esmExternals: true
+        }),
         nodeResolve({
-          exportConditions: ['module', 'import', 'require', 'default']
+          exportConditions: ['import', 'require', 'default']
         }),
         (config.prod || config.browser) && replace({
           preventAssignment: true,
