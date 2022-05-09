@@ -23,10 +23,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 export const DisqusJSForceDisqusModeButton = memo((props: { children: React.ReactNode }) => {
   const setDisqusJsMode = useStore(state => state.setMode);
-  const onClickHandler = useCallback(() => {
-    setDisqusJsMode('disqus');
-    localStorage.setItem('dsqjs_mode', 'disqus');
-  }, [setDisqusJsMode]);
+  const onClickHandler = useCallback(() => setDisqusJsMode('disqus'), [setDisqusJsMode]);
 
   return (
     <a id="dsqjs-force-disqus" className="dsqjs-msg-btn" onClick={onClickHandler}>{props.children}</a>
@@ -39,10 +36,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 export const DisqusJSReTestModeButton = memo((props: { children: React.ReactNode }) => {
   const setDisqusJsMode = useStore(state => state.setMode);
-  const onClickHandler = useCallback(() => {
-    setDisqusJsMode(null);
-    localStorage.removeItem('dsqjs_mode');
-  }, [setDisqusJsMode]);
+  const onClickHandler = useCallback(() => setDisqusJsMode(null), [setDisqusJsMode]);
 
   return (
     <a id="dsqjs-test-disqus" className="dsqjs-msg-btn" onClick={onClickHandler}>{props.children}</a>
@@ -55,10 +49,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 export const DisqusJSForceDisqusJsModeButton = memo((props: { children: React.ReactNode }) => {
   const setDisqusJsMode = useStore(state => state.setMode);
-  const onClickHandler = useCallback(() => {
-    setDisqusJsMode('dsqjs');
-    localStorage.setItem('dsqjs_mode', 'dsqjs');
-  }, [setDisqusJsMode]);
+  const onClickHandler = useCallback(() => setDisqusJsMode('dsqjs'), [setDisqusJsMode]);
 
   return (
     <a id="dsqjs-force-dsqjs" className="dsqjs-msg-btn" onClick={onClickHandler}>{props.children}</a>

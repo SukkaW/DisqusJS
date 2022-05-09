@@ -10,9 +10,7 @@ const DisqusJSSortTypeRadio = memo(() => {
   const sortType = useStore(state => state.sortType);
   const setSortType = useStore(state => state.setSortType);
 
-  const onChangeHandler = useCallback((value: DisqusJsSortType) => () => {
-    setSortType(value);
-  }, [setSortType]);
+  const onChangeHandler = useCallback((value: DisqusJsSortType) => () => setSortType(value), [setSortType]);
 
   return (
     <div className="dsqjs-order">
@@ -97,10 +95,6 @@ const DisqusJSPosts = (props: DisqusJSConfig & { id: string }) => {
     }
   }, [posts, fetchNextPageOfPosts, props.id, resetPosts]);
 
-  const loadMoreCommentsButtonClickHandler = useCallback(() => {
-    fetchNextPageOfPosts();
-  }, [fetchNextPageOfPosts]);
-
   if (posts.length > 0) {
     return (
       <>
@@ -110,7 +104,7 @@ const DisqusJSPosts = (props: DisqusJSConfig & { id: string }) => {
             <DisqusJSLoadMoreCommentsButton
               isLoading={isLoadingMorePosts}
               isError={errorWhenLoadMorePosts}
-              onClick={isLoadingMorePosts ? undefined : loadMoreCommentsButtonClickHandler}
+              onClick={isLoadingMorePosts ? undefined : fetchNextPageOfPosts}
             />
           )
         }
