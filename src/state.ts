@@ -66,7 +66,14 @@ export const useStore = create<State & StateActions>((set, get) => ({
   setMode(mode: DisqusJsMode) {
     set({ mode });
     if (isBrowser && mode) {
-      localStorage.setItem('dsqjs_mode', mode);
+      // Always wait for a macrotask before setting localStorage
+      Promise.resolve().then(() => {
+        if (mode === null) {
+          localStorage.removeItem('dsqjs_mode');
+        } else {
+          localStorage.setItem('dsqjs_mode', mode);
+        }
+      });
     }
   },
 
