@@ -1,9 +1,10 @@
 import type { DisqusJSConfig, DisqusJsSortType } from '../types';
-import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
+import { memo, useCallback, useEffect, useRef } from 'react';
 import { DisqusJSCreateThread, DisqusJSNoComment } from './Error';
 import { DisqusJSCommentsList } from './CommentList';
 import { DisqusJSForceDisqusModeButton, DisqusJSLoadMoreCommentsButton, DisqusJSReTestModeButton } from './Button';
 import { useStore } from '../state';
+import { useRandomApiKey } from '../lib/hooks';
 
 const DisqusJSSortTypeRadio = memo(() => {
   const sortType = useStore(state => state.sortType);
@@ -72,9 +73,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 const DisqusJSPosts = (props: DisqusJSConfig & { id: string }) => {
-  const apiKeys = useMemo(() => (
-    Array.isArray(props.apikey) ? props.apikey : [props.apikey]
-  ), [props.apikey]);
+  const apiKeys = useRandomApiKey(props.apikey);
 
   const posts = useStore(state => state.posts);
   const resetPosts = useStore(state => state.resetPosts);
@@ -123,9 +122,7 @@ const DisqusJSPosts = (props: DisqusJSConfig & { id: string }) => {
 };
 
 export const DisqusJSThread = (props: DisqusJSConfig) => {
-  const apiKeys = useMemo(() => (
-    Array.isArray(props.apikey) ? props.apikey : [props.apikey]
-  ), [props.apikey]);
+  const apiKeys = useRandomApiKey(props.apikey);
 
   const thread = useStore(state => state.thread);
   const fetchThread = useStore(state => state.fetchThread);

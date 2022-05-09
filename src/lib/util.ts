@@ -5,8 +5,7 @@ export function randomInt(min: number, max: number): number {
 
 export const isBrowser = typeof window !== 'undefined';
 
-export const disqusJsApiFetcher = <T>(apiKeys: string[]) => (url: string): Promise<T> => {
-  const apiKey = apiKeys[randomInt(0, apiKeys.length - 1)];
+export const disqusJsApiFetcher = <T>(apiKey: string) => (url: string): Promise<T> => {
   const Url = new URL(url);
   Url.searchParams.set('api_key', apiKey);
   return fetch(Url.toString()).then(res => res.json());

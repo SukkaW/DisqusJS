@@ -26,6 +26,7 @@ const DisqusJSEntry = (props: DisqusJSConfig) => {
       <Disqus shortname={props.shortname} identifier={props.identifier} url={props.url} title={props.title} />
     );
   }
+
   if (disqusJsMode === 'dsqjs') {
     return (
       <DisqusJSThread {...props} />
