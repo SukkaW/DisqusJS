@@ -109,24 +109,15 @@ function findChildrenFromComments(allChildrenComments: DisqusAPI.Post[], parentI
 
 export const DisqusJSCommentsList = (props: { comments: DisqusAPI.Post[] } & PassedDownDisqusJSConfig) => {
   const processedComments = useMemo(() => {
-    const comments = props.comments.slice().sort((a, b) => {
-      // Only sorts parent by ascending order
-      if (a.parent && b.parent) {
-        return getTimeStampFromString(a.createdAt) - getTimeStampFromString(b.createdAt);
-      }
-      return 0;
-    });
-
     const topLevelComments: DisqusAPI.Post[] = [];
     const childComments: DisqusAPI.Post[] = [];
 
-    comments.forEach(comment => {
-      if (comment.parent) {
-        childComments.push(comment);
-      } else {
-        topLevelComments.push(comment);
-      }
-    });
+    const rawComments = props.comments.slice();
+    rawComments
+      .map((comment, index) => ({ i: index, p: comment.parent, d: getTimeStampFromString(comment.createdAt) }))
+      .sort((a, b) => (a.p && b.p ? a.d - b.d : 0))
+      .map(({ i }) => rawComments[i])
+      .forEach(comment => (comment.parent ? childComments : topLevelComments).push(comment));
 
     return topLevelComments.map(comment => createDisqusJSCommentASTItem(comment, childComments, 0));
   }, [props.comments]);
