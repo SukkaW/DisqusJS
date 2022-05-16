@@ -5,8 +5,6 @@ import { DisqusJSForceDisqusModeButton } from './Button';
 
 interface DisqusJSCommentASTItem {
   comment: DisqusAPI.Post,
-  username: string,
-  author: string,
   children: DisqusJSCommentASTItem[] | null,
   nesting?: number
 }
@@ -28,10 +26,10 @@ function DisqusJSPostItem(props: DisqusJSCommentASTItem & PassedDownDisqusJSConf
           {profileUrl
             ? (
               <a href={profileUrl} target="_blank" rel="noreferrer noopenner nofollow external">
-                <img alt={props.username} src={avatarUrl} />
+                <img alt={props.comment.author.username} src={avatarUrl} />
               </a>
             )
-            : <img alt={props.username} src={avatarUrl} />}
+            : <img alt={props.comment.author.username} src={avatarUrl} />}
         </div>
         <div className="dsqjs-post-body">
           <div className="dsqjs-post-header">
@@ -46,7 +44,7 @@ function DisqusJSPostItem(props: DisqusJSCommentASTItem & PassedDownDisqusJSConf
             }
             {
               // authorEl admin label
-              props.admin === props.username && (
+              props.admin === props.comment.author.username && (
                 <span className="dsqjs-admin-badge">{props.adminLabel}</span>
               )
             }
@@ -89,8 +87,6 @@ function DisqusJSChildrenPostItems(props: { children: DisqusJSCommentASTItem[] |
 function createDisqusJSCommentASTItem(comment: DisqusAPI.Post, allChildrenComments: DisqusAPI.Post[], nesting: number) {
   const result: DisqusJSCommentASTItem = {
     comment,
-    username: comment.author.username,
-    author: comment.author.name,
     children: findChildrenFromComments(allChildrenComments, Number(comment.id), nesting + 1),
     nesting: nesting + 1
   };
