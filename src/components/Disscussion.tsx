@@ -6,7 +6,28 @@ import { DisqusJSForceDisqusModeButton, DisqusJSLoadMoreCommentsButton, DisqusJS
 import { useStore } from '../state';
 import { useRandomApiKey } from '../lib/hooks';
 
-const DisqusJSSortTypeRadio = memo(() => {
+const DisqusJSSortTypeRadio = (props: {
+  checked: boolean;
+  sortType: string;
+  title: string;
+  label: string;
+  onChange: () => void;
+}) => {
+  return <>
+    <input
+      className="dsqjs-order-radio"
+      id={`dsqjs-order-${props.sortType}`}
+      type="radio"
+      name="comment-order"
+      value={props.sortType}
+      onChange={props.onChange}
+      checked={props.checked}
+    />
+    <label className="dsqjs-order-label" htmlFor={`dsqjs-order-${props.sortType}`} title={props.title}>{props.label}</label>
+  </>;
+};
+
+const DisqusJSSortTypeRadioGroup = memo(() => {
   const sortType = useStore(state => state.sortType);
   const setSortType = useStore(state => state.setSortType);
 
@@ -14,42 +35,33 @@ const DisqusJSSortTypeRadio = memo(() => {
 
   return (
     <div className="dsqjs-order">
-      <input
-        className="dsqjs-order-radio"
-        id="dsqjs-order-desc"
-        type="radio"
-        name="comment-order"
-        value="desc"
-        onChange={onChangeHandler('desc')}
+      <DisqusJSSortTypeRadio
         checked={sortType === 'desc' || sortType === null}
+        sortType="desc"
+        title="按从新到旧"
+        label="最新"
+        onChange={onChangeHandler('desc')}
       />
-      <label className="dsqjs-order-label" htmlFor="dsqjs-order-desc" title="按从新到旧">最新</label>
-      <input
-        className="dsqjs-order-radio"
-        id="dsqjs-order-asc"
-        type="radio"
-        name="comment-order"
-        value="asc"
-        onChange={onChangeHandler('asc')}
+      <DisqusJSSortTypeRadio
         checked={sortType === 'asc'}
+        sortType="asc"
+        title="按从旧到新"
+        label="最早"
+        onChange={onChangeHandler('asc')}
       />
-      <label className="dsqjs-order-label" htmlFor="dsqjs-order-asc" title="按从旧到新">最早</label>
-      <input
-        className="dsqjs-order-radio"
-        id="dsqjs-order-popular"
-        type="radio"
-        name="comment-order"
-        value="popular"
-        onChange={onChangeHandler('popular')}
+      <DisqusJSSortTypeRadio
         checked={sortType === 'popular'}
+        sortType="popular"
+        title="按评分从高到低"
+        label="最佳"
+        onChange={onChangeHandler('popular')}
       />
-      <label className="dsqjs-order-label" htmlFor="dsqjs-order-popular" title="按评分从高到低">最佳</label>
     </div>
   );
 });
 
 if (process.env.NODE_ENV !== 'production') {
-  DisqusJSSortTypeRadio.displayName = 'DisqusJSSortTypeRadio';
+  DisqusJSSortTypeRadioGroup.displayName = 'DisqusJSSortTypeRadio';
 }
 
 const DisqusJSHeader = memo((props: { totalComments: number, siteName: string }) => (
@@ -61,7 +73,7 @@ const DisqusJSHeader = memo((props: { totalComments: number, siteName: string })
         </li>
         <li className="dsqjs-nav-tab">{props.siteName}</li>
       </ul>
-      <DisqusJSSortTypeRadio />
+      <DisqusJSSortTypeRadioGroup />
     </nav>
   </header>
 ));

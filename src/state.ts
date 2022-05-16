@@ -104,9 +104,9 @@ export const useStore = create<State & StateActions>((set, get) => ({
     set({ msg });
   },
 
-  async fetchThread(shortname: string, identifier: string, apiKeys: string, api = 'https://disqus.skk.moe/disqus/') {
+  async fetchThread(shortname: string, identifier: string, apiKey: string, api = 'https://disqus.skk.moe/disqus/') {
     try {
-      const thread = await disqusJsApiFetcher<DisqusAPI.Thread>(apiKeys)(`${api}3.0/threads/list.json?forum=${encodeURIComponent(shortname)}&thread=${encodeURIComponent(`ident:${identifier}`)}`);
+      const thread = await disqusJsApiFetcher<DisqusAPI.Thread>(apiKey, `${api}3.0/threads/list.json?forum=${encodeURIComponent(shortname)}&thread=${encodeURIComponent(`ident:${identifier}`)}`);
       if (thread.code === 0) {
         set({ thread });
       } else {
@@ -121,7 +121,7 @@ export const useStore = create<State & StateActions>((set, get) => ({
     set({ posts: [], loadingPosts: false, morePostsError: false });
   },
 
-  async fetchMorePosts(shortname: string, id: string | null, apiKeys: string, api = 'https://disqus.skk.moe/disqus/') {
+  async fetchMorePosts(shortname: string, id: string | null, apiKey: string, api = 'https://disqus.skk.moe/disqus/') {
     set({ loadingPosts: true, morePostsError: false });
     if (!id) return;
 
@@ -143,7 +143,7 @@ export const useStore = create<State & StateActions>((set, get) => ({
     };
 
     try {
-      const newPosts = await disqusJsApiFetcher<DisqusAPI.Posts>(apiKeys)(url);
+      const newPosts = await disqusJsApiFetcher<DisqusAPI.Posts>(apiKey, url);
 
       if (newPosts.code === 0) {
         set((state) => ({ posts: state.posts.concat(newPosts), loadingPosts: false }));

@@ -5,14 +5,13 @@ export function randomInt(min: number, max: number): number {
 
 export const isBrowser = typeof window !== 'undefined';
 
-export const disqusJsApiFetcher = <T>(apiKey: string) => (url: string): Promise<T> => {
+export const disqusJsApiFetcher = <T>(apiKey: string, url: string): Promise<T> => {
   const Url = new URL(url);
   Url.searchParams.set('api_key', apiKey);
   return fetch(Url.toString()).then(res => res.json());
 };
 
-export const parseDateFromString = (dateString: string) => new Date(dateString);
-export const getTimeStampFromString = (dateString: string) => parseDateFromString(dateString).getTime();
+export const getTimeStampFromString = (dateString: string) => new Date(dateString).getTime();
 
 export const replaceDisquscdn = (str: string) => str.replace(/a\.disquscdn\.com/g, 'c.disquscdn.com');
 
@@ -46,19 +45,26 @@ export const checkDomainAccessiblity = (domain: string) => {
   return new Promise<void>((resolve, reject) => {
     const img = new Image();
 
-    const timeout = setTimeout(() => {
-      img.onerror = null;
+    const clear = () => {
       img.onload = null;
+      img.onerror = null;
+      img.remove();
+    };
+
+    const timeout = setTimeout(() => {
+      clear();
       reject();
     }, 3000);
 
     img.onerror = () => {
       clearTimeout(timeout);
+      clear();
       reject();
     };
 
     img.onload = () => {
       clearTimeout(timeout);
+      clear();
       resolve();
     };
 
