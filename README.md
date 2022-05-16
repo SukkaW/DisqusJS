@@ -28,17 +28,17 @@ DisqusJS 是一个基于 Disqus API 和 React 开发的 Embed 插件。DisqusJS 
 在你需要安装 DisqusJS 的页面的 `</head>` 之前引入 DisqusJS 的 CSS：
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/disqusjs@3.0.0-experimental.6/dist/browser/styles/disqusjs.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/disqusjs@3.0/dist/browser/styles/disqusjs.css">
 ```
 
 在需要展示评论的地方插入 JS：
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/disqusjs@3.0.0-experimental.6/dist/browser/disqusjs.es2015.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/disqusjs@3.0/dist/browser/disqusjs.es2015.umd.min.js"></script>
 
 <!-- 如果你只兼容现代浏览器，你也可以使用 ES Module -->
 <script type="module">
-  import DisqusJS from 'https://cdn.jsdelivr.net/npm/disqusjs@3.0.0-experimental.6/dist/browser/disqusjs.es2018.es.min.mjs'
+  import DisqusJS from 'https://cdn.jsdelivr.net/npm/disqusjs@3.0/dist/browser/disqusjs.es2018.es.min.mjs'
 </script>
 ```
 
@@ -228,7 +228,7 @@ document.addEventListener('pjax:send', () => {
 });
 
 document.addEventListener('pjax:complete', () => {
-  // 创建全新的 DisqusJS 实例
+  // 使用新的参数（如新的 identifier 和 url）创建全新的 DisqusJS 实例
   disqusjs = new DisqusJS({
     // ...
   });
@@ -269,6 +269,37 @@ document.addEventListener('pjax:complete', () => {
 - DisqusJS 仅在当前域名首次访问时检测 Disqus 可用性并选择模式，并把结果持久化在 localStorage 中，之后访问都会沿用之前的模式。
 - 一个 Disqus Application 的 Rate Limit 是每小时 1000 次；DisqusJS 一次正常加载会产生 2 次请求。DisqusJS 支持将多个 API Key 填入一个 Array 中，并在请求时随机选择（负载均衡）。你可以创建多个 Disqus API Application 并分别获取 API Key。
 
+## 从 DisqusJS 1.3.0 升级到 DisqusJS 3.0.0
+
+```html
+<!-- 替换 DisqusJS 版本 -->
+<!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/disqusjs@1.3/dist/disqusjs.css">-->
+<!--<script src="https://cdn.jsdelivr.net/npm/disqusjs@1.3/dist/disqus.js"></script>-->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/disqusjs@3.0/dist/browser/styles/disqusjs.css">
+<script src="https://cdn.jsdelivr.net/npm/disqusjs@3.0/dist/browser/disqusjs.es2015.umd.min.js"></script>
+
+<!--
+  DisqusJS 1.3.0 容器的 id 属性必须是 `disqus_thread`，
+  DisqusJS 3.0.0 容器的 id 属性 **必须不是** `disqus_thread`。
+  建议使用 "disqusjs" 作为 DisqusJS 容器的 id 属性。
+-->
+<!--<div id="disqus_thread"></div>-->
+<div id="disqusjs"></div>
+<script>
+  const disqusjs = new DisqusJS({
+    // DisqusJS 1.3.0 和 DisqusJS 3.0.0 配置完全兼容，无需更改
+    // ...
+  });
+
+  // DisqusJS 1.3.0 在初始化实例后评论列表已经开始渲染到页面上，DisqusJS 3.0.0 还需要额外调用 render() 方法：
+  disqusjs.render(document.getElementById('disqusjs')); // render() 方法需要传入 DisqusJS 的容器
+
+  // DisqusJS 3.0.0 新增了销毁实例的 destroy() 方法，你可以在 PJAX 跳转时直接调用它：
+  disqusjs.destroy();
+  // 关于 PJAX 站点使用，请参考前文「SPA 与 PJAX 站点注意事项」
+</script>
+```
+
 ## 谁在使用 DisqusJS？
 
 - Sukka: [Sukka's Blog](https://blog.skk.moe)
@@ -279,9 +310,6 @@ document.addEventListener('pjax:complete', () => {
 - ysc3839: [YSC's blog](https://blog.ysc3839.com/)
 
 如果你的站点或者个人博客在使用 DisqusJS，来 [把你的网站分享给其他人吧](https://github.com/SukkaW/DisqusJS/issues/12)！
-
-## 从 DisqusJS 1.3.0 升级到 DisqusJS 3.0.0
-
 
 ## Author 作者
 
