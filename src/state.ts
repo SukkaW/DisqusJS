@@ -43,8 +43,7 @@ interface StateActions {
   setError: (error: boolean) => void;
   setMsg: (msg: JSX.Element | string | number | null) => void;
   fetchThread: (shortname: string, identifier: string, apiKeys: string, api?: string) => Promise<void>;
-  fetchMorePosts: (shortname: string, identifier: string, apiKeys: string, api?: string) => Promise<void>;
-  resetPosts: () => void;
+  fetchMorePosts: (shortname: string, identifier: string, apiKeys: string, api?: string, reset?: boolean) => Promise<void>;
 
   reset: () => void;
 }
@@ -91,8 +90,11 @@ export const useStore = create<State & StateActions>((set, get) => ({
 
   setSortType(sortType: DisqusJsSortType) {
     set({ sortType });
+
     if (isBrowser && sortType) {
-      localStorage.setItem('dsqjs_sort', sortType);
+      Promise.resolve().then(() => {
+        localStorage.setItem('dsqjs_sort', sortType);
+      });
     }
   },
 
@@ -117,15 +119,15 @@ export const useStore = create<State & StateActions>((set, get) => ({
     }
   },
 
-  resetPosts() {
-    set({ posts: [], loadingPosts: false, morePostsError: false });
-  },
-
-  async fetchMorePosts(shortname: string, id: string | null, apiKey: string, api = 'https://disqus.skk.moe/disqus/') {
-    set({ loadingPosts: true, morePostsError: false });
+  async fetchMorePosts(shortname: string, id: string | null, apiKey: string, api = 'https://disqus.skk.moe/disqus/', reset = false) {
     if (!id) return;
+    set({
+      ...(reset && { posts: [] }),
+      loadingPosts: true,
+      morePostsError: false
+    });
 
-    const posts = get().posts;
+    const posts = reset ? [] : get().posts;
     const sortType = get().sortType;
     const lastPost = posts.at(-1);
     if (lastPost && !lastPost.cursor.hasNext) return;

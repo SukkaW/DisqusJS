@@ -83,29 +83,39 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 const DisqusJSPosts = (props: DisqusJSConfig & { id: string }) => {
-  const apiKeys = useRandomApiKey(props.apikey);
+  const apiKey = useRef(useRandomApiKey(props.apikey));
 
   const posts = useStore(state => state.posts);
-  const resetPosts = useStore(state => state.resetPosts);
+
+  const sortType = useStore(state => state.sortType);
+  const prevSortType = useRef(sortType);
+
   const errorWhenLoadMorePosts = useStore(state => state.morePostsError);
   const isLoadingMorePosts = useStore(state => state.loadingPosts);
   const fetchMorePosts = useStore(state => state.fetchMorePosts);
 
   const fetchFirstPageRef = useRef<string | null>(null);
 
+  const resetAndFetchFirstPageOfPosts = useCallback(
+    () => fetchMorePosts(props.shortname, props.id, apiKey.current, props.api, true),
+    [fetchMorePosts, props.api, props.id, props.shortname]
+  );
   const fetchNextPageOfPosts = useCallback(
-    () => fetchMorePosts(props.shortname, props.id, apiKeys, props.api),
-    [apiKeys, fetchMorePosts, props.api, props.id, props.shortname]
+    () => fetchMorePosts(props.shortname, props.id, apiKey.current, props.api, false),
+    [fetchMorePosts, props.api, props.id, props.shortname]
   );
 
   useEffect(() => {
     // When there is no posts at all, load the first pagination of posts.
     if (fetchFirstPageRef.current !== props.id) {
-      resetPosts();
       fetchFirstPageRef.current = props.id;
-      fetchNextPageOfPosts();
+      resetAndFetchFirstPageOfPosts();
+    } else if (prevSortType.current !== sortType) {
+      prevSortType.current = sortType;
+      fetchFirstPageRef.current = props.id;
+      resetAndFetchFirstPageOfPosts();
     }
-  }, [posts, fetchNextPageOfPosts, props.id, resetPosts]);
+  }, [posts, resetAndFetchFirstPageOfPosts, props.id, isLoadingMorePosts, sortType]);
 
   if (posts.length > 0) {
     return (
@@ -128,7 +138,7 @@ const DisqusJSPosts = (props: DisqusJSConfig & { id: string }) => {
 };
 
 export const DisqusJSThread = (props: DisqusJSConfig) => {
-  const apiKeys = useRandomApiKey(props.apikey);
+  const apiKey = useRef(useRandomApiKey(props.apikey));
 
   const thread = useStore(state => state.thread);
   const fetchThread = useStore(state => state.fetchThread);
@@ -146,7 +156,7 @@ export const DisqusJSThread = (props: DisqusJSConfig) => {
         </>
       );
       fetchThreadRef.current = identifier;
-      fetchThread(props.shortname, identifier, apiKeys, props.api);
+      fetchThread(props.shortname, identifier, apiKey.current, props.api);
     } else {
       setDisqusJsMessage(
         <>
@@ -154,7 +164,7 @@ export const DisqusJSThread = (props: DisqusJSConfig) => {
         </>
       );
     }
-  }, [thread, fetchThread, identifier, setDisqusJsMessage, props.shortname, props.api, apiKeys]);
+  }, [thread, fetchThread, identifier, setDisqusJsMessage, props.shortname, props.api]);
 
   if (!thread) {
     return null;
