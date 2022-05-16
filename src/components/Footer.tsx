@@ -1,12 +1,13 @@
 import { memo } from 'react';
 
 export const DisqusJSFooter = memo(() => (
-  <footer>
+  <footer className="dsqjs-footer-container">
     <p className="dsqjs-footer">
-      Powered by
-      {' '}
+      {'Powered by '}
       <a className="dsqjs-disqus-logo" href="https://disqus.com" target="_blank" rel="external nofollow noopener noreferrer" />
-      {' '}&amp;{' '}
+      {' '}
+      &amp;
+      {' '}
       <a className="dsqjs-dsqjs-logo" href="https://disqusjs.skk.moe" target="_blank" rel="noreferrer">DisqusJS</a>
     </p>
   </footer>
