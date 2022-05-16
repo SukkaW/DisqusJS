@@ -130,9 +130,7 @@ export const useStore = create<State & StateActions>((set, get) => ({
     const lastPost = posts.at(-1);
     if (lastPost && !lastPost.cursor.hasNext) return;
 
-    const url = posts.length === 0
-      ? `${api}3.0/threads/listPostsThreaded?forum=${shortname}&thread=${id}&order=${sortType ?? 'desc'}`
-      : `${api}3.0/threads/listPostsThreaded?forum=${shortname}&thread=${id}${lastPost?.cursor.next ? `&cursor=${lastPost.cursor.next}` : ''}&order=${sortType ?? 'desc'}`;
+    const url = `${api}3.0/threads/listPostsThreaded?forum=${shortname}&thread=${id}&order=${sortType ?? 'desc'}${posts.length !== 0 && lastPost?.cursor.next ? `&cursor=${encodeURIComponent(lastPost.cursor.next)}` : ''}`;
 
     const handleError = () => {
       if (posts.length === 0) {
