@@ -69,9 +69,9 @@
   },
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "NODE_ENV=production rollup --configPlugin swc3 -c rollup.config.ts",
+    "build": "cross-env NODE_ENV=production rollup --configPlugin swc3 -c rollup.config.ts",
     "prepublishOnly": "npm run build",
-    "build:analyze": "NODE_ENV=production ANALYZE=true rollup --configPlugin swc3 -c rollup.config.ts",
+    "build:analyze": "cross-env NODE_ENV=production ANALYZE=true rollup --configPlugin swc3 -c rollup.config.ts",
     "dev": "nollup -c ./example/rollup.config.js --rc ./example/.nolluprc.js --environment NODE_ENV:development"
   },
   "repository": {
@@ -136,7 +136,8 @@
     "rollup-plugin-static-files": "^0.2.0",
     "rollup-plugin-swc3": "^0.3.0",
     "rollup-plugin-visualizer": "^5.6.0",
-    "sass": "^1.51.0"
+    "sass": "^1.51.0",
+    "cross-env":"^7.0.3"
   },
   "dependencies": {
     "zustand": "^4.0.0-rc.1"
