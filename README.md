@@ -107,13 +107,13 @@ disqusjs.render(document.getElementById('disqusjs'));
 ### 作为 React 组件使用
 
 ```jsx
-import 'disqusjs/dist/react/styles/disqusjs.css';
-import { DisqusJS } from 'disqusjs/react/dist/disqusjs.es2015.es.js';
-// import { DisqusJS } from 'disqusjs/react/dist/disqusjs.es2017.es.js';
-// import { DisqusJS } from 'disqusjs/react/dist/disqusjs.es2022.es.js';
-// const { DisqusJS } = require('disqusjs/react/dist/disqusjs.es2015.umd');
-// const { DisqusJS } = require('disqusjs/react/dist/disqusjs.es2017.umd');
-// const { DisqusJS } = require('disqusjs/react/dist/disqusjs.es2022.umd');
+import 'disqusjs/react/styles/disqusjs.css';
+import { DisqusJS } from 'disqusjs/react';
+// import { DisqusJS } from 'disqusjs/react/es2017';
+// import { DisqusJS } from 'disqusjs/react/es2022';
+// const { DisqusJS } = require('disqusjs/react');
+// const { DisqusJS } = require('disqusjs/react/es2017');
+// const { DisqusJS } = require('disqusjs/react/es2022');
 
 <DisqusJS
   shortname=""
