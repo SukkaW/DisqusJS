@@ -38,7 +38,7 @@ const numberPadstart = (num: number) => String(num).padStart(2, '0');
 export const formatDate = (str: string) => {
   const utcTimestamp = getTimeStampFromString(str);
   const date = new Date(utcTimestamp - timezoneOffset * 60 * 1000);
-  return `${date.getFullYear()}-${numberPadstart(date.getMonth() + 1)}-${numberPadstart(date.getMonth() + 1)} ${numberPadstart(date.getHours())}:${numberPadstart(date.getMinutes())}`;
+  return `${date.getFullYear()}-${numberPadstart(date.getMonth() + 1)}-${numberPadstart(date.getDate())} ${numberPadstart(date.getHours())}:${numberPadstart(date.getMinutes())}`;
 };
 
 export const checkDomainAccessiblity = (domain: string) => {
