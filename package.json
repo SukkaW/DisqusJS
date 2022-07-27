@@ -10,6 +10,7 @@
     "LICENSE"
   ],
   "exports": {
+    "./dist/": "./dist/",
     "./package.json": "./package.json",
     "./styles/disqusjs.css": "./dist/styles/disqusjs.css",
     ".": {
