@@ -1,6 +1,6 @@
 {
   "name": "disqusjs",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "Alternative DISQUS - Render comments components from Disqus API",
   "main": "dist/disqusjs.es2015.umd.js",
   "types": "dist/disqusjs.es2015.umd.d.ts",
