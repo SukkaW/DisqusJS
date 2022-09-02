@@ -68,6 +68,7 @@
       "default": "./dist/browser/disqusjs.es2015.umd.min.js"
     }
   },
+  "jsdelivr": "./dist/browser/disqusjs.es2015.umd.min.js",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "cross-env NODE_ENV=production rollup --configPlugin swc3 -c rollup.config.ts",
