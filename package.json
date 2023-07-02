@@ -122,7 +122,7 @@
     "eslint": "^8.23.0",
     "eslint-config-sukka": "^1.4.0",
     "eslint-import-resolver-typescript": "^3.5.0",
-    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-import": "npm:eslint-plugin-i@^2.27.5-3",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "nollup": "^0.19.0",
