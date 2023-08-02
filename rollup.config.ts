@@ -14,6 +14,8 @@ let cache: RollupCache;
 
 const dtsOutput: Record<string, Set<string>> = {};
 
+const noBundleExternal = ['react', 'react-dom', 'preact', 'foxact'];
+
 const outputMatrix = (config: {
   input: string;
   format: 'iife' | 'umd' | 'es' | 'cjs';
@@ -109,7 +111,14 @@ const outputMatrix = (config: {
         })),
         process.env.ANALYZE === 'true' && visualizer()
       ],
-      external: config.bundle ? undefined : ['react', 'react/jsx-runtime', 'react-dom', 'preact', 'preact/compat', 'preact/jsx-runtime', 'zustand']
+      external: config.bundle
+        ? undefined
+        : (id) => {
+          return (
+            noBundleExternal.includes(id)
+            || noBundleExternal.some(dep => id.startsWith(`${dep}/`))
+          );
+        }
     }
   ];
 

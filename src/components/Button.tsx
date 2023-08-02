@@ -1,5 +1,6 @@
 import { memo, useCallback } from 'react';
-import { useStore } from '../state';
+import { useSetDisqusJsMode } from '../context/disqusjs-mode';
+import { useSetDisqusJsHasError } from '../context/disqusjs-error';
 
 export const DisqusJSLoadMoreCommentsButton = memo((props: JSX.IntrinsicElements['a'] & { isError?: boolean, isLoading: boolean }) => {
   const { isError, isLoading, ...restProps } = props;
@@ -22,7 +23,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 export const DisqusJSForceDisqusModeButton = memo((props: { children: React.ReactNode }) => {
-  const setDisqusJsMode = useStore(state => state.setMode);
+  const setDisqusJsMode = useSetDisqusJsMode();
   const onClickHandler = useCallback(() => setDisqusJsMode('disqus'), [setDisqusJsMode]);
 
   return (
@@ -35,7 +36,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 export const DisqusJSReTestModeButton = memo((props: { children: React.ReactNode }) => {
-  const setDisqusJsMode = useStore(state => state.setMode);
+  const setDisqusJsMode = useSetDisqusJsMode();
   const onClickHandler = useCallback(() => setDisqusJsMode(null), [setDisqusJsMode]);
 
   return (
@@ -48,7 +49,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 export const DisqusJSForceDisqusJsModeButton = memo((props: { children: React.ReactNode }) => {
-  const setDisqusJsMode = useStore(state => state.setMode);
+  const setDisqusJsMode = useSetDisqusJsMode();
   const onClickHandler = useCallback(() => setDisqusJsMode('dsqjs'), [setDisqusJsMode]);
 
   return (
@@ -61,7 +62,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 export const DisqusJSRetryButton = memo((props: { children: React.ReactNode }) => {
-  const setDisqusJsHasError = useStore(state => state.setError);
+  const setDisqusJsHasError = useSetDisqusJsHasError();
   const handleClick = useCallback(() => {
     setDisqusJsHasError(false);
   }, [setDisqusJsHasError]);

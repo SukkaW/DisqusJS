@@ -1,8 +1,8 @@
 import { memo, useEffect, useState } from 'react';
 import { isBrowser } from '../lib/util';
 import { DisqusConfig } from '../types';
-import { useStore } from '../state';
 import { DisqusJSForceDisqusJsModeButton } from './Button';
+import { useSetDisqusJsMessage } from '../context/disqusjs-msg';
 
 const THREAD_ID = 'disqus_thread';
 const EMBED_SCRIPT_ID = 'dsq-embed-scr';
@@ -21,7 +21,7 @@ declare global {
 }
 
 export const Disqus = memo((props: DisqusConfig) => {
-  const setDisqusJsMessage = useStore(state => state.setMsg);
+  const setDisqusJsMessage = useSetDisqusJsMessage();
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -48,17 +48,15 @@ export const Disqus = memo((props: DisqusConfig) => {
           const containerEl = document.getElementById(THREAD_ID);
           if (containerEl) {
             while (containerEl.hasChildNodes()) {
-              containerEl.removeChild(containerEl.firstChild!);
+              if (containerEl.firstChild) {
+                containerEl.removeChild(containerEl.firstChild);
+              }
             }
           }
 
           document.querySelectorAll(
             'link[href*="disquscdn.com/next"], link[href*="disqus.com/next"], script[src*="disquscdn.com/next/embed"], script[src*="disqus.com/count-data.js"], iframe[title="Disqus"]'
-          ).forEach((el) => {
-            el.parentNode?.removeChild(el);
-            el.parentElement?.removeChild(el);
-            el.remove();
-          });
+          ).forEach((el) => el.remove());
         }
       };
 
@@ -110,7 +108,13 @@ export const Disqus = memo((props: DisqusConfig) => {
       <div id={THREAD_ID}>
         评论完整模式加载中... 如果长时间无法加载，请针对 disq.us | disquscdn.com | disqus.com 启用代理，或切换至 <DisqusJSForceDisqusJsModeButton>评论基础模式</DisqusJSForceDisqusJsModeButton>
       </div>
-      {!loaded && <div id="dsqjs-msg">评论完整模式加载中... 如果长时间无法加载，请针对 disq.us | disquscdn.com | disqus.com 启用代理，或切换至 <DisqusJSForceDisqusJsModeButton>评论基础模式</DisqusJSForceDisqusJsModeButton></div>}
+      {!loaded && (
+        <div id="dsqjs-msg">
+          评论完整模式加载中... 如果长时间无法加载，请针对 disq.us | disquscdn.com | disqus.com 启用代理，或切换至
+          {' '}
+          <DisqusJSForceDisqusJsModeButton>评论基础模式</DisqusJSForceDisqusJsModeButton>
+        </div>
+      )}
     </>
   );
 });
