@@ -107,20 +107,19 @@ function findChildrenFromComments(allChildrenComments: DisqusAPI.Post[], parentI
   return list;
 }
 
-export const DisqusJSCommentsList = (props: { comments: DisqusAPI.Post[] } & PassedDownDisqusJSConfig) => {
+export const DisqusJSCommentsList = ({ comments, admin, adminLabel }: { comments: DisqusAPI.Post[] } & PassedDownDisqusJSConfig) => {
   const processedComments = useMemo(() => {
     const topLevelComments: DisqusAPI.Post[] = [];
     const childComments: DisqusAPI.Post[] = [];
 
-    const rawComments = props.comments.slice();
-    rawComments
-      .map((comment, index) => ({ i: index, p: comment.parent, d: getTimeStampFromString(comment.createdAt) }))
+    const rawComments = comments.slice();
+    rawComments.map((comment, i) => ({ i, p: comment.parent, d: getTimeStampFromString(comment.createdAt) }))
       .sort((a, b) => (a.p && b.p ? a.d - b.d : 0))
       .map(({ i }) => rawComments[i])
       .forEach(comment => (comment.parent ? childComments : topLevelComments).push(comment));
 
     return topLevelComments.map(comment => createDisqusJSCommentASTItem(comment, childComments, 0));
-  }, [props.comments]);
+  }, [comments]);
 
   return (
     <ul className="dsqjs-post-list" id="dsqjs-post-container">
@@ -128,8 +127,8 @@ export const DisqusJSCommentsList = (props: { comments: DisqusAPI.Post[] } & Pas
         <DisqusJSPostItem
           {...comment}
           key={comment.comment.id}
-          admin={props.admin}
-          adminLabel={props.adminLabel}
+          admin={admin}
+          adminLabel={adminLabel}
         />
       ))}
     </ul>

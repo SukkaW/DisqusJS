@@ -13,12 +13,11 @@ export const disqusJsApiFetcher = <T>(apiKey: string, url: string): Promise<T> =
 
 export const getTimeStampFromString = (dateString: string) => new Date(dateString).getTime();
 
-export const replaceDisquscdn = (str: string) => str.replace(/a\.disquscdn\.com/g, 'c.disquscdn.com');
-
 let domParser: DOMParser | null = null;
 
 export const processCommentMessage = (str: string) => {
-  const rawHtml = replaceDisquscdn(str)
+  const rawHtml = str
+    .replace(/a\.disquscdn\.com/g, 'c.disquscdn.com')
     .replace(/https?:\/\/disq.us\/url\?url=(.+)%3A[\w-]+&amp;cuid=\d+/gm, (_, $1) => decodeURIComponent($1));
 
   domParser ||= new DOMParser();

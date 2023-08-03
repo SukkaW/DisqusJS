@@ -5,10 +5,12 @@ import { DisqusJSFooter } from './components/Footer';
 import { forwardRef } from 'react';
 
 import styles from './styles/disqusjs.module.sass';
+
+import { DisqusJSEntry } from './entry';
 import { DisqusJSError } from './components/Error';
+
 import { DisqusJsModeProvider } from './context/disqusjs-mode';
 import { DisqusJsSortTypeProvider } from './context/disqusjs-sort-type';
-import { DisqusJSEntry } from './entry';
 import { DisqusJsHasErrorProvider, useDisqusJsHasError } from './context/disqusjs-error';
 import { DisqusJsMessageProvider, useDisqusJsMessage } from './context/disqusjs-msg';
 import { DisqusJSLoadingPostsProvider } from './context/disqusjs-loading-posts';
@@ -18,25 +20,23 @@ import { DisqusJsThreadProvider } from './context/disqusjs-thread';
 
 export type { DisqusJSConfig };
 
-export const DisqusJS = forwardRef((props: DisqusJSConfig & JSX.IntrinsicElements['div'], ref: React.ForwardedRef<HTMLDivElement>) => {
+export const DisqusJS = forwardRef(({
+  shortname,
+  siteName,
+  identifier,
+  url,
+  title,
+  api,
+  apikey,
+  nesting,
+  nocomment,
+  admin,
+  adminLabel,
+  className,
+  ...rest
+}: DisqusJSConfig & JSX.IntrinsicElements['div'], ref: React.ForwardedRef<HTMLDivElement>) => {
   const msg = useDisqusJsMessage();
   const disqusJsHasError = useDisqusJsHasError();
-
-  const {
-    shortname,
-    siteName,
-    identifier,
-    url,
-    title,
-    api,
-    apikey,
-    nesting,
-    nocomment,
-    admin,
-    adminLabel,
-    className,
-    ...rest
-  } = props;
 
   const disqusJsConfig: DisqusJSConfig = {
     shortname,

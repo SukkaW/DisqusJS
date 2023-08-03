@@ -13,24 +13,32 @@ import { useSetDisqusJsHasError } from '../context/disqusjs-error';
 import { disqusJsApiFetcher } from '../lib/util';
 import { useDisqusJsThread, useSetDisqusJsThread } from '../context/disqusjs-thread';
 
-const DisqusJSSortTypeRadio = (props: {
+interface DisqusJSSortTypeRadioProps {
   checked: boolean;
   sortType: string;
   title: string;
   label: string;
   onChange: () => void;
-}) => {
+}
+
+const DisqusJSSortTypeRadio = ({
+  sortType,
+  onChange,
+  checked,
+  title,
+  label
+}: DisqusJSSortTypeRadioProps) => {
   return <>
     <input
       className="dsqjs-order-radio"
-      id={`dsqjs-order-${props.sortType}`}
+      id={`dsqjs-order-${sortType}`}
       type="radio"
       name="comment-order"
-      value={props.sortType}
-      onChange={props.onChange}
-      checked={props.checked}
+      value={sortType}
+      onChange={onChange}
+      checked={checked}
     />
-    <label className="dsqjs-order-label" htmlFor={`dsqjs-order-${props.sortType}`} title={props.title}>{props.label}</label>
+    <label className="dsqjs-order-label" htmlFor={`dsqjs-order-${sortType}`} title={title}>{label}</label>
   </>;
 };
 
@@ -69,14 +77,19 @@ if (process.env.NODE_ENV !== 'production') {
   DisqusJSSortTypeRadioGroup.displayName = 'DisqusJSSortTypeRadio';
 }
 
-const DisqusJSHeader = memo((props: { totalComments: number, siteName: string }) => (
+interface HeaderProps {
+  totalComments: number;
+  siteName: string;
+}
+
+const DisqusJSHeader = memo(({ totalComments, siteName }: HeaderProps) => (
   <header className="dsqjs-header" id="dsqjs-header">
     <nav className="dsqjs-nav dsqjs-clearfix">
       <ul>
         <li className="dsqjs-nav-tab dsqjs-tab-active">
-          <span>{props.totalComments} Comments</span>
+          <span>{totalComments} Comments</span>
         </li>
-        <li className="dsqjs-nav-tab">{props.siteName}</li>
+        <li className="dsqjs-nav-tab">{siteName}</li>
       </ul>
       <DisqusJSSortTypeRadioGroup />
     </nav>
@@ -130,8 +143,15 @@ const useFetchMorePosts = (shortname: string, id: string | null, apiKey: string,
   }, [api, apiKey, id, posts, setError, setErrorWhenLoadingMorePosts, setLoadingPosts, setPosts, shortname]);
 };
 
-const DisqusJSPosts = (props: DisqusJSConfig & { id: string }) => {
-  const apiKey = useRef(useRandomApiKey(props.apikey));
+const DisqusJSPosts = ({
+  apikey,
+  shortname,
+  id,
+  api,
+  admin,
+  adminLabel
+}: DisqusJSConfig & { id: string }) => {
+  const apiKey = useRef(useRandomApiKey(apikey));
 
   const posts = useDisqusJSPosts();
 
@@ -141,37 +161,37 @@ const DisqusJSPosts = (props: DisqusJSConfig & { id: string }) => {
   const errorWhenLoadMorePosts = useDisqusJSLoadingMorePostsError();
   const isLoadingMorePosts = useDisqusJSLoadingPosts();
 
-  const fetchMorePosts = useFetchMorePosts(props.shortname, props.id, apiKey.current, props.api);
+  const fetchMorePosts = useFetchMorePosts(shortname, id, apiKey.current, api);
 
   const fetchFirstPageRef = useRef<string | null>(null);
 
   const resetAndFetchFirstPageOfPosts = useCallback(
-    () => fetchMorePosts(true),
-    [fetchMorePosts]
+    () => fetchMorePosts(true, sortType),
+    [fetchMorePosts, sortType]
   );
   const fetchNextPageOfPosts = useCallback(
-    () => fetchMorePosts(false),
-    [fetchMorePosts]
+    () => fetchMorePosts(false, sortType),
+    [fetchMorePosts, sortType]
   );
 
   useEffect(() => {
     // When there is no posts at all, load the first pagination of posts.
-    if (fetchFirstPageRef.current !== props.id) {
-      fetchFirstPageRef.current = props.id;
+    if (fetchFirstPageRef.current !== id) {
+      fetchFirstPageRef.current = id;
       resetAndFetchFirstPageOfPosts();
     } else if (prevSortType.current !== sortType) {
       prevSortType.current = sortType;
-      fetchFirstPageRef.current = props.id;
+      fetchFirstPageRef.current = id;
       resetAndFetchFirstPageOfPosts();
     }
-  }, [posts, resetAndFetchFirstPageOfPosts, props.id, isLoadingMorePosts, sortType]);
+  }, [posts, resetAndFetchFirstPageOfPosts, id, isLoadingMorePosts, sortType]);
 
   if (posts.length > 0) {
     return (
       <>
-        <DisqusJSCommentsList comments={posts.filter(Boolean).map(i => i.response).flat()} admin={props.admin} adminLabel={props.adminLabel} />
+        <DisqusJSCommentsList comments={posts.filter(Boolean).map(i => i.response).flat()} admin={admin} adminLabel={adminLabel} />
         {
-          posts.at(-1)?.cursor.hasNext && (
+          posts[posts.length - 1]?.cursor.hasNext && (
             <DisqusJSLoadMoreCommentsButton
               isLoading={isLoadingMorePosts}
               isError={errorWhenLoadMorePosts}
@@ -219,7 +239,9 @@ export const DisqusJSThread = (props: DisqusJSConfig) => {
     if (fetchThreadRef.current !== identifier) {
       setDisqusJsMessage(
         <>
-          评论基础模式加载中... 如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并 <DisqusJSReTestModeButton>尝试完整 Disqus 模式</DisqusJSReTestModeButton> | <DisqusJSForceDisqusModeButton>强制完整 Disqus 模式</DisqusJSForceDisqusModeButton>
+          评论基础模式加载中... 如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并
+          {' '}
+          <DisqusJSReTestModeButton>尝试完整 Disqus 模式</DisqusJSReTestModeButton> | <DisqusJSForceDisqusModeButton>强制完整 Disqus 模式</DisqusJSForceDisqusModeButton>
         </>
       );
       fetchThreadRef.current = identifier;
@@ -227,7 +249,9 @@ export const DisqusJSThread = (props: DisqusJSConfig) => {
     } else {
       setDisqusJsMessage(
         <>
-          你可能无法访问 Disqus，已启用评论基础模式。如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并 <DisqusJSReTestModeButton>尝试完整 Disqus 模式</DisqusJSReTestModeButton> | <DisqusJSForceDisqusModeButton>强制完整 Disqus 模式</DisqusJSForceDisqusModeButton>
+          你可能无法访问 Disqus，已启用评论基础模式。如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并
+          {' '}
+          <DisqusJSReTestModeButton>尝试完整 Disqus 模式</DisqusJSReTestModeButton> | <DisqusJSForceDisqusModeButton>强制完整 Disqus 模式</DisqusJSForceDisqusModeButton>
         </>
       );
     }
