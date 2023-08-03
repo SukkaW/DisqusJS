@@ -100,7 +100,7 @@ const outputMatrix = (config: {
             externalHelpers: true,
             target: config.target,
             minify: config.minify
-              ? { compress: { unsafe: true }, mangle: {} }
+              ? { compress: { unsafe: true }, mangle: true, module: true }
               : undefined
           },
           minify: config.minify,
