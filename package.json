@@ -131,6 +131,7 @@
     "react-refresh": "^0.9.0",
     "rimraf": "^5.0.1",
     "rollup": "^3.27.1",
+    "rollup-plugin-bundle-analyzer": "^1.6.6",
     "rollup-plugin-commonjs-alternate": "^0.8.0",
     "rollup-plugin-dts": "^5.3.1",
     "rollup-plugin-hot-css": "^0.7.2",
@@ -138,7 +139,6 @@
     "rollup-plugin-react-refresh": "^0.0.3",
     "rollup-plugin-static-files": "^0.2.0",
     "rollup-plugin-swc3": "^0.9.1",
-    "rollup-plugin-visualizer": "^5.9.2",
     "sass": "^1.64.2"
   },
   "dependencies": {

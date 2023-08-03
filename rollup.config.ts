@@ -5,7 +5,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import alias from '@rollup/plugin-alias';
 import { dts } from 'rollup-plugin-dts';
-import { visualizer } from 'rollup-plugin-visualizer';
+import bundleAnalyzer from 'rollup-plugin-bundle-analyzer';
 
 import type { RollupCache, RollupOptions } from 'rollup';
 import type { JscTarget } from '@swc/core';
@@ -64,7 +64,7 @@ const outputMatrix = (config: {
           esmExternals: true
         }),
         nodeResolve({
-          exportConditions: ['import', 'require', 'default']
+          exportConditions: ['import', 'module', 'require', 'default']
         }),
         (config.prod || config.browser) && replace({
           preventAssignment: true,
@@ -74,8 +74,7 @@ const outputMatrix = (config: {
           }),
           ...(config.browser && {
             'typeof window': JSON.stringify('object')
-          }),
-          'use-sync-external-store/shim/with-selector': 'use-sync-external-store/shim/with-selector.js'
+          })
         }),
         postcss({
           modules: {
@@ -109,7 +108,7 @@ const outputMatrix = (config: {
             type: 'es6'
           }
         })),
-        process.env.ANALYZE === 'true' && visualizer()
+        process.env.ANALYZE === 'true' && bundleAnalyzer({})
       ],
       external: config.bundle
         ? undefined
