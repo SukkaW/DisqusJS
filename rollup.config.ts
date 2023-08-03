@@ -4,7 +4,7 @@ import replace from '@rollup/plugin-replace';
 import commonjs from '@rollup/plugin-commonjs';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import alias from '@rollup/plugin-alias';
-import dts from 'rollup-plugin-dts';
+import { dts } from 'rollup-plugin-dts';
 import { visualizer } from 'rollup-plugin-visualizer';
 
 import type { RollupCache, RollupOptions } from 'rollup';
