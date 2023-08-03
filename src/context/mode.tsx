@@ -14,10 +14,10 @@ const getDisqusJsModeDefaultValue = () => {
   return null;
 };
 
-const [DisqusJsModeProvider, useDisqusJsMode, useSetDisqusJsModeState] = createContextState<DisqusJsMode>(getDisqusJsModeDefaultValue());
+const [ModeProvider, useMode, useSetModeState] = createContextState<DisqusJsMode>(getDisqusJsModeDefaultValue());
 
-const useSetDisqusJsMode = () => {
-  const setDisqusJsMode = useSetDisqusJsModeState();
+const useSetMode = () => {
+  const setDisqusJsMode = useSetModeState();
 
   return useCallback((mode: DisqusJsMode) => {
     setDisqusJsMode(mode);
@@ -31,4 +31,4 @@ const useSetDisqusJsMode = () => {
   }, [setDisqusJsMode]);
 };
 
-export { DisqusJsModeProvider, useDisqusJsMode, useSetDisqusJsMode };
+export { ModeProvider, useMode, useSetMode };

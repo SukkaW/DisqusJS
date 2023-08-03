@@ -1,42 +1,52 @@
-import { useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Disqus } from './components/Disqus';
 import { DisqusJSThread } from './components/Disscussion';
 import { DisqusJSError } from './components/Error';
 
 import type { DisqusJSConfig } from './types';
 
-import { useDisqusJsMode, useSetDisqusJsMode } from './context/disqusjs-mode';
-import { useDisqusJsHasError } from './context/disqusjs-error';
-import { useDisqusJsMessage, useSetDisqusJsMessage } from './context/disqusjs-msg';
+import { useHasError } from './context/error';
+import { useMessage, useSetMessage } from './context/message';
 
 import { checkDomainAccessiblity } from './lib/util';
-
-const useCheckDisqusJsMode = (shortname: string) => {
-  const setMsg = useSetDisqusJsMessage();
-  const setMode = useSetDisqusJsMode();
-
-  return useCallback(() => {
-    setMsg('正在检查 Disqus 能否访问...');
-    Promise.all((['disqus.com', `${shortname}.disqus.com`]).map(checkDomainAccessiblity))
-      .then(
-        () => setMode('disqus'),
-        () => setMode('dsqjs')
-      );
-  }, [setMode, setMsg, shortname]);
-};
+import { useMode, useSetMode } from './context/mode';
 
 export const DisqusJSEntry = (props: DisqusJSConfig) => {
-  const disqusJsMode = useDisqusJsMode();
-  const checkDisqusJsMode = useCheckDisqusJsMode(props.shortname);
+  const setMsg = useSetMessage();
+
+  const mode = useMode();
+  const setMode = useSetMode();
+
+  const { shortname } = props;
 
   useEffect(() => {
-    if (disqusJsMode !== 'disqus' && disqusJsMode !== 'dsqjs') {
-      checkDisqusJsMode();
-    }
-  }, [checkDisqusJsMode, disqusJsMode]);
+    let cancel = false;
 
-  const disqusJsHasError = useDisqusJsHasError();
-  const msg = useDisqusJsMessage();
+    if (mode === 'disqus' || mode === 'dsqjs') {
+      return;
+    }
+
+    setMsg('正在检查 Disqus 能否访问...');
+
+    Promise.all(
+      (['disqus.com', `${shortname}.disqus.com`]).map(checkDomainAccessiblity)
+    ).then(() => {
+      if (!cancel) {
+        setMode('disqus');
+      }
+    }).catch(() => {
+      if (!cancel) {
+        setMode('dsqjs');
+      }
+    });
+
+    return () => {
+      cancel = true;
+    };
+  }, [mode, setMode, setMsg, shortname]);
+
+  const disqusJsHasError = useHasError();
+  const msg = useMessage();
 
   if (disqusJsHasError) {
     return <DisqusJSError />;
@@ -45,8 +55,8 @@ export const DisqusJSEntry = (props: DisqusJSConfig) => {
   return (
     <>
       {msg && <div id="dsqjs-msg">{msg}</div>}
-      {disqusJsMode === 'disqus' && <Disqus shortname={props.shortname} identifier={props.identifier} url={props.url} title={props.title} />}
-      {disqusJsMode === 'dsqjs' && <DisqusJSThread {...props} />}
+      {mode === 'disqus' && <Disqus shortname={props.shortname} identifier={props.identifier} url={props.url} title={props.title} />}
+      {mode === 'dsqjs' && <DisqusJSThread {...props} />}
     </>
   );
 };

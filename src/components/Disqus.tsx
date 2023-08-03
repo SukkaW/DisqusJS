@@ -2,7 +2,7 @@ import { memo, useEffect, useState } from 'react';
 import { isBrowser } from '../lib/util';
 import { DisqusConfig } from '../types';
 import { DisqusJSForceDisqusJsModeButton } from './Button';
-import { useSetDisqusJsMessage } from '../context/disqusjs-msg';
+import { useSetMessage } from '../context/message';
 
 const THREAD_ID = 'disqus_thread';
 const EMBED_SCRIPT_ID = 'dsq-embed-scr';
@@ -26,11 +26,11 @@ export const Disqus = memo(({
   url,
   title
 }: DisqusConfig) => {
-  const setDisqusJsMessage = useSetDisqusJsMessage();
+  const setMsg = useSetMessage();
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    setDisqusJsMessage(null);
+    setMsg(null);
 
     if (isBrowser) {
       const clearDisqusInstance = () => {
@@ -106,12 +106,14 @@ export const Disqus = memo(({
 
       return clearDisqusInstance;
     }
-  }, [shortname, identifier, url, title, setDisqusJsMessage]);
+  }, [shortname, identifier, url, title, setMsg]);
 
   return (
     <>
       <div id={THREAD_ID}>
-        评论完整模式加载中... 如果长时间无法加载，请针对 disq.us | disquscdn.com | disqus.com 启用代理，或切换至 <DisqusJSForceDisqusJsModeButton>评论基础模式</DisqusJSForceDisqusJsModeButton>
+        评论完整模式加载中... 如果长时间无法加载，请针对 disq.us | disquscdn.com | disqus.com 启用代理，或切换至
+        {' '}
+        <DisqusJSForceDisqusJsModeButton>评论基础模式</DisqusJSForceDisqusJsModeButton>
       </div>
       {!loaded && (
         <div id="dsqjs-msg">

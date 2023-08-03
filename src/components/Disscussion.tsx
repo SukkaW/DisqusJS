@@ -1,17 +1,13 @@
 import type { DisqusAPI, DisqusJSConfig, DisqusJsSortType } from '../types';
-import { memo, useCallback, useEffect, useRef } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { DisqusJSCreateThread, DisqusJSNoComment } from './Error';
 import { DisqusJSCommentsList } from './CommentList';
 import { DisqusJSForceDisqusModeButton, DisqusJSLoadMoreCommentsButton, DisqusJSReTestModeButton } from './Button';
 import { useRandomApiKey } from '../lib/hooks';
-import { useSetDisqusJsMessage } from '../context/disqusjs-msg';
-import { useDisqusJsSortType, useSetDisqusJsSortType } from '../context/disqusjs-sort-type';
-import { useDisqusJSLoadingMorePostsError, useSetDisqusJsLoadingMorePostsError } from '../context/disqusjs-error-when-loading-more-posts';
-import { useDisqusJSPosts, useSetDisqusJSPosts } from '../context/disqusjs-posts';
-import { useDisqusJSLoadingPosts, useSetDisqusJsLoadingPosts } from '../context/disqusjs-loading-posts';
-import { useSetDisqusJsHasError } from '../context/disqusjs-error';
+import { useSetMessage } from '../context/message';
+import { useSortType, useSetSortType } from '../context/sort-type';
+import { useSetHasError } from '../context/error';
 import { disqusJsApiFetcher } from '../lib/util';
-import { useDisqusJsThread, useSetDisqusJsThread } from '../context/disqusjs-thread';
 
 interface DisqusJSSortTypeRadioProps {
   checked: boolean;
@@ -43,8 +39,8 @@ const DisqusJSSortTypeRadio = ({
 };
 
 const DisqusJSSortTypeRadioGroup = memo(() => {
-  const sortType = useDisqusJsSortType();
-  const setSortType = useSetDisqusJsSortType();
+  const sortType = useSortType();
+  const setSortType = useSetSortType();
 
   return (
     <div className="dsqjs-order">
@@ -100,49 +96,6 @@ if (process.env.NODE_ENV !== 'production') {
   DisqusJSHeader.displayName = 'DisqusJSHeader';
 }
 
-const useFetchMorePosts = (shortname: string, id: string | null, apiKey: string, api = 'https://disqus.skk.moe/disqus/') => {
-  const posts = useDisqusJSPosts();
-  const setPosts = useSetDisqusJSPosts();
-  const setLoadingPosts = useSetDisqusJsLoadingPosts();
-  const setError = useSetDisqusJsHasError();
-  const setErrorWhenLoadingMorePosts = useSetDisqusJsLoadingMorePostsError();
-
-  return useCallback(async (reset = false, sortType: DisqusJsSortType = 'desc') => {
-    if (!id) return;
-
-    setLoadingPosts(true);
-    setErrorWhenLoadingMorePosts(false);
-
-    const lastPost = reset ? null : posts[posts.length - 1];
-    if (lastPost && !lastPost.cursor.hasNext) return;
-
-    const url = `${api}3.0/threads/listPostsThreaded?forum=${shortname}&thread=${id}&order=${sortType ?? 'desc'}${posts.length !== 0 && lastPost?.cursor.next ? `&cursor=${encodeURIComponent(lastPost.cursor.next)}` : ''}`;
-
-    const handleError = () => {
-      if (reset) {
-        setError(true);
-        setLoadingPosts(false);
-      } else {
-        setErrorWhenLoadingMorePosts(true);
-        setLoadingPosts(false);
-      }
-    };
-
-    try {
-      const newPosts = await disqusJsApiFetcher<DisqusAPI.Posts>(apiKey, url);
-
-      if (newPosts.code === 0) {
-        setPosts(prevPosts => (reset ? [] : prevPosts).concat(newPosts));
-        setLoadingPosts(false);
-      } else {
-        handleError();
-      }
-    } catch {
-      handleError();
-    }
-  }, [api, apiKey, id, posts, setError, setErrorWhenLoadingMorePosts, setLoadingPosts, setPosts, shortname]);
-};
-
 const DisqusJSPosts = ({
   apikey,
   shortname,
@@ -153,15 +106,49 @@ const DisqusJSPosts = ({
 }: DisqusJSConfig & { id: string }) => {
   const apiKey = useRef(useRandomApiKey(apikey));
 
-  const posts = useDisqusJSPosts();
+  const [posts, setPosts] = useState<DisqusAPI.Posts[]>([]);
+  const setError = useSetHasError();
 
-  const sortType = useDisqusJsSortType();
+  const sortType = useSortType();
   const prevSortType = useRef(sortType);
 
-  const errorWhenLoadMorePosts = useDisqusJSLoadingMorePostsError();
-  const isLoadingMorePosts = useDisqusJSLoadingPosts();
+  const [isLoadingMorePosts, setIsLoadingMorePosts] = useState(false);
+  const [errorWhenLoadMorePosts, setErrorWhenLoadingMorePosts] = useState(false);
 
-  const fetchMorePosts = useFetchMorePosts(shortname, id, apiKey.current, api);
+  const fetchMorePosts = useCallback(async (reset = false, sortType: DisqusJsSortType = 'desc') => {
+    if (!id) return;
+
+    setIsLoadingMorePosts(true);
+    setErrorWhenLoadingMorePosts(false);
+
+    const lastPost = reset ? null : posts[posts.length - 1];
+    if (lastPost && !lastPost.cursor.hasNext) return;
+
+    const url = `${api}3.0/threads/listPostsThreaded?forum=${shortname}&thread=${id}&order=${sortType ?? 'desc'}${posts.length !== 0 && lastPost?.cursor.next ? `&cursor=${encodeURIComponent(lastPost.cursor.next)}` : ''}`;
+
+    const handleError = () => {
+      if (reset) {
+        setError(true);
+        setIsLoadingMorePosts(false);
+      } else {
+        setErrorWhenLoadingMorePosts(true);
+        setIsLoadingMorePosts(false);
+      }
+    };
+
+    try {
+      const newPosts = await disqusJsApiFetcher<DisqusAPI.Posts>(apiKey.current, url);
+
+      if (newPosts.code === 0) {
+        setPosts(prevPosts => (reset ? [] : prevPosts).concat(newPosts));
+        setIsLoadingMorePosts(false);
+      } else {
+        handleError();
+      }
+    } catch {
+      handleError();
+    }
+  }, [api, id, posts, shortname, setError, setErrorWhenLoadingMorePosts, setIsLoadingMorePosts, setPosts]);
 
   const fetchFirstPageRef = useRef<string | null>(null);
 
@@ -206,13 +193,19 @@ const DisqusJSPosts = ({
   return null;
 };
 
-const useFetchThread = (shortname: string, identifier: string, apiKey: string, api = 'https://disqus.skk.moe/disqus/') => {
-  const setThread = useSetDisqusJsThread();
-  const setError = useSetDisqusJsHasError();
+export const DisqusJSThread = (props: DisqusJSConfig) => {
+  const apiKey = useRef(useRandomApiKey(props.apikey));
 
-  return useCallback(async () => {
+  const { shortname, api } = props;
+
+  const [thread, setThread] = useState<DisqusAPI.Thread | null>(null);
+  const setError = useSetHasError();
+
+  const identifier = props.identifier ?? document.location.origin + document.location.pathname + document.location.search;
+
+  const fetchThread = useCallback(async () => {
     try {
-      const thread = await disqusJsApiFetcher<DisqusAPI.Thread>(apiKey, `${api}3.0/threads/list.json?forum=${encodeURIComponent(shortname)}&thread=${encodeURIComponent(`ident:${identifier}`)}`);
+      const thread = await disqusJsApiFetcher<DisqusAPI.Thread>(apiKey.current, `${api}3.0/threads/list.json?forum=${encodeURIComponent(shortname)}&thread=${encodeURIComponent(`ident:${identifier}`)}`);
       if (thread.code === 0) {
         setThread(thread);
       } else {
@@ -222,22 +215,14 @@ const useFetchThread = (shortname: string, identifier: string, apiKey: string, a
       setError(true);
     }
   }, [api, apiKey, identifier, setError, setThread, shortname]);
-};
 
-export const DisqusJSThread = (props: DisqusJSConfig) => {
-  const apiKey = useRef(useRandomApiKey(props.apikey));
-
-  const thread = useDisqusJsThread();
-  const identifier = props.identifier ?? document.location.origin + document.location.pathname + document.location.search;
-
-  const fetchThread = useFetchThread(props.shortname, identifier, apiKey.current, props.api);
-  const setDisqusJsMessage = useSetDisqusJsMessage();
+  const setMsg = useSetMessage();
 
   const fetchThreadRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (fetchThreadRef.current !== identifier) {
-      setDisqusJsMessage(
+      setMsg(
         <>
           评论基础模式加载中... 如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并
           {' '}
@@ -247,7 +232,7 @@ export const DisqusJSThread = (props: DisqusJSConfig) => {
       fetchThreadRef.current = identifier;
       fetchThread();
     } else {
-      setDisqusJsMessage(
+      setMsg(
         <>
           你可能无法访问 Disqus，已启用评论基础模式。如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并
           {' '}
@@ -255,7 +240,7 @@ export const DisqusJSThread = (props: DisqusJSConfig) => {
         </>
       );
     }
-  }, [thread, fetchThread, identifier, setDisqusJsMessage, props.shortname, props.api]);
+  }, [thread, fetchThread, identifier, setMsg, shortname, props.api]);
 
   if (!thread) {
     return null;

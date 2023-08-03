@@ -7,16 +7,11 @@ import { forwardRef } from 'react';
 import styles from './styles/disqusjs.module.sass';
 
 import { DisqusJSEntry } from './entry';
-import { DisqusJSError } from './components/Error';
 
-import { DisqusJsModeProvider } from './context/disqusjs-mode';
-import { DisqusJsSortTypeProvider } from './context/disqusjs-sort-type';
-import { DisqusJsHasErrorProvider, useDisqusJsHasError } from './context/disqusjs-error';
-import { DisqusJsMessageProvider, useDisqusJsMessage } from './context/disqusjs-msg';
-import { DisqusJSLoadingPostsProvider } from './context/disqusjs-loading-posts';
-import { DisqusJSLoadingMorePostsErrorProvider } from './context/disqusjs-error-when-loading-more-posts';
-import { DisqusJSPostsProvider } from './context/disqusjs-posts';
-import { DisqusJsThreadProvider } from './context/disqusjs-thread';
+import { ModeProvider } from './context/mode';
+import { SortTypeProvider } from './context/sort-type';
+import { HasErrorProvider } from './context/error';
+import { MessageProvider } from './context/message';
 
 export type { DisqusJSConfig };
 
@@ -35,9 +30,6 @@ export const DisqusJS = forwardRef(({
   className,
   ...rest
 }: DisqusJSConfig & JSX.IntrinsicElements['div'], ref: React.ForwardedRef<HTMLDivElement>) => {
-  const msg = useDisqusJsMessage();
-  const disqusJsHasError = useDisqusJsHasError();
-
   const disqusJsConfig: DisqusJSConfig = {
     shortname,
     siteName,
@@ -57,35 +49,18 @@ export const DisqusJS = forwardRef(({
   if (startClientSideRender) {
     return (
       <div ref={ref} {...rest} className={`${styles.dsqjs} ${className ?? ''}`}>
-        <DisqusJsModeProvider>
-          <DisqusJsSortTypeProvider>
-            <DisqusJsHasErrorProvider>
-              <DisqusJsMessageProvider>
-                <DisqusJSLoadingPostsProvider>
-                  <DisqusJSLoadingMorePostsErrorProvider>
-                    <DisqusJsThreadProvider>
-                      <DisqusJSPostsProvider>
-                        <section id="dsqjs">
-                          {
-                            disqusJsHasError
-                              ? <DisqusJSError />
-                              : (
-                                <>
-                                  {msg && <div id="dsqjs-msg">{msg}</div>}
-                                  <DisqusJSEntry {...disqusJsConfig} />
-                                </>
-                              )
-                          }
-                          <DisqusJSFooter />
-                        </section>
-                      </DisqusJSPostsProvider>
-                    </DisqusJsThreadProvider>
-                  </DisqusJSLoadingMorePostsErrorProvider>
-                </DisqusJSLoadingPostsProvider>
-              </DisqusJsMessageProvider>
-            </DisqusJsHasErrorProvider>
-          </DisqusJsSortTypeProvider>
-        </DisqusJsModeProvider>
+        <ModeProvider>
+          <SortTypeProvider>
+            <HasErrorProvider>
+              <MessageProvider>
+                <section id="dsqjs">
+                  <DisqusJSEntry {...disqusJsConfig} />
+                  <DisqusJSFooter />
+                </section>
+              </MessageProvider>
+            </HasErrorProvider>
+          </SortTypeProvider>
+        </ModeProvider>
       </div>
     );
   }

@@ -13,6 +13,6 @@ const getDisqusJsSortTypeDefaultValue = () => {
   return null;
 };
 
-const [DisqusJsSortTypeProvider, useDisqusJsSortType, useSetDisqusJsSortType] = createContextState<DisqusJsSortType>(getDisqusJsSortTypeDefaultValue());
+const [SortTypeProvider, useSortType, useSetSortType] = createContextState<DisqusJsSortType>(getDisqusJsSortTypeDefaultValue());
 
-export { DisqusJsSortTypeProvider, useDisqusJsSortType, useSetDisqusJsSortType };
+export { SortTypeProvider, useSortType, useSetSortType };
