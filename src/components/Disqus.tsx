@@ -1,8 +1,8 @@
 import { memo, useEffect, useState } from 'react';
 import { isBrowser } from '../lib/util';
 import { DisqusConfig } from '../types';
-import { useStore } from '../state';
 import { DisqusJSForceDisqusJsModeButton } from './Button';
+import { useSetMessage } from '../context/message';
 
 const THREAD_ID = 'disqus_thread';
 const EMBED_SCRIPT_ID = 'dsq-embed-scr';
@@ -20,12 +20,17 @@ declare global {
   }
 }
 
-export const Disqus = memo((props: DisqusConfig) => {
-  const setDisqusJsMessage = useStore(state => state.setMsg);
+export const Disqus = memo(({
+  shortname,
+  identifier,
+  url,
+  title
+}: DisqusConfig) => {
+  const setMsg = useSetMessage();
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    setDisqusJsMessage(null);
+    setMsg(null);
 
     if (isBrowser) {
       const clearDisqusInstance = () => {
@@ -48,34 +53,32 @@ export const Disqus = memo((props: DisqusConfig) => {
           const containerEl = document.getElementById(THREAD_ID);
           if (containerEl) {
             while (containerEl.hasChildNodes()) {
-              containerEl.removeChild(containerEl.firstChild!);
+              if (containerEl.firstChild) {
+                containerEl.removeChild(containerEl.firstChild);
+              }
             }
           }
 
           document.querySelectorAll(
             'link[href*="disquscdn.com/next"], link[href*="disqus.com/next"], script[src*="disquscdn.com/next/embed"], script[src*="disqus.com/count-data.js"], iframe[title="Disqus"]'
-          ).forEach((el) => {
-            el.parentNode?.removeChild(el);
-            el.parentElement?.removeChild(el);
-            el.remove();
-          });
+          ).forEach((el) => el.remove());
         }
       };
 
-      if (window.disqus_shortname !== props.shortname) {
+      if (window.disqus_shortname !== shortname) {
         clearDisqusInstance();
       }
 
       const getDisqusConfig = () => {
         return function (this: any) {
-          if (props.identifier) {
-            this.page.identifier = props.identifier;
+          if (identifier) {
+            this.page.identifier = identifier;
           }
-          if (props.url) {
-            this.page.url = props.url;
+          if (url) {
+            this.page.url = url;
           }
-          if (props.title) {
-            this.page.title = props.title;
+          if (title) {
+            this.page.title = title;
           }
           this.callbacks.onReady = [
             () => {
@@ -92,25 +95,33 @@ export const Disqus = memo((props: DisqusConfig) => {
         });
       } else {
         window.disqus_config = getDisqusConfig();
-        window.disqus_shortname = props.shortname;
+        window.disqus_shortname = shortname;
 
         const scriptEl = document.createElement('script');
         scriptEl.id = EMBED_SCRIPT_ID;
-        scriptEl.src = `https://${props.shortname}.disqus.com/embed.js`;
+        scriptEl.src = `https://${shortname}.disqus.com/embed.js`;
         scriptEl.async = true;
         document.head.appendChild(scriptEl);
       }
 
       return clearDisqusInstance;
     }
-  }, [props.shortname, props.identifier, props.url, props.title, setDisqusJsMessage]);
+  }, [shortname, identifier, url, title, setMsg]);
 
   return (
     <>
       <div id={THREAD_ID}>
-        评论完整模式加载中... 如果长时间无法加载，请针对 disq.us | disquscdn.com | disqus.com 启用代理，或切换至 <DisqusJSForceDisqusJsModeButton>评论基础模式</DisqusJSForceDisqusJsModeButton>
+        评论完整模式加载中... 如果长时间无法加载，请针对 disq.us | disquscdn.com | disqus.com 启用代理，或切换至
+        {' '}
+        <DisqusJSForceDisqusJsModeButton>评论基础模式</DisqusJSForceDisqusJsModeButton>
       </div>
-      {!loaded && <div id="dsqjs-msg">评论完整模式加载中... 如果长时间无法加载，请针对 disq.us | disquscdn.com | disqus.com 启用代理，或切换至 <DisqusJSForceDisqusJsModeButton>评论基础模式</DisqusJSForceDisqusJsModeButton></div>}
+      {!loaded && (
+        <div id="dsqjs-msg">
+          评论完整模式加载中... 如果长时间无法加载，请针对 disq.us | disquscdn.com | disqus.com 启用代理，或切换至
+          {' '}
+          <DisqusJSForceDisqusJsModeButton>评论基础模式</DisqusJSForceDisqusJsModeButton>
+        </div>
+      )}
     </>
   );
 });

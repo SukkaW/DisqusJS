@@ -1,60 +1,35 @@
-import { useStore } from './state';
+import { useIsClient } from 'foxact/use-is-client';
+
 import type { DisqusJSConfig } from './types';
-import { Disqus } from './components/Disqus';
-import { DisqusJSThread } from './components/Disscussion';
 import { DisqusJSFooter } from './components/Footer';
-import { forwardRef, useEffect, useState } from 'react';
-import type React from 'react';
+import { forwardRef } from 'react';
 
 import styles from './styles/disqusjs.module.sass';
-import { DisqusJSError } from './components/Error';
+
+import { DisqusJSEntry } from './entry';
+
+import { ModeProvider } from './context/mode';
+import { SortTypeProvider } from './context/sort-type';
+import { HasErrorProvider } from './context/error';
+import { MessageProvider } from './context/message';
 
 export type { DisqusJSConfig };
 
-const DisqusJSEntry = (props: DisqusJSConfig) => {
-  const disqusJsMode = useStore(state => state.mode);
-  const checkDisqusJsMode = useStore(state => state.checkMode);
-
-  useEffect(() => {
-    if (disqusJsMode !== 'disqus' && disqusJsMode !== 'dsqjs') {
-      checkDisqusJsMode(props.shortname);
-    }
-  }, [checkDisqusJsMode, disqusJsMode, props.shortname]);
-
-  if (disqusJsMode === 'disqus') {
-    return (
-      <Disqus shortname={props.shortname} identifier={props.identifier} url={props.url} title={props.title} />
-    );
-  }
-
-  if (disqusJsMode === 'dsqjs') {
-    return (
-      <DisqusJSThread {...props} />
-    );
-  }
-  return null;
-};
-
-export const DisqusJS = forwardRef((props: DisqusJSConfig & JSX.IntrinsicElements['div'], ref: React.ForwardedRef<HTMLDivElement>) => {
-  const msg = useStore(state => state.msg);
-  const disqusJsHasError = useStore(state => state.error);
-
-  const {
-    shortname,
-    siteName,
-    identifier,
-    url,
-    title,
-    api,
-    apikey,
-    nesting,
-    nocomment,
-    admin,
-    adminLabel,
-    className,
-    ...rest
-  } = props;
-
+export const DisqusJS = forwardRef(({
+  shortname,
+  siteName,
+  identifier,
+  url,
+  title,
+  api,
+  apikey,
+  nesting,
+  nocomment,
+  admin,
+  adminLabel,
+  className,
+  ...rest
+}: DisqusJSConfig & JSX.IntrinsicElements['div'], ref: React.ForwardedRef<HTMLDivElement>) => {
   const disqusJsConfig: DisqusJSConfig = {
     shortname,
     siteName,
@@ -69,27 +44,23 @@ export const DisqusJS = forwardRef((props: DisqusJSConfig & JSX.IntrinsicElement
     adminLabel
   };
 
-  const [startClientSideRender, setStartClientSideRender] = useState(false);
-  useEffect(() => {
-    setStartClientSideRender(true);
-  }, []);
+  const startClientSideRender = useIsClient();
 
   if (startClientSideRender) {
     return (
       <div ref={ref} {...rest} className={`${styles.dsqjs} ${className ?? ''}`}>
-        <section id="dsqjs">
-          {
-            disqusJsHasError
-              ? <DisqusJSError />
-              : (
-                <>
-                  {msg && <div id="dsqjs-msg">{msg}</div>}
+        <ModeProvider>
+          <SortTypeProvider>
+            <HasErrorProvider>
+              <MessageProvider>
+                <section id="dsqjs">
                   <DisqusJSEntry {...disqusJsConfig} />
-                </>
-              )
-          }
-          <DisqusJSFooter />
-        </section>
+                  <DisqusJSFooter />
+                </section>
+              </MessageProvider>
+            </HasErrorProvider>
+          </SortTypeProvider>
+        </ModeProvider>
       </div>
     );
   }
