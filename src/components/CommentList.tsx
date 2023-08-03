@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { formatDate, getTimeStampFromString, processCommentMessage, processCommentMessage as replaceDisqusCdn } from '../lib/util';
-import { DisqusAPI } from '../types';
+import type { DisqusAPI } from '../types';
 import { DisqusJSForceDisqusModeButton } from './Button';
 
 interface DisqusJSCommentASTItem {
@@ -10,8 +10,8 @@ interface DisqusJSCommentASTItem {
 }
 
 interface PassedDownDisqusJSConfig {
-  admin?: string
-  adminLabel?: string
+  admin?: string,
+  adminLabel?: string,
   nestingSetting?: number
 }
 
@@ -84,14 +84,12 @@ function DisqusJSChildrenPostItems(props: { children: DisqusJSCommentASTItem[] |
   );
 }
 
-function createDisqusJSCommentASTItem(comment: DisqusAPI.Post, allChildrenComments: DisqusAPI.Post[], nesting: number) {
-  const result: DisqusJSCommentASTItem = {
+function createDisqusJSCommentASTItem(comment: DisqusAPI.Post, allChildrenComments: DisqusAPI.Post[], nesting: number): DisqusJSCommentASTItem {
+  return {
     comment,
     children: findChildrenFromComments(allChildrenComments, Number(comment.id), nesting + 1),
     nesting: nesting + 1
   };
-
-  return result;
 }
 
 function findChildrenFromComments(allChildrenComments: DisqusAPI.Post[], parentId: number, nesting: number): DisqusJSCommentASTItem[] | null {

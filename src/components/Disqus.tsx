@@ -1,6 +1,6 @@
 import { memo, useEffect, useState } from 'react';
 import { isBrowser } from '../lib/util';
-import { DisqusConfig } from '../types';
+import type { DisqusConfig } from '../types';
 import { DisqusJSForceDisqusJsModeButton } from './Button';
 import { useSetMessage } from '../context/message';
 
@@ -12,11 +12,11 @@ declare global {
     DISQUS?: {
       reset: (opt: {
         reload?: boolean,
-        config?: () => void;
-      }) => void;
+        config?: () => void
+      }) => void
     },
-    disqus_config?: () => void;
-    disqus_shortname?: string;
+    disqus_config?: () => void,
+    disqus_shortname?: string
   }
 }
 
@@ -54,7 +54,7 @@ export const Disqus = memo(({
           if (containerEl) {
             while (containerEl.hasChildNodes()) {
               if (containerEl.firstChild) {
-                containerEl.removeChild(containerEl.firstChild);
+                containerEl.firstChild.remove();
               }
             }
           }

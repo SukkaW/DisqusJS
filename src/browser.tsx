@@ -1,12 +1,7 @@
-import { DisqusJSConfig } from './types';
+import type { DisqusJSConfig } from './types';
 import { DisqusJS as DisqusJSComponent } from './';
 
 import { render } from 'preact';
-
-// eslint-disable-next-line no-nested-ternary
-const getElementFromConfig = (el?: string | Element) => (el
-  ? (typeof el === 'string' ? document.querySelector(el) : el)
-  : document.getElementById('disqusjs'));
 
 export type { DisqusJSConfig };
 
@@ -19,7 +14,16 @@ export default class DisqusJS {
   }
 
   render(el?: string | Element) {
-    const container = getElementFromConfig(el);
+    let container;
+    if (el) {
+      if (typeof el === 'string') {
+        container = document.querySelector(el);
+      } else {
+        container = el;
+      }
+    } else {
+      container = document.getElementById('disqusjs');
+    }
 
     if (container) {
       this.container = container;

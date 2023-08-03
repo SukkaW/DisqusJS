@@ -1,5 +1,5 @@
 export function randomInt(min: number, max: number): number {
-  // eslint-disable-next-line no-bitwise
+  // eslint-disable-next-line no-bitwise -- performance
   return (Math.random() * (max - min + 1) + min) | 0;
 }
 
@@ -18,7 +18,7 @@ let domParser: DOMParser | null = null;
 export const processCommentMessage = (str: string) => {
   const rawHtml = str
     .replace(/a\.disquscdn\.com/g, 'c.disquscdn.com')
-    .replace(/https?:\/\/disq.us\/url\?url=(.+)%3A[\w-]+&amp;cuid=\d+/gm, (_, $1) => decodeURIComponent($1));
+    .replace(/https?:\/\/disq.us\/url\?url=(.+)%3A[\w-]+&amp;cuid=\d+/gm, (_, $1: string) => decodeURIComponent($1));
 
   domParser ||= new DOMParser();
   const doc = domParser.parseFromString(rawHtml, 'text/html');

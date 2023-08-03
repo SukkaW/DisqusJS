@@ -15,7 +15,7 @@ export interface DisqusJSConfig {
 export interface DisqusConfig {
   shortname: string,
   identifier?: string,
-  url: string
+  url: string,
   title?: string
 }
 
@@ -26,7 +26,7 @@ export namespace DisqusAPI {
   export interface Cursor {
     prev: null | string,
     hasNext: boolean,
-    next: null | string
+    next: null | string,
     total: null | number,
     id: string,
     more: boolean
@@ -50,7 +50,7 @@ export namespace DisqusAPI {
     author: {
       name: string,
       avatar: {
-        cache: string
+        cache: string,
         permalink: string
       },
       profileUrl: string,

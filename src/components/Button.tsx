@@ -1,18 +1,21 @@
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { useSetMode } from '../context/mode';
 import { useSetHasError } from '../context/error';
 
 export const DisqusJSLoadMoreCommentsButton = memo(({ isError, isLoading, ...restProps }: JSX.IntrinsicElements['a'] & { isError?: boolean, isLoading: boolean }) => {
+  const text = useMemo(() => {
+    if (isError) {
+      return '加载失败，请重试';
+    }
+    if (isLoading) {
+      return '正在加载...';
+    }
+    return '加载更多评论';
+  }, [isError, isLoading]);
+
   return (
     <a {...restProps} id="dsqjs-load-more" className={`dsqjs-load-more ${isError ? 'is-error' : ''}`} role="button">
-      {
-        // eslint-disable-next-line no-nested-ternary
-        isError
-          ? '加载失败，请重试'
-          : isLoading
-            ? '正在加载...'
-            : '加载更多评论'
-      }
+      {text}
     </a>
   );
 });

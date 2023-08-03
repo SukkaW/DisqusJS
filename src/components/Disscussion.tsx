@@ -10,11 +10,11 @@ import { useSetHasError } from '../context/error';
 import { disqusJsApiFetcher } from '../lib/util';
 
 interface DisqusJSSortTypeRadioProps {
-  checked: boolean;
-  sortType: string;
-  title: string;
-  label: string;
-  onChange: () => void;
+  checked: boolean,
+  sortType: string,
+  title: string,
+  label: string,
+  onChange: () => void
 }
 
 const DisqusJSSortTypeRadio = ({
@@ -74,8 +74,8 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 interface HeaderProps {
-  totalComments: number;
-  siteName: string;
+  totalComments: number,
+  siteName: string
 }
 
 const DisqusJSHeader = memo(({ totalComments, siteName }: HeaderProps) => (
@@ -165,11 +165,11 @@ const DisqusJSPosts = ({
     // When there is no posts at all, load the first pagination of posts.
     if (fetchFirstPageRef.current !== id) {
       fetchFirstPageRef.current = id;
-      resetAndFetchFirstPageOfPosts();
+      void resetAndFetchFirstPageOfPosts();
     } else if (prevSortType.current !== sortType) {
       prevSortType.current = sortType;
       fetchFirstPageRef.current = id;
-      resetAndFetchFirstPageOfPosts();
+      void resetAndFetchFirstPageOfPosts();
     }
   }, [posts, resetAndFetchFirstPageOfPosts, id, isLoadingMorePosts, sortType]);
 
@@ -230,7 +230,7 @@ export const DisqusJSThread = (props: DisqusJSConfig) => {
         </>
       );
       fetchThreadRef.current = identifier;
-      fetchThread();
+      void fetchThread();
     } else {
       setMsg(
         <>

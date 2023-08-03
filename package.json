@@ -116,14 +116,13 @@
     "@types/node": "^18.17.1",
     "@types/react": "^18.2.18",
     "@types/react-dom": "^18.2.7",
-    "@typescript-eslint/eslint-plugin": "^5.36.1",
-    "@typescript-eslint/parser": "^5.36.1",
+    "@typescript-eslint/eslint-plugin": "^6.2.1",
+    "@typescript-eslint/parser": "^6.2.1",
     "cross-env": "^7.0.3",
-    "eslint": "^8.23.0",
-    "eslint-config-sukka": "^1.4.0",
-    "eslint-import-resolver-typescript": "^3.5.0",
-    "eslint-plugin-import": "npm:eslint-plugin-i@^2.27.5-3",
-    "eslint-plugin-node": "^11.1.0",
+    "eslint": "^8.46.0",
+    "eslint-config-sukka": "^3.0.1",
+    "eslint-import-resolver-typescript": "^3.5.5",
+    "eslint-plugin-import": "npm:eslint-plugin-i@^2.28.0-2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "nollup": "^0.21.0",
     "preact": "^10.16.0",
@@ -143,6 +142,7 @@
     "sass": "^1.64.2"
   },
   "dependencies": {
+    "eslint-plugin-n": "^16.0.1",
     "foxact": "^0.2.17"
   }
 }

@@ -17,8 +17,8 @@ const dtsOutput: Record<string, Set<string>> = {};
 const noBundleExternal = ['react', 'react-dom', 'preact', 'foxact'];
 
 const outputMatrix = (config: {
-  input: string;
-  format: 'iife' | 'umd' | 'es' | 'cjs';
+  input: string,
+  format: 'iife' | 'umd' | 'es' | 'cjs',
   minify: boolean,
   target: JscTarget,
   bundle: boolean,
@@ -26,7 +26,7 @@ const outputMatrix = (config: {
   browser: boolean,
   dts: boolean,
   dir?: string,
-  preact: boolean,
+  preact: boolean
 }): RollupOptions[] => {
   const filenameBase = `${config.dir ?? 'dist'}${config.browser ? '/browser' : ''}/disqusjs.${config.target}.${config.format}${config.minify ? '.min' : ''}`;
 
@@ -247,14 +247,14 @@ function stringHash(str: string) {
   let i = str.length;
 
   while (i) {
-    // eslint-disable-next-line no-bitwise
+    // eslint-disable-next-line no-bitwise -- performance
     hash = (hash * 33) ^ str.charCodeAt(--i);
   }
 
   /* JavaScript does bitwise operations (like XOR, above) on 32-bit signed
    * integers. Since we want the results to be always positive, convert the
    * signed int to an unsigned by doing an unsigned bitshift. */
-  // eslint-disable-next-line no-bitwise
+  // eslint-disable-next-line no-bitwise -- performance
   return hash >>> 0;
 }
 
