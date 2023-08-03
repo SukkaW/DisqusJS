@@ -3,12 +3,10 @@ export function randomInt(min: number, max: number): number {
   return (Math.random() * (max - min + 1) + min) | 0;
 }
 
-export const isBrowser = typeof window !== 'undefined';
-
 export const disqusJsApiFetcher = <T>(apiKey: string, url: string): Promise<T> => {
   const Url = new URL(url);
   Url.searchParams.set('api_key', apiKey);
-  return fetch(Url.toString()).then(res => res.json());
+  return fetch(Url.href).then(res => res.json());
 };
 
 export const getTimeStampFromString = (dateString: string) => new Date(dateString).getTime();

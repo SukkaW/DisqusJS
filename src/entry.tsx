@@ -3,21 +3,20 @@ import { Disqus } from './components/Disqus';
 import { DisqusJSThread } from './components/Disscussion';
 import { DisqusJSError } from './components/Error';
 
-import type { DisqusJSConfig } from './types';
-
 import { useHasError } from './context/error';
 import { useMessage, useSetMessage } from './context/message';
 
 import { checkDomainAccessiblity } from './lib/util';
 import { useMode, useSetMode } from './context/mode';
+import { useConfig } from './context/config';
 
-export const DisqusJSEntry = (props: DisqusJSConfig) => {
+export const DisqusJSEntry = () => {
   const setMsg = useSetMessage();
 
   const mode = useMode();
   const setMode = useSetMode();
 
-  const { shortname } = props;
+  const { shortname, identifier, url, title } = useConfig();
 
   useEffect(() => {
     let cancel = false;
@@ -55,8 +54,8 @@ export const DisqusJSEntry = (props: DisqusJSConfig) => {
   return (
     <>
       {msg && <div id="dsqjs-msg">{msg}</div>}
-      {mode === 'disqus' && <Disqus shortname={props.shortname} identifier={props.identifier} url={props.url} title={props.title} />}
-      {mode === 'dsqjs' && <DisqusJSThread {...props} />}
+      {mode === 'disqus' && <Disqus shortname={shortname} identifier={identifier} url={url} title={title} />}
+      {mode === 'dsqjs' && <DisqusJSThread />}
     </>
   );
 };

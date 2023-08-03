@@ -12,6 +12,7 @@ import { ModeProvider } from './context/mode';
 import { SortTypeProvider } from './context/sort-type';
 import { HasErrorProvider } from './context/error';
 import { MessageProvider } from './context/message';
+import { ConfigProvider } from './context/config';
 
 export type { DisqusJSConfig };
 
@@ -30,37 +31,35 @@ export const DisqusJS = forwardRef(({
   className,
   ...rest
 }: DisqusJSConfig & JSX.IntrinsicElements['div'], ref: React.ForwardedRef<HTMLDivElement>) => {
-  const disqusJsConfig: DisqusJSConfig = {
-    shortname,
-    siteName,
-    identifier,
-    url,
-    title,
-    api,
-    apikey,
-    nesting,
-    nocomment,
-    admin,
-    adminLabel
-  };
-
-  const startClientSideRender = useIsClient();
-
-  if (startClientSideRender) {
+  if (useIsClient()) {
     return (
       <div ref={ref} {...rest} className={`${styles.dsqjs} ${className ?? ''}`}>
-        <ModeProvider>
-          <SortTypeProvider>
-            <HasErrorProvider>
-              <MessageProvider>
-                <section id="dsqjs">
-                  <DisqusJSEntry {...disqusJsConfig} />
-                  <DisqusJSFooter />
-                </section>
-              </MessageProvider>
-            </HasErrorProvider>
-          </SortTypeProvider>
-        </ModeProvider>
+        <ConfigProvider value={{
+          shortname,
+          siteName,
+          identifier,
+          url,
+          title,
+          api,
+          apikey,
+          nesting,
+          nocomment,
+          admin,
+          adminLabel
+        }}>
+          <ModeProvider>
+            <SortTypeProvider>
+              <HasErrorProvider>
+                <MessageProvider>
+                  <section id="dsqjs">
+                    <DisqusJSEntry />
+                    <DisqusJSFooter />
+                  </section>
+                </MessageProvider>
+              </HasErrorProvider>
+            </SortTypeProvider>
+          </ModeProvider>
+        </ConfigProvider>
       </div>
     );
   }

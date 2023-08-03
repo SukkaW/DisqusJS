@@ -1,5 +1,4 @@
 import { memo, useEffect, useState } from 'react';
-import { isBrowser } from '../lib/util';
 import type { DisqusConfig } from '../types';
 import { DisqusJSForceDisqusJsModeButton } from './Button';
 import { useSetMessage } from '../context/message';
@@ -32,9 +31,9 @@ export const Disqus = memo(({
   useEffect(() => {
     setMsg(null);
 
-    if (isBrowser) {
+    if (typeof window !== 'undefined') {
       const clearDisqusInstance = () => {
-        if (isBrowser) {
+        if (typeof window !== 'undefined') {
           window.disqus_config = undefined;
           const scriptEl = document.getElementById(EMBED_SCRIPT_ID);
           if (scriptEl) {

@@ -1,10 +1,9 @@
 import { createContextState } from 'foxact/context-state';
-import { isBrowser } from '../lib/util';
 import type { DisqusJsMode } from '../types';
 import { useCallback } from 'react';
 
 const getDisqusJsModeDefaultValue = () => {
-  if (isBrowser) {
+  if (typeof window !== 'undefined') {
     const value = localStorage.getItem('dsqjs_mode');
     if (value === 'dsqjs' || value === 'disqus') {
       return value;

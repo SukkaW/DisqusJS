@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { formatDate, getTimeStampFromString, processCommentMessage, processCommentMessage as replaceDisqusCdn } from '../lib/util';
 import type { DisqusAPI } from '../types';
 import { DisqusJSForceDisqusModeButton } from './Button';
+import { useConfig } from '../context/config';
 
 interface DisqusJSCommentASTItem {
   comment: DisqusAPI.Post,
@@ -9,27 +10,24 @@ interface DisqusJSCommentASTItem {
   nesting?: number
 }
 
-interface PassedDownDisqusJSConfig {
-  admin?: string,
-  adminLabel?: string,
-  nestingSetting?: number
-}
+function DisqusJSPostItem({ comment, children, nesting }: DisqusJSCommentASTItem) {
+  const { admin, adminLabel } = useConfig();
+  const profileUrl = comment.author.profileUrl;
+  const avatarUrl = replaceDisqusCdn(comment.author.avatar.cache);
 
-function DisqusJSPostItem(props: DisqusJSCommentASTItem & PassedDownDisqusJSConfig) {
-  const profileUrl = props.comment.author.profileUrl;
-  const avatarUrl = replaceDisqusCdn(props.comment.author.avatar.cache);
+  const imgEl = <img alt={comment.author.username} src={avatarUrl} />;
 
   return (
-    <li id={`comment-${props.comment.id}`}>
+    <li id={`comment-${comment.id}`}>
       <div className="dsqjs-post-item dsqjs-clearfix">
         <div className="dsqjs-post-avatar">
           {profileUrl
             ? (
               <a href={profileUrl} target="_blank" rel="noreferrer noopenner nofollow external">
-                <img alt={props.comment.author.username} src={avatarUrl} />
+                {imgEl}
               </a>
             )
-            : <img alt={props.comment.author.username} src={avatarUrl} />}
+            : imgEl}
         </div>
         <div className="dsqjs-post-body">
           <div className="dsqjs-post-header">
@@ -37,48 +35,50 @@ function DisqusJSPostItem(props: DisqusJSCommentASTItem & PassedDownDisqusJSConf
               profileUrl
                 ? (
                   <span className="dsqjs-post-author">
-                    <a href={profileUrl} target="_blank" rel="noreferrer noopenner nofollow external">{props.comment.author.name}</a>
+                    <a href={profileUrl} target="_blank" rel="noreferrer noopenner nofollow external">{comment.author.name}</a>
                   </span>
                 )
-                : <span className="dsqjs-post-author">{props.comment.author.name}</span>
+                : <span className="dsqjs-post-author">{comment.author.name}</span>
             }
             {
               // authorEl admin label
-              props.admin === props.comment.author.username && (
-                <span className="dsqjs-admin-badge">{props.adminLabel}</span>
+              admin === comment.author.username && (
+                <span className="dsqjs-admin-badge">{adminLabel}</span>
               )
             }
             {' '}
             <span className="dsqjs-bullet"></span>
             {' '}
             {
-              props.comment.createdAt && (
+              comment.createdAt && (
                 <span className="dsqjs-meta">
-                  <time>{formatDate(props.comment.createdAt)}</time>
+                  <time>{formatDate(comment.createdAt)}</time>
                 </span>
               )
             }
           </div>
           {
-            props.comment.isDeleted
+            comment.isDeleted
               ? <div className="dsqjs-post-content"><small>此评论已被删除</small></div>
-              : <div className="dsqjs-post-content" dangerouslySetInnerHTML={{ __html: processCommentMessage(props.comment.message) }} />
+              : <div className="dsqjs-post-content" dangerouslySetInnerHTML={{ __html: processCommentMessage(comment.message) }} />
           }
         </div>
       </div>
-      <DisqusJSChildrenPostItems {...props} currentNesting={props.nesting} />
-      {props.comment.hasMore && <p className="dsqjs-has-more">切换至 <DisqusJSForceDisqusModeButton>完整 Disqus 模式</DisqusJSForceDisqusModeButton> 显示更多回复</p>}
+      <DisqusJSChildrenPostItems children={children} nesting={nesting} />
+      {comment.hasMore && <p className="dsqjs-has-more">切换至 <DisqusJSForceDisqusModeButton>完整 Disqus 模式</DisqusJSForceDisqusModeButton> 显示更多回复</p>}
     </li>
   );
 }
 
-function DisqusJSChildrenPostItems(props: { children: DisqusJSCommentASTItem[] | null } & { currentNesting?: number } & PassedDownDisqusJSConfig) {
-  if (!props.children || props.children.length === 0) return null;
+function DisqusJSChildrenPostItems({ children, nesting: currentNesting = 1 }: { children: DisqusJSCommentASTItem[] | null, nesting?: number }) {
+  const { nesting: nestingSetting = 4 } = useConfig();
+
+  if (!children || children.length === 0) return null;
 
   return (
-    <ul className={`dsqjs-post-list ${(props.currentNesting ?? 1) < (props.nestingSetting ?? 4) ? 'dsqjs-children' : ''}`}>
-      {props.children.map(comment => (
-        <DisqusJSPostItem {...comment} admin={props.admin} adminLabel={props.adminLabel} key={comment.comment.id} />
+    <ul className={`dsqjs-post-list ${currentNesting < nestingSetting ? 'dsqjs-children' : ''}`}>
+      {children.map(comment => (
+        <DisqusJSPostItem {...comment} key={comment.comment.id} />
       ))}
     </ul>
   );
@@ -105,16 +105,16 @@ function findChildrenFromComments(allChildrenComments: DisqusAPI.Post[], parentI
   return list;
 }
 
-export const DisqusJSCommentsList = ({ comments, admin, adminLabel }: { comments: DisqusAPI.Post[] } & PassedDownDisqusJSConfig) => {
+export const DisqusJSCommentsList = ({ comments }: { comments: DisqusAPI.Post[] }) => {
   const processedComments = useMemo(() => {
     const topLevelComments: DisqusAPI.Post[] = [];
     const childComments: DisqusAPI.Post[] = [];
 
-    const rawComments = comments.slice();
-    rawComments.map((comment, i) => ({ i, p: comment.parent, d: getTimeStampFromString(comment.createdAt) }))
+    comments.map((comment, i) => ({ i, p: comment.parent, d: getTimeStampFromString(comment.createdAt) }))
       .sort((a, b) => (a.p && b.p ? a.d - b.d : 0))
-      .map(({ i }) => rawComments[i])
-      .forEach(comment => (comment.parent ? childComments : topLevelComments).push(comment));
+      .forEach(({ i }) => {
+        (comments[i].parent ? childComments : topLevelComments).push(comments[i]);
+      });
 
     return topLevelComments.map(comment => createDisqusJSCommentASTItem(comment, childComments, 0));
   }, [comments]);
@@ -125,8 +125,6 @@ export const DisqusJSCommentsList = ({ comments, admin, adminLabel }: { comments
         <DisqusJSPostItem
           {...comment}
           key={comment.comment.id}
-          admin={admin}
-          adminLabel={adminLabel}
         />
       ))}
     </ul>

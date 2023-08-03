@@ -1,5 +1,5 @@
-import type { DisqusAPI, DisqusJSConfig, DisqusJsSortType } from '../types';
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import type { DisqusAPI } from '../types';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DisqusJSCreateThread, DisqusJSNoComment } from './Error';
 import { DisqusJSCommentsList } from './CommentList';
 import { DisqusJSForceDisqusModeButton, DisqusJSLoadMoreCommentsButton, DisqusJSReTestModeButton } from './Button';
@@ -8,6 +8,7 @@ import { useSetMessage } from '../context/message';
 import { useSortType, useSetSortType } from '../context/sort-type';
 import { useSetHasError } from '../context/error';
 import { disqusJsApiFetcher } from '../lib/util';
+import { useConfig } from '../context/config';
 
 interface DisqusJSSortTypeRadioProps {
   checked: boolean,
@@ -96,14 +97,9 @@ if (process.env.NODE_ENV !== 'production') {
   DisqusJSHeader.displayName = 'DisqusJSHeader';
 }
 
-const DisqusJSPosts = ({
-  apikey,
-  shortname,
-  id,
-  api,
-  admin,
-  adminLabel
-}: DisqusJSConfig & { id: string }) => {
+const DisqusJSPosts = ({ id }: { id: string }) => {
+  const { apikey, shortname, api } = useConfig();
+
   const apiKey = useRef(useRandomApiKey(apikey));
 
   const [posts, setPosts] = useState<DisqusAPI.Posts[]>([]);
@@ -115,7 +111,7 @@ const DisqusJSPosts = ({
   const [isLoadingMorePosts, setIsLoadingMorePosts] = useState(false);
   const [errorWhenLoadMorePosts, setErrorWhenLoadingMorePosts] = useState(false);
 
-  const fetchMorePosts = useCallback(async (reset = false, sortType: DisqusJsSortType = 'desc') => {
+  const fetchMorePosts = useCallback(async (reset = false) => {
     if (!id) return;
 
     setIsLoadingMorePosts(true);
@@ -148,17 +144,17 @@ const DisqusJSPosts = ({
     } catch {
       handleError();
     }
-  }, [api, id, posts, shortname, setError, setErrorWhenLoadingMorePosts, setIsLoadingMorePosts, setPosts]);
+  }, [id, posts, api, shortname, sortType, setError]);
 
   const fetchFirstPageRef = useRef<string | null>(null);
 
   const resetAndFetchFirstPageOfPosts = useCallback(
-    () => fetchMorePosts(true, sortType),
-    [fetchMorePosts, sortType]
+    () => fetchMorePosts(true),
+    [fetchMorePosts]
   );
   const fetchNextPageOfPosts = useCallback(
-    () => fetchMorePosts(false, sortType),
-    [fetchMorePosts, sortType]
+    () => fetchMorePosts(false),
+    [fetchMorePosts]
   );
 
   useEffect(() => {
@@ -173,10 +169,12 @@ const DisqusJSPosts = ({
     }
   }, [posts, resetAndFetchFirstPageOfPosts, id, isLoadingMorePosts, sortType]);
 
+  const comments = useMemo(() => posts.filter(Boolean).map(i => i.response).flat(), [posts]);
+
   if (posts.length > 0) {
     return (
       <>
-        <DisqusJSCommentsList comments={posts.filter(Boolean).map(i => i.response).flat()} admin={admin} adminLabel={adminLabel} />
+        <DisqusJSCommentsList comments={comments} />
         {
           posts[posts.length - 1]?.cursor.hasNext && (
             <DisqusJSLoadMoreCommentsButton
@@ -193,15 +191,15 @@ const DisqusJSPosts = ({
   return null;
 };
 
-export const DisqusJSThread = (props: DisqusJSConfig) => {
-  const apiKey = useRef(useRandomApiKey(props.apikey));
+export const DisqusJSThread = () => {
+  const { apikey: $apikey, identifier: $identifier, shortname, api, siteName, nocomment } = useConfig();
 
-  const { shortname, api } = props;
+  const apiKey = useRef(useRandomApiKey($apikey));
 
   const [thread, setThread] = useState<DisqusAPI.Thread | null>(null);
   const setError = useSetHasError();
 
-  const identifier = props.identifier ?? document.location.origin + document.location.pathname + document.location.search;
+  const identifier = $identifier ?? document.location.origin + document.location.pathname + document.location.search;
 
   const fetchThread = useCallback(async () => {
     try {
@@ -221,12 +219,18 @@ export const DisqusJSThread = (props: DisqusJSConfig) => {
   const fetchThreadRef = useRef<string | null>(null);
 
   useEffect(() => {
+    const actionElement = (
+      <>
+        <DisqusJSReTestModeButton>尝试完整 Disqus 模式</DisqusJSReTestModeButton> | <DisqusJSForceDisqusModeButton>强制完整 Disqus 模式</DisqusJSForceDisqusModeButton>
+      </>
+    );
+
     if (fetchThreadRef.current !== identifier) {
       setMsg(
         <>
           评论基础模式加载中... 如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并
           {' '}
-          <DisqusJSReTestModeButton>尝试完整 Disqus 模式</DisqusJSReTestModeButton> | <DisqusJSForceDisqusModeButton>强制完整 Disqus 模式</DisqusJSForceDisqusModeButton>
+          {actionElement}
         </>
       );
       fetchThreadRef.current = identifier;
@@ -236,33 +240,30 @@ export const DisqusJSThread = (props: DisqusJSConfig) => {
         <>
           你可能无法访问 Disqus，已启用评论基础模式。如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并
           {' '}
-          <DisqusJSReTestModeButton>尝试完整 Disqus 模式</DisqusJSReTestModeButton> | <DisqusJSForceDisqusModeButton>强制完整 Disqus 模式</DisqusJSForceDisqusModeButton>
+          {actionElement}
         </>
       );
     }
-  }, [thread, fetchThread, identifier, setMsg, shortname, props.api]);
+  }, [thread, fetchThread, identifier, setMsg, shortname, api]);
 
   if (!thread) {
     return null;
   }
 
-  if (thread.response.length === 1) {
-    if (thread.response[0].posts === 0) {
-      return (
-        <>
-          <DisqusJSHeader totalComments={0} siteName={props.siteName ?? ''} />
-          <DisqusJSNoComment text={props.nocomment ?? '这里空荡荡的，一个人都没有'} />
-        </>
-      );
-    }
-
-    return (
-      <>
-        <DisqusJSHeader totalComments={thread.response[0].posts} siteName={props.siteName ?? ''} />
-        <DisqusJSPosts {...props} id={thread.response[0].id} />
-      </>
-    );
+  if (thread.response.length !== 1) {
+    return <DisqusJSCreateThread />;
   }
 
-  return <DisqusJSCreateThread />;
+  const matchedThread = thread.response[0];
+  const totalComments = matchedThread.posts;
+
+  return (
+    <>
+      <DisqusJSHeader totalComments={totalComments} siteName={siteName ?? ''} />
+      {totalComments === 0
+        ? <DisqusJSNoComment text={nocomment ?? '这里空荡荡的，一个人都没有'} />
+        : <DisqusJSPosts id={matchedThread.id} />
+      }
+    </>
+  );
 };

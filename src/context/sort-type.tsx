@@ -1,9 +1,8 @@
 import { createContextState } from 'foxact/context-state';
-import { isBrowser } from '../lib/util';
 import type { DisqusJsSortType } from '../types';
 
 const getDisqusJsSortTypeDefaultValue = () => {
-  if (isBrowser) {
+  if (typeof window !== 'undefined') {
     const value = localStorage.getItem('dsqjs_sort');
     if (value === 'popular' || value === 'asc' || value === 'desc') {
       return value;

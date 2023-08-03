@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { useSetMode } from '../context/mode';
 import { useSetHasError } from '../context/error';
 
@@ -26,10 +26,8 @@ if (process.env.NODE_ENV !== 'production') {
 
 export const DisqusJSForceDisqusModeButton = memo(({ children }: React.PropsWithChildren) => {
   const setDisqusJsMode = useSetMode();
-  const onClickHandler = useCallback(() => setDisqusJsMode('disqus'), [setDisqusJsMode]);
-
   return (
-    <a id="dsqjs-force-disqus" className="dsqjs-msg-btn" onClick={onClickHandler}>{children}</a>
+    <a id="dsqjs-force-disqus" className="dsqjs-msg-btn" onClick={() => setDisqusJsMode('disqus')}>{children}</a>
   );
 });
 
@@ -39,10 +37,8 @@ if (process.env.NODE_ENV !== 'production') {
 
 export const DisqusJSReTestModeButton = memo(({ children }: React.PropsWithChildren) => {
   const setDisqusJsMode = useSetMode();
-  const onClickHandler = useCallback(() => setDisqusJsMode(null), [setDisqusJsMode]);
-
   return (
-    <a id="dsqjs-test-disqus" className="dsqjs-msg-btn" onClick={onClickHandler}>{children}</a>
+    <a id="dsqjs-test-disqus" className="dsqjs-msg-btn" onClick={() => setDisqusJsMode(null)}>{children}</a>
   );
 });
 
@@ -52,10 +48,8 @@ if (process.env.NODE_ENV !== 'production') {
 
 export const DisqusJSForceDisqusJsModeButton = memo(({ children }: React.PropsWithChildren) => {
   const setDisqusJsMode = useSetMode();
-  const onClickHandler = useCallback(() => setDisqusJsMode('dsqjs'), [setDisqusJsMode]);
-
   return (
-    <a id="dsqjs-force-dsqjs" className="dsqjs-msg-btn" onClick={onClickHandler}>{children}</a>
+    <a id="dsqjs-force-dsqjs" className="dsqjs-msg-btn" onClick={() => setDisqusJsMode('dsqjs')}>{children}</a>
   );
 });
 
@@ -65,11 +59,8 @@ if (process.env.NODE_ENV !== 'production') {
 
 export const DisqusJSRetryButton = memo(({ children }: React.PropsWithChildren) => {
   const setDisqusJsHasError = useSetHasError();
-  const handleClick = useCallback(() => {
-    setDisqusJsHasError(false);
-  }, [setDisqusJsHasError]);
   return (
-    <a id="dsqjs-reload-dsqjs" className="dsqjs-msg-btn" onClick={handleClick}>{children}</a>
+    <a id="dsqjs-reload-dsqjs" className="dsqjs-msg-btn" onClick={() => setDisqusJsHasError(false)}>{children}</a>
   );
 });
 
