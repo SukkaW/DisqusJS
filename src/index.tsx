@@ -1,4 +1,5 @@
 import { useIsClient } from 'foxact/use-is-client';
+import { ComposeContextProvider } from 'foxact/compose-context-provider';
 
 import type { DisqusJSConfig } from './types';
 import { DisqusJSFooter } from './components/Footer';
@@ -15,7 +16,6 @@ import { MessageProvider } from './context/message';
 import { ConfigProvider } from './context/config';
 
 export type { DisqusJSConfig };
-
 export const DisqusJS = forwardRef(({
   shortname,
   siteName,
@@ -34,32 +34,30 @@ export const DisqusJS = forwardRef(({
   if (useIsClient()) {
     return (
       <div ref={ref} {...rest} className={`${styles.dsqjs} ${className ?? ''}`}>
-        <ConfigProvider value={{
-          shortname,
-          siteName,
-          identifier,
-          url,
-          title,
-          api,
-          apikey,
-          nesting,
-          nocomment,
-          admin,
-          adminLabel
-        }}>
-          <ModeProvider>
-            <SortTypeProvider>
-              <HasErrorProvider>
-                <MessageProvider>
-                  <section id="dsqjs">
-                    <DisqusJSEntry />
-                    <DisqusJSFooter />
-                  </section>
-                </MessageProvider>
-              </HasErrorProvider>
-            </SortTypeProvider>
-          </ModeProvider>
-        </ConfigProvider>
+        <ComposeContextProvider contexts={[
+          <ConfigProvider value={{
+            shortname,
+            siteName,
+            identifier,
+            url,
+            title,
+            api,
+            apikey,
+            nesting,
+            nocomment,
+            admin,
+            adminLabel
+          }} />,
+          <ModeProvider />,
+          <SortTypeProvider />,
+          <HasErrorProvider />,
+          <MessageProvider />
+        ]}>
+          <section id="dsqjs">
+            <DisqusJSEntry />
+            <DisqusJSFooter />
+          </section>
+        </ComposeContextProvider>
       </div>
     );
   }

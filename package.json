@@ -143,6 +143,6 @@
   },
   "dependencies": {
     "eslint-plugin-n": "^16.0.1",
-    "foxact": "^0.2.17"
+    "foxact": "^0.2.20"
   }
 }
