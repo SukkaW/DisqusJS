@@ -21,8 +21,8 @@ module.exports = {
     {
       files: ['**/*.ts', '**/*.tsx'],
       extends: [
-        'sukka/typescript',
-        'plugin:react-hooks/recommended'
+        'sukka/react',
+        'sukka/typescript'
       ],
       plugins: [
         'react-hooks'
