@@ -69,6 +69,7 @@ export const Disqus = memo(({
       }
 
       const getDisqusConfig = () => {
+        /* eslint-disable react/no-this-in-sfc -- "this" refers to Disqus config object */
         return function (this: any) {
           if (identifier) {
             this.page.identifier = identifier;
@@ -85,6 +86,7 @@ export const Disqus = memo(({
             }
           ];
         };
+        /* eslint-enable react/no-this-in-sfc */
       };
 
       if (window.DISQUS && document.getElementById(EMBED_SCRIPT_ID)) {

@@ -3,11 +3,11 @@ import { DisqusJSForceDisqusModeButton, DisqusJSReTestModeButton, DisqusJSRetryB
 
 export const DisqusJSError = memo(() => (
   <div id="dsqjs-msg">
-      评论基础模式加载失败，请
+    评论基础模式加载失败，请
     {' '}
     <DisqusJSRetryButton>重载</DisqusJSRetryButton>
     {' '}
-      或
+    或
     {' '}
     <DisqusJSReTestModeButton>尝试完整 Disqus 模式</DisqusJSReTestModeButton>
   </div>
@@ -15,10 +15,10 @@ export const DisqusJSError = memo(() => (
 
 export const DisqusJSCreateThread = memo(() => (
   <div id="dsqjs-msg">
-      当前 Thread 尚未创建。是否切换至
+    当前 Thread 尚未创建。是否切换至
     {' '}
     <DisqusJSForceDisqusModeButton>完整 Disqus 模式</DisqusJSForceDisqusModeButton>
-      ？
+    ？
   </div>
 ));
 

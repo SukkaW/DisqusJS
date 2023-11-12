@@ -47,7 +47,7 @@ function DisqusJSPostItem({ comment, children, nesting }: DisqusJSCommentASTItem
               )
             }
             {' '}
-            <span className="dsqjs-bullet"></span>
+            <span className="dsqjs-bullet" />
             {' '}
             {
               comment.createdAt && (
@@ -64,7 +64,7 @@ function DisqusJSPostItem({ comment, children, nesting }: DisqusJSCommentASTItem
           }
         </div>
       </div>
-      <DisqusJSChildrenPostItems children={children} nesting={nesting} />
+      <DisqusJSChildrenPostItems nesting={nesting}>{children}</DisqusJSChildrenPostItems>
       {comment.hasMore && <p className="dsqjs-has-more">切换至 <DisqusJSForceDisqusModeButton>完整 Disqus 模式</DisqusJSForceDisqusModeButton> 显示更多回复</p>}
     </li>
   );

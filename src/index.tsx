@@ -35,23 +35,26 @@ export const DisqusJS = forwardRef(({
     return (
       <div ref={ref} {...rest} className={`${styles.dsqjs} ${className ?? ''}`}>
         <ComposeContextProvider contexts={[
-          <ConfigProvider value={{
-            shortname,
-            siteName,
-            identifier,
-            url,
-            title,
-            api,
-            apikey,
-            nesting,
-            nocomment,
-            admin,
-            adminLabel
-          }} />,
-          <ModeProvider />,
-          <SortTypeProvider />,
-          <HasErrorProvider />,
-          <MessageProvider />
+          <ConfigProvider
+            key="config"
+            value={{
+              shortname,
+              siteName,
+              identifier,
+              url,
+              title,
+              api,
+              apikey,
+              nesting,
+              nocomment,
+              admin,
+              adminLabel
+            }}
+          />,
+          <ModeProvider key="mode" />,
+          <SortTypeProvider key="sortType" />,
+          <HasErrorProvider key="hasError" />,
+          <MessageProvider key="msg" />
         ]}>
           <section id="dsqjs">
             <DisqusJSEntry />

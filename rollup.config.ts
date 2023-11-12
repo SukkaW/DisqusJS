@@ -246,14 +246,13 @@ function stringHash(str: string) {
   let i = str.length;
 
   while (i) {
-    // eslint-disable-next-line no-bitwise -- performance
     hash = (hash * 33) ^ str.charCodeAt(--i);
   }
 
   /* JavaScript does bitwise operations (like XOR, above) on 32-bit signed
    * integers. Since we want the results to be always positive, convert the
    * signed int to an unsigned by doing an unsigned bitshift. */
-  // eslint-disable-next-line no-bitwise -- performance
+
   return hash >>> 0;
 }
 

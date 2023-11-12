@@ -25,18 +25,20 @@ const DisqusJSSortTypeRadio = ({
   title,
   label
 }: DisqusJSSortTypeRadioProps) => {
-  return <>
-    <input
-      className="dsqjs-order-radio"
-      id={`dsqjs-order-${sortType}`}
-      type="radio"
-      name="comment-order"
-      value={sortType}
-      onChange={onChange}
-      checked={checked}
-    />
-    <label className="dsqjs-order-label" htmlFor={`dsqjs-order-${sortType}`} title={title}>{label}</label>
-  </>;
+  return (
+    <>
+      <input
+        className="dsqjs-order-radio"
+        id={`dsqjs-order-${sortType}`}
+        type="radio"
+        name="comment-order"
+        value={sortType}
+        onChange={onChange}
+        checked={checked}
+      />
+      <label className="dsqjs-order-label" htmlFor={`dsqjs-order-${sortType}`} title={title}>{label}</label>
+    </>
+  );
 };
 
 const DisqusJSSortTypeRadioGroup = memo(() => {
@@ -169,7 +171,7 @@ const DisqusJSPosts = ({ id }: { id: string }) => {
     }
   }, [posts, resetAndFetchFirstPageOfPosts, id, isLoadingMorePosts, sortType]);
 
-  const comments = useMemo(() => posts.filter(Boolean).map(i => i.response).flat(), [posts]);
+  const comments = useMemo(() => posts.filter(Boolean).flatMap(i => i.response), [posts]);
 
   if (posts.length > 0) {
     return (
@@ -262,8 +264,7 @@ export const DisqusJSThread = () => {
       <DisqusJSHeader totalComments={totalComments} siteName={siteName ?? ''} />
       {totalComments === 0
         ? <DisqusJSNoComment text={nocomment ?? '这里空荡荡的，一个人都没有'} />
-        : <DisqusJSPosts id={matchedThread.id} />
-      }
+        : <DisqusJSPosts id={matchedThread.id} />}
     </>
   );
 };

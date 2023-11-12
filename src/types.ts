@@ -38,12 +38,12 @@ export namespace DisqusAPI {
   }
 
   export interface Thread extends Response {
-    response: {
+    response: Array<{
       id: string,
       isClosed: boolean,
       posts: number,
       likes: number
-    }[]
+    }>
   }
 
   export interface Post {

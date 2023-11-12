@@ -1,5 +1,4 @@
 export function randomInt(min: number, max: number): number {
-  // eslint-disable-next-line no-bitwise -- performance
   return (Math.random() * (max - min + 1) + min) | 0;
 }
 
@@ -15,8 +14,8 @@ let domParser: DOMParser | null = null;
 
 export const processCommentMessage = (str: string) => {
   const rawHtml = str
-    .replace(/a\.disquscdn\.com/g, 'c.disquscdn.com')
-    .replace(/https?:\/\/disq.us\/url\?url=(.+)%3A[\w-]+&amp;cuid=\d+/gm, (_, $1: string) => decodeURIComponent($1));
+    .replaceAll('a.disquscdn.com', 'c.disquscdn.com')
+    .replaceAll(/https?:\/\/disq.us\/url\?url=(.+)%3A[\w-]+&amp;cuid=\d+/gm, (_, $1: string) => decodeURIComponent($1));
 
   domParser ||= new DOMParser();
   const doc = domParser.parseFromString(rawHtml, 'text/html');
@@ -42,29 +41,32 @@ export const checkDomainAccessiblity = (domain: string) => {
   return new Promise<void>((resolve, reject) => {
     const img = new Image();
 
-    const clear = () => {
-      img.onload = null;
-      img.onerror = null;
-      img.remove();
-    };
-
     const timeout = setTimeout(() => {
       clear();
       reject();
     }, 3000);
 
-    img.onerror = () => {
-      clearTimeout(timeout);
-      clear();
-      reject();
-    };
-
-    img.onload = () => {
+    function handleLoad() {
       clearTimeout(timeout);
       clear();
       resolve();
-    };
+    }
 
-    img.src = `https://${domain}/favicon.ico?${+(new Date())}=${+(new Date())}`;
+    function handleError() {
+      clearTimeout(timeout);
+      clear();
+      reject();
+    }
+
+    function clear() {
+      img.removeEventListener('load', handleLoad);
+      img.removeEventListener('error', handleError);
+      img.remove();
+    }
+
+    img.addEventListener('error', handleError);
+    img.addEventListener('load', handleLoad);
+
+    img.src = `https://${domain}/favicon.ico?${Date.now()}=${Date.now()}`;
   });
 };

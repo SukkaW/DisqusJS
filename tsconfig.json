@@ -2,16 +2,16 @@
   "compilerOptions": {
     "target": "es2018",
     "lib": ["esnext", "dom"],
-    "module": "commonjs",
-    "declaration": true,
-    "moduleResolution": "node",
-    "outDir": "./dist",
-    "strict": true,
-    "jsx":"react-jsx",
+    "jsx": "react-jsx",
     "jsxImportSource": "react",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "resolveJsonModule": false,
+    "declaration": true,
+    "outDir": "./dist",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": false
+    "strict": true
   },
   "include": ["src/**/*", "example/**/*", "rollup.config.ts"],
   "exclude": ["dist/**/*", "node_modules/**/*"]
