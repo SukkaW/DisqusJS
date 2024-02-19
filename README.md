@@ -251,11 +251,6 @@ document.addEventListener('pjax:complete', () => {
 [Cloudflare Workers](https://www.cloudflare.com/products/cloudflare-workers/) 提供了一个在 Cloudflare 上运行 JavaScript 的平台。免费 Plan 可提供每天 `100000` 次免费请求次数额度。
 [idawnlight/disqusjs-proxy-cloudflare-workers](https://github.com/idawnlight/disqusjs-proxy-cloudflare-workers) 提供了一份使用 Cloudflare Workers 进行反代的样例代码。
 
-### Heroku
-
-[Heroku](https://www.heroku.com/) 是一个支持多种编程语言的 SaaS 平台。不绑定信用卡每月有 550 小时的免费运行时间、绑定信用卡后每月有 1000 小时的免费运行时间。
-[ysc3839/disqusjs-proxy](https://github.com/ysc3839/disqusjs-proxy) 提供了一个直接部署至 Heroku 的 Disqus API 反代项目。你可以点击 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/ysc3839/disqusjs-proxy) 直接部署。
-
 ### Firebase
 
 [Firebase Cloud Functions](https://firebase.google.com/products/functions/) 提供了执行 Node.js 代码的 Serverless 平台。需绑定银行卡 (Visa 或 MasterCard) 才能启用互联网出站访问功能。
