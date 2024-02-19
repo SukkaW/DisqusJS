@@ -298,11 +298,17 @@ document.addEventListener('pjax:complete', () => {
 ## 谁在使用 DisqusJS？
 
 - Sukka: [Sukka's Blog](https://blog.skk.moe)
-- DIYgod: [Hi, DIYgod](https://diygod.me) ([source](https://github.com/DIYgod/diygod.me))
-- imlonghao: [Imlonghao](https://imlonghao.com/)
 - Yrom Wang: [Yrom's](https://yrom.net/) (Still using DisqusJS v0.2.5)
 - chawyehsu: [The Art of Chawye Hsu](https://chawyehsu.com) ([source](https://github.com/chawyehsu/chawyehsu.com))
 - ysc3839: [YSC's blog](https://blog.ysc3839.com/)
+- JiPai: [JiPai Store](https://blog.jipai.moe/)
+- GodU: [U](https://godu.ink/)
+- bmyjacks: [Hey Bro, Wassup?](https://www.dreamsafari.info/)
+- 若风: [青菜芋子](https://loafing.cn/)
+- Ward Chen:[WardChan 的小站](https://blog.wardchan.com/)
+- jubyshu:[渚碧](https://jubeny.com/)
+- V2beach:[V2beach's Blog](https://blog.v2beach.cn/)
+
 
 如果你的站点或者个人博客在使用 DisqusJS，来 [把你的网站分享给其他人吧](https://github.com/SukkaW/DisqusJS/issues/12)！
 
