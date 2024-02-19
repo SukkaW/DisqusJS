@@ -108,12 +108,12 @@ disqusjs.render(document.getElementById('disqusjs'));
 
 ```jsx
 import 'disqusjs/dist/react/styles/disqusjs.css';
-import { DisqusJS } from 'disqusjs/react/dist/disqusjs.es2015.es.js';
-// import { DisqusJS } from 'disqusjs/react/dist/disqusjs.es2017.es.js';
-// import { DisqusJS } from 'disqusjs/react/dist/disqusjs.es2022.es.js';
-// const { DisqusJS } = require('disqusjs/react/dist/disqusjs.es2015.umd');
-// const { DisqusJS } = require('disqusjs/react/dist/disqusjs.es2017.umd');
-// const { DisqusJS } = require('disqusjs/react/dist/disqusjs.es2022.umd');
+import { DisqusJS } from 'disqusjs/dist/react/disqusjs.es2015.es.js';
+// import { DisqusJS } from 'disqusjs/dist/react/disqusjs.es2017.es.js';
+// import { DisqusJS } from 'disqusjs/dist/react/disqusjs.es2022.es.js';
+// const { DisqusJS } = require('disqusjs/dist/react/disqusjs.es2015.umd');
+// const { DisqusJS } = require('disqusjs/dist/react/disqusjs.es2017.umd');
+// const { DisqusJS } = require('disqusjs/dist/react/disqusjs.es2022.umd');
 
 <DisqusJS
   shortname=""
