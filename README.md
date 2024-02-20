@@ -108,12 +108,12 @@ disqusjs.render(document.getElementById('disqusjs'));
 
 ```jsx
 import 'disqusjs/dist/react/styles/disqusjs.css';
-import { DisqusJS } from 'disqusjs/react/dist/disqusjs.es2015.es.js';
-// import { DisqusJS } from 'disqusjs/react/dist/disqusjs.es2017.es.js';
-// import { DisqusJS } from 'disqusjs/react/dist/disqusjs.es2022.es.js';
-// const { DisqusJS } = require('disqusjs/react/dist/disqusjs.es2015.umd');
-// const { DisqusJS } = require('disqusjs/react/dist/disqusjs.es2017.umd');
-// const { DisqusJS } = require('disqusjs/react/dist/disqusjs.es2022.umd');
+import { DisqusJS } from 'disqusjs/dist/react/disqusjs.es2015.es.js';
+// import { DisqusJS } from 'disqusjs/dist/react/disqusjs.es2017.es.js';
+// import { DisqusJS } from 'disqusjs/dist/react/disqusjs.es2022.es.js';
+// const { DisqusJS } = require('disqusjs/dist/react/disqusjs.es2015.umd');
+// const { DisqusJS } = require('disqusjs/dist/react/disqusjs.es2017.umd');
+// const { DisqusJS } = require('disqusjs/dist/react/disqusjs.es2022.umd');
 
 <DisqusJS
   shortname=""
@@ -251,11 +251,6 @@ document.addEventListener('pjax:complete', () => {
 [Cloudflare Workers](https://www.cloudflare.com/products/cloudflare-workers/) 提供了一个在 Cloudflare 上运行 JavaScript 的平台。免费 Plan 可提供每天 `100000` 次免费请求次数额度。
 [idawnlight/disqusjs-proxy-cloudflare-workers](https://github.com/idawnlight/disqusjs-proxy-cloudflare-workers) 提供了一份使用 Cloudflare Workers 进行反代的样例代码。
 
-### Heroku
-
-[Heroku](https://www.heroku.com/) 是一个支持多种编程语言的 SaaS 平台。不绑定信用卡每月有 550 小时的免费运行时间、绑定信用卡后每月有 1000 小时的免费运行时间。
-[ysc3839/disqusjs-proxy](https://github.com/ysc3839/disqusjs-proxy) 提供了一个直接部署至 Heroku 的 Disqus API 反代项目。你可以点击 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/ysc3839/disqusjs-proxy) 直接部署。
-
 ### Firebase
 
 [Firebase Cloud Functions](https://firebase.google.com/products/functions/) 提供了执行 Node.js 代码的 Serverless 平台。需绑定银行卡 (Visa 或 MasterCard) 才能启用互联网出站访问功能。
@@ -303,11 +298,17 @@ document.addEventListener('pjax:complete', () => {
 ## 谁在使用 DisqusJS？
 
 - Sukka: [Sukka's Blog](https://blog.skk.moe)
-- DIYgod: [Hi, DIYgod](https://diygod.me) ([source](https://github.com/DIYgod/diygod.me))
-- imlonghao: [Imlonghao](https://imlonghao.com/)
 - Yrom Wang: [Yrom's](https://yrom.net/) (Still using DisqusJS v0.2.5)
 - chawyehsu: [The Art of Chawye Hsu](https://chawyehsu.com) ([source](https://github.com/chawyehsu/chawyehsu.com))
 - ysc3839: [YSC's blog](https://blog.ysc3839.com/)
+- JiPai: [JiPai Store](https://blog.jipai.moe/)
+- GodU: [U](https://godu.ink/)
+- bmyjacks: [Hey Bro, Wassup?](https://www.dreamsafari.info/)
+- 若风: [青菜芋子](https://loafing.cn/)
+- Ward Chen:[WardChan 的小站](https://blog.wardchan.com/)
+- jubyshu:[渚碧](https://jubeny.com/)
+- V2beach:[V2beach's Blog](https://blog.v2beach.cn/)
+
 
 如果你的站点或者个人博客在使用 DisqusJS，来 [把你的网站分享给其他人吧](https://github.com/SukkaW/DisqusJS/issues/12)！
 
