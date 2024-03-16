@@ -122,7 +122,6 @@
     "react-refresh": "^0.9.0",
     "rimraf": "^5.0.5",
     "rollup": "^4.4.0",
-    "rollup-plugin-bundle-analyzer": "^1.6.6",
     "rollup-plugin-commonjs-alternate": "^0.8.0",
     "rollup-plugin-dts": "^6.1.0",
     "rollup-plugin-hot-css": "^0.7.2",
@@ -130,7 +129,8 @@
     "rollup-plugin-react-refresh": "^0.0.3",
     "rollup-plugin-static-files": "^0.2.0",
     "rollup-plugin-swc3": "^0.10.3",
-    "sass": "^1.69.5"
+    "sass": "^1.69.5",
+    "vite-bundle-analyzer": "^0.9.0"
   },
   "peerDependencies": {
     "preact": "^10.7.1",
