@@ -5,7 +5,7 @@ import commonjs from '@rollup/plugin-commonjs';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import alias from '@rollup/plugin-alias';
 import { dts } from 'rollup-plugin-dts';
-import bundleAnalyzer from 'rollup-plugin-bundle-analyzer';
+import { adapter, analyzer } from 'vite-bundle-analyzer';
 
 import type { RollupCache, RollupOptions } from 'rollup';
 import type { JscTarget } from '@swc/core';
@@ -100,15 +100,16 @@ const outputMatrix = (config: {
             externalHelpers: true,
             target: config.target,
             minify: config.minify
-              ? { compress: { unsafe: true }, mangle: true, module: true }
+              ? { compress: { unsafe: true }, mangle: true, module: true, sourceMap: true }
               : undefined
           },
           minify: config.minify,
+          sourceMaps: true,
           module: {
             type: 'es6'
           }
         })),
-        process.env.ANALYZE === 'true' && bundleAnalyzer({})
+        process.env.ANALYZE === 'true' && adapter(analyzer())
       ],
       external: config.bundle
         ? undefined
