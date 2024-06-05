@@ -53,7 +53,7 @@ export const DisqusJSEntry = () => {
 
   return (
     <>
-      {msg && <div id="dsqjs-msg">{msg}</div>}
+      {msg != null && <div id="dsqjs-msg">{msg}</div>}
       {mode === 'disqus' && <Disqus shortname={shortname} identifier={identifier} url={url} title={title} />}
       {mode === 'dsqjs' && <DisqusJSThread />}
     </>

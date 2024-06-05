@@ -3,7 +3,7 @@ import { ComposeContextProvider } from 'foxact/compose-context-provider';
 
 import type { DisqusJSConfig } from './types';
 import { DisqusJSFooter } from './components/Footer';
-import { forwardRef } from 'react';
+import { forwardRef, useMemo } from 'react';
 
 import styles from './styles/disqusjs.module.sass';
 
@@ -31,31 +31,34 @@ export const DisqusJS = forwardRef(({
   className,
   ...rest
 }: DisqusJSConfig & JSX.IntrinsicElements['div'], ref: React.ForwardedRef<HTMLDivElement>) => {
+  // eslint-disable-next-line @arthurgeron/react-usememo/require-usememo -- safe
+  const contexts = useMemo(() => [
+    <ConfigProvider
+      key="config"
+      value={{
+        shortname,
+        siteName,
+        identifier,
+        url,
+        title,
+        api,
+        apikey,
+        nesting,
+        nocomment,
+        admin,
+        adminLabel
+      }}
+    />,
+    <ModeProvider key="mode" />,
+    <SortTypeProvider key="sortType" />,
+    <HasErrorProvider key="hasError" />,
+    <MessageProvider key="msg" />
+  ], [admin, adminLabel, api, apikey, identifier, nesting, nocomment, shortname, siteName, title, url]);
+
   if (useIsClient()) {
     return (
       <div ref={ref} {...rest} className={`${styles.dsqjs} ${className ?? ''}`}>
-        <ComposeContextProvider contexts={[
-          <ConfigProvider
-            key="config"
-            value={{
-              shortname,
-              siteName,
-              identifier,
-              url,
-              title,
-              api,
-              apikey,
-              nesting,
-              nocomment,
-              admin,
-              adminLabel
-            }}
-          />,
-          <ModeProvider key="mode" />,
-          <SortTypeProvider key="sortType" />,
-          <HasErrorProvider key="hasError" />,
-          <MessageProvider key="msg" />
-        ]}>
+        <ComposeContextProvider contexts={contexts}>
           <section id="dsqjs">
             <DisqusJSEntry />
             <DisqusJSFooter />

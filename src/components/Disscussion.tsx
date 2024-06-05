@@ -111,7 +111,7 @@ const DisqusJSPosts = ({ id }: { id: string }) => {
   const prevSortType = useRef(sortType);
 
   const [isLoadingMorePosts, setIsLoadingMorePosts] = useState(false);
-  const [errorWhenLoadMorePosts, setErrorWhenLoadingMorePosts] = useState(false);
+  const [errorWhenLoadingMorePosts, setErrorWhenLoadingMorePosts] = useState(false);
 
   const fetchMorePosts = useCallback(async (reset = false) => {
     if (!id) return;
@@ -181,7 +181,7 @@ const DisqusJSPosts = ({ id }: { id: string }) => {
           posts[posts.length - 1]?.cursor.hasNext && (
             <DisqusJSLoadMoreCommentsButton
               isLoading={isLoadingMorePosts}
-              isError={errorWhenLoadMorePosts}
+              isError={errorWhenLoadingMorePosts}
               onClick={isLoadingMorePosts ? undefined : fetchNextPageOfPosts}
             />
           )
@@ -201,7 +201,10 @@ export const DisqusJSThread = () => {
   const [thread, setThread] = useState<DisqusAPI.Thread | null>(null);
   const setError = useSetHasError();
 
-  const identifier = $identifier ?? document.location.origin + document.location.pathname + document.location.search;
+  const identifier = typeof window !== 'undefined'
+    // eslint-disable-next-line ssr-friendly/no-dom-globals-in-react-fc -- bundler condition
+    ? ($identifier ?? document.location.origin + document.location.pathname + document.location.search)
+    : $identifier ?? null;
 
   const fetchThread = useCallback(async () => {
     try {
