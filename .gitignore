@@ -5,5 +5,4 @@ node_modules
 .directory
 _build
 dist
-package-lock.json
 stats.html
