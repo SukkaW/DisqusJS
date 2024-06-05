@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect } from 'foxact/use-abortable-effect';
 import { Disqus } from './components/Disqus';
 import { DisqusJSThread } from './components/Disscussion';
 import { DisqusJSError } from './components/Error';
@@ -18,9 +18,7 @@ export const DisqusJSEntry = () => {
 
   const { shortname, identifier, url, title } = useConfig();
 
-  useEffect(() => {
-    let cancel = false;
-
+  useEffect(signal => {
     if (mode === 'disqus' || mode === 'dsqjs') {
       return;
     }
@@ -30,18 +28,14 @@ export const DisqusJSEntry = () => {
     Promise.all(
       (['disqus.com', `${shortname}.disqus.com`]).map(checkDomainAccessiblity)
     ).then(() => {
-      if (!cancel) {
+      if (!signal.aborted) {
         setMode('disqus');
       }
     }).catch(() => {
-      if (!cancel) {
+      if (!signal.aborted) {
         setMode('dsqjs');
       }
     });
-
-    return () => {
-      cancel = true;
-    };
   }, [mode, setMode, setMsg, shortname]);
 
   const disqusJsHasError = useHasError();

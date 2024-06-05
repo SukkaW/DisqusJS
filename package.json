@@ -99,9 +99,9 @@
     "foxact": "^0.2.33"
   },
   "devDependencies": {
-    "@eslint-sukka/node": "^6.0.0-beta.18",
-    "@eslint-sukka/react": "^6.0.0-beta.18",
-    "@eslint-sukka/ts": "^6.0.0-beta.18",
+    "@eslint-sukka/node": "^6.0.0-beta.21",
+    "@eslint-sukka/react": "^6.0.0-beta.21",
+    "@eslint-sukka/ts": "^6.0.0-beta.21",
     "@rollup/plugin-alias": "^5.1.0",
     "@rollup/plugin-commonjs": "^25.0.8",
     "@rollup/plugin-node-resolve": "^15.2.3",
@@ -113,8 +113,8 @@
     "@types/react-dom": "^18.3.0",
     "cross-env": "^7.0.3",
     "eslint": "^9.4.0",
-    "eslint-config-sukka": "^6.0.0-beta.18",
-    "eslint-formatter-sukka": "^6.0.0-beta.18",
+    "eslint-config-sukka": "^6.0.0-beta.21",
+    "eslint-formatter-sukka": "^6.0.0-beta.21",
     "nollup": "^0.21.0",
     "preact": "^10.22.0",
     "react": "^18.3.1",
@@ -161,7 +161,6 @@
     "object.hasown": "npm:@nolyfill/object.hasown@latest",
     "object.values": "npm:@nolyfill/object.values@latest",
     "side-channel": "npm:@nolyfill/side-channel@latest",
-    "string.prototype.matchall": "npm:@nolyfill/string.prototype.matchall@latest",
-    "eslint": "$eslint"
+    "string.prototype.matchall": "npm:@nolyfill/string.prototype.matchall@latest"
   }
 }
