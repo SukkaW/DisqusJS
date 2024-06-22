@@ -96,25 +96,24 @@
   "author": "Sukka <https://skk.moe>",
   "license": "MIT",
   "dependencies": {
-    "foxact": "^0.2.33"
+    "foxact": "^0.2.35"
   },
   "devDependencies": {
-    "@eslint-sukka/node": "^6.0.0-beta.21",
-    "@eslint-sukka/react": "^6.0.0-beta.21",
-    "@eslint-sukka/ts": "^6.0.0-beta.21",
+    "@eslint-sukka/node": "^6.0.0-beta.25",
+    "@eslint-sukka/react": "^6.0.0-beta.25",
     "@rollup/plugin-alias": "^5.1.0",
-    "@rollup/plugin-commonjs": "^25.0.8",
+    "@rollup/plugin-commonjs": "^26.0.1",
     "@rollup/plugin-node-resolve": "^15.2.3",
-    "@rollup/plugin-replace": "^5.0.6",
-    "@swc/core": "^1.5.25",
+    "@rollup/plugin-replace": "^5.0.7",
+    "@swc/core": "^1.6.5",
     "@swc/helpers": "^0.5.11",
-    "@types/node": "^20.14.1",
+    "@types/node": "^20.14.8",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "cross-env": "^7.0.3",
-    "eslint": "^9.4.0",
-    "eslint-config-sukka": "^6.0.0-beta.21",
-    "eslint-formatter-sukka": "^6.0.0-beta.21",
+    "eslint": "^9.5.0",
+    "eslint-config-sukka": "^6.0.0-beta.25",
+    "eslint-formatter-sukka": "^6.0.0-beta.25",
     "nollup": "^0.21.0",
     "preact": "^10.22.0",
     "react": "^18.3.1",
@@ -129,8 +128,8 @@
     "rollup-plugin-react-refresh": "^0.0.3",
     "rollup-plugin-static-files": "^0.2.0",
     "rollup-plugin-swc3": "^0.11.2",
-    "sass": "^1.77.4",
-    "vite-bundle-analyzer": "^0.9.4"
+    "sass": "^1.77.6",
+    "vite-bundle-analyzer": "^0.10.3"
   },
   "peerDependencies": {
     "preact": "^10.7.1",
