@@ -62,20 +62,20 @@ npm i disqusjs
 
 ```js
 // CommonJS
-const DisqusJS = require('disqusjs/dist/disqusjs.es2015.umd');
-// const DisqusJS = require('disqusjs/dist/disqusjs.es2017.umd');
-// const DisqusJS = require('disqusjs/dist/disqusjs.es2022.umd');
+const DisqusJS = require('disqusjs/es2015');
+// const DisqusJS = require('disqusjs/es2017');
+// const DisqusJS = require('disqusjs/es2022');
 
 // ES Module
-import DisqusJS from 'disqusjs/dist/disqusjs.es2015.es.js';
-// import DisqusJS from 'disqusjs/dist/disqusjs.es2017.es.js';
-// import DisqusJS from 'disqusjs/dist/disqusjs.es2022.es.js';
+import DisqusJS from 'disqusjs/es2015';
+// import DisqusJS from 'disqusjs/es2017';
+// import DisqusJS from 'disqusjs/es2022';
 ```
 
 注意，你仍然需要手动引入 DisqusJS 的 CSS：
 
 ```js
-import 'disqusjs/dist/styles/disqusjs.css';
+import 'disqusjs/disqusjs.css';
 ```
 
 ---
@@ -107,13 +107,13 @@ disqusjs.render(document.getElementById('disqusjs'));
 ### 作为 React 组件使用
 
 ```jsx
-import 'disqusjs/dist/react/styles/disqusjs.css';
-import { DisqusJS } from 'disqusjs/dist/react/disqusjs.es2015.es.js';
-// import { DisqusJS } from 'disqusjs/dist/react/disqusjs.es2017.es.js';
-// import { DisqusJS } from 'disqusjs/dist/react/disqusjs.es2022.es.js';
-// const { DisqusJS } = require('disqusjs/dist/react/disqusjs.es2015.umd');
-// const { DisqusJS } = require('disqusjs/dist/react/disqusjs.es2017.umd');
-// const { DisqusJS } = require('disqusjs/dist/react/disqusjs.es2022.umd');
+import 'disqusjs/react/styles/disqusjs.css';
+import { DisqusJS } from 'disqusjs/react/es2015';
+// import { DisqusJS } from 'disqusjs/es2017';
+// import { DisqusJS } from 'disqusjs/es2022';
+// const { DisqusJS } = require('disqusjs/es2015');
+// const { DisqusJS } = require('disqusjs/es2017');
+// const { DisqusJS } = require('disqusjs/es2022');
 
 <DisqusJS
   shortname=""
