@@ -8,7 +8,8 @@ export const DisqusJSFooter = memo(() => (
       {' '}
       &amp;
       {' '}
-      <a className="dsqjs-dsqjs-logo" href="https://disqusjs.skk.moe" target="_blank" rel="noreferrer noopener">DisqusJS</a>
+      {/* eslint-disable-next-line @eslint-react/dom/no-unsafe-target-blank -- backlink */}
+      <a className="dsqjs-dsqjs-logo" href="https://disqusjs.skk.moe" target="_blank">DisqusJS</a>
     </p>
   </footer>
 ));
