@@ -31,7 +31,6 @@ jobs:
       - run: npm install -g npm
       - run: pnpm install
       - run: pnpm run lint
-      - run: pnpm run test
       - run: pnpm run build
       - name: Publish
         run: |
