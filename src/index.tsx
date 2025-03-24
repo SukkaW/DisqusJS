@@ -30,8 +30,7 @@ export const DisqusJS = forwardRef(({
   adminLabel,
   className,
   ...rest
-}: DisqusJSConfig & JSX.IntrinsicElements['div'], ref: React.ForwardedRef<HTMLDivElement>) => {
-  // eslint-disable-next-line @arthurgeron/react-usememo/require-usememo -- safe
+}: DisqusJSConfig & React.JSX.IntrinsicElements['div'], ref: React.ForwardedRef<HTMLDivElement>) => {
   const contexts = useMemo(() => [
     <ConfigProvider
       key="config"

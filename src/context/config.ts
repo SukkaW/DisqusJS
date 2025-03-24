@@ -5,10 +5,10 @@ const ConfigContext = createContext<DisqusJSConfig | null>(null);
 
 export const ConfigProvider = ConfigContext.Provider;
 
-export const useConfig = () => {
+export function useConfig() {
   const config = useContext(ConfigContext);
   if (!config) {
     throw new TypeError('<ConfigProvider /> is missing');
   }
   return config;
-};
+}

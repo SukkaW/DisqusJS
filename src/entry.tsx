@@ -10,7 +10,7 @@ import { checkDomainAccessiblity } from './lib/util';
 import { useMode, useSetMode } from './context/mode';
 import { useConfig } from './context/config';
 
-export const DisqusJSEntry = () => {
+export function DisqusJSEntry() {
   const setMsg = useSetMessage();
 
   const mode = useMode();
@@ -52,4 +52,4 @@ export const DisqusJSEntry = () => {
       {mode === 'dsqjs' && <DisqusJSThread />}
     </>
   );
-};
+}

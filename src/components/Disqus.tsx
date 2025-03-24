@@ -68,23 +68,20 @@ export const Disqus = memo(({
         clearDisqusInstance();
       }
 
-      const getDisqusConfig = () => {
-        return function (this: any) {
-          if (identifier) {
-            this.page.identifier = identifier;
-          }
-          if (url) {
-            this.page.url = url;
-          }
-          if (title) {
-            this.page.title = title;
-          }
-          this.callbacks.onReady = [
-            () => {
-              setLoaded(true);
-            }
-          ];
-        };
+      // eslint-disable-next-line sukka/unicorn/consistent-function-scoping -- scope of "this"
+      const getDisqusConfig = () => function (this: any) {
+        if (identifier) {
+          this.page.identifier = identifier;
+        }
+        if (url) {
+          this.page.url = url;
+        }
+        if (title) {
+          this.page.title = title;
+        }
+        this.callbacks.onReady = [
+          () => setLoaded(true)
+        ];
       };
 
       if (window.DISQUS && document.getElementById(EMBED_SCRIPT_ID)) {

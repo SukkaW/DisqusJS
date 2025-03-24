@@ -1,5 +1,5 @@
 import type { DisqusJSConfig } from './types';
-import { DisqusJS as DisqusJSComponent } from './';
+import { DisqusJS as DisqusJSComponent } from '.';
 
 import { render } from 'preact';
 

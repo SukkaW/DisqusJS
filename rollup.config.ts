@@ -7,16 +7,14 @@ import alias from '@rollup/plugin-alias';
 import { dts } from 'rollup-plugin-dts';
 import { adapter, analyzer } from 'vite-bundle-analyzer';
 
-import type { RollupCache, RollupOptions } from 'rollup';
+import type { RollupOptions } from 'rollup';
 import type { JscTarget } from '@swc/core';
-
-let cache: RollupCache;
 
 const dtsOutput: Record<string, Set<string>> = {};
 
 const noBundleExternal = ['react', 'react-dom', 'preact', 'foxact'];
 
-const outputMatrix = (config: {
+function outputMatrix(config: {
   input: string,
   format: 'iife' | 'umd' | 'es' | 'cjs',
   minify: boolean,
@@ -27,13 +25,12 @@ const outputMatrix = (config: {
   dts: boolean,
   dir?: string,
   preact: boolean
-}): RollupOptions[] => {
+}): RollupOptions[] {
   const filenameBase = `${config.dir ?? 'dist'}${config.browser ? '/browser' : ''}/disqusjs.${config.target}.${config.format}${config.minify ? '.min' : ''}`;
 
   const rollupOpts: RollupOptions[] = [
     {
       input: config.input,
-      cache,
       output: config.format === 'es'
         ? ([`${filenameBase}.js`, `${filenameBase}.mjs`] as const).map(file => ({
           format: config.format,
@@ -113,12 +110,10 @@ const outputMatrix = (config: {
       ],
       external: config.bundle
         ? undefined
-        : (id) => {
-          return (
-            noBundleExternal.includes(id)
-            || noBundleExternal.some(dep => id.startsWith(`${dep}/`))
-          );
-        }
+        : (id) => (
+          noBundleExternal.includes(id)
+          || noBundleExternal.some(dep => id.startsWith(`${dep}/`))
+        )
     }
   ];
 
@@ -128,22 +123,19 @@ const outputMatrix = (config: {
   }
 
   return rollupOpts;
-};
+}
 
-const dtsMatrix = (): RollupOptions[] => {
-  return Object.keys(dtsOutput).map(input => {
-    return {
-      input,
-      cache,
-      output: [...dtsOutput[input]].map(file => ({
-        file
-      })),
-      plugins: [
-        dts()
-      ]
-    };
-  });
-};
+function dtsMatrix(): RollupOptions[] {
+  return Object.keys(dtsOutput).map(input => ({
+    input,
+    output: [...dtsOutput[input]].map(file => ({
+      file
+    })),
+    plugins: [
+      dts()
+    ]
+  }));
+}
 
 const buildConfig: RollupOptions[] = process.env.ANALYZE === 'true'
   ? outputMatrix({

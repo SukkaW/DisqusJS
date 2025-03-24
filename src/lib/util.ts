@@ -2,20 +2,20 @@ export function randomInt(min: number, max: number): number {
   return (Math.random() * (max - min + 1) + min) | 0;
 }
 
-export const disqusJsApiFetcher = <T>(apiKey: string, url: string): Promise<T> => {
+export function disqusJsApiFetcher<T>(apiKey: string, url: string): Promise<T> {
   const Url = new URL(url);
   Url.searchParams.set('api_key', apiKey);
   return fetch(Url.href).then(res => res.json());
-};
+}
 
 export const getTimeStampFromString = (dateString: string) => new Date(dateString).getTime();
 
 let domParser: DOMParser | null = null;
 
-export const processCommentMessage = (str: string) => {
+export function processCommentMessage(str: string) {
   const rawHtml = str
     .replaceAll('a.disquscdn.com', 'c.disquscdn.com')
-    .replaceAll(/https?:\/\/disq.us\/url\?url=(.+)%3A[\w-]+&amp;cuid=\d+/gm, (_, $1: string) => decodeURIComponent($1));
+    .replaceAll(/https?:\/\/disq.us\/url\?url=(.+)%3A[\w-]+&amp;cuid=\d+/g, (_, $1: string) => decodeURIComponent($1));
 
   domParser ||= new DOMParser();
   const doc = domParser.parseFromString(rawHtml, 'text/html');
@@ -27,17 +27,17 @@ export const processCommentMessage = (str: string) => {
     a.rel = 'external noopener nofollow noreferrer';
   });
   return doc.body.innerHTML;
-};
+}
 
 const timezoneOffset = new Date().getTimezoneOffset();
 const numberPadstart = (num: number) => String(num).padStart(2, '0');
-export const formatDate = (str: string) => {
+export function formatDate(str: string) {
   const utcTimestamp = getTimeStampFromString(str);
   const date = new Date(utcTimestamp - timezoneOffset * 60 * 1000);
   return `${date.getFullYear()}-${numberPadstart(date.getMonth() + 1)}-${numberPadstart(date.getDate())} ${numberPadstart(date.getHours())}:${numberPadstart(date.getMinutes())}`;
-};
+}
 
-export const checkDomainAccessiblity = (domain: string) => {
+export function checkDomainAccessiblity(domain: string) {
   return new Promise<void>((resolve, reject) => {
     const img = new Image();
 
@@ -69,4 +69,4 @@ export const checkDomainAccessiblity = (domain: string) => {
 
     img.src = `https://${domain}/favicon.ico?${Date.now()}=${Date.now()}`;
   });
-};
+}

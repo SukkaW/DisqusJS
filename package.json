@@ -143,6 +143,7 @@
       "optional": true
     }
   },
+  "packageManager": "pnpm@10.6.5",
   "overrides": {
     "array-includes": "npm:@nolyfill/array-includes@latest",
     "array.prototype.flat": "npm:@nolyfill/array.prototype.flat@latest",
@@ -160,6 +161,5 @@
     "object.values": "npm:@nolyfill/object.values@latest",
     "side-channel": "npm:@nolyfill/side-channel@latest",
     "string.prototype.matchall": "npm:@nolyfill/string.prototype.matchall@latest"
-  },
-  "packageManager": "pnpm@10.6.5"
+  }
 }

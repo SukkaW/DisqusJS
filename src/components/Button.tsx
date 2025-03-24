@@ -1,8 +1,9 @@
 import { memo, useMemo } from 'react';
+
 import { useSetMode } from '../context/mode';
 import { useSetHasError } from '../context/error';
 
-export const DisqusJSLoadMoreCommentsButton = memo(({ isError, isLoading, ...restProps }: JSX.IntrinsicElements['a'] & { isError?: boolean, isLoading: boolean }) => {
+export const DisqusJSLoadMoreCommentsButton = memo(({ isError, isLoading, ...restProps }: React.JSX.IntrinsicElements['a'] & { isError?: boolean, isLoading: boolean }) => {
   const text = useMemo(() => {
     if (isError) {
       return '加载失败，请重试';
@@ -38,7 +39,7 @@ if (process.env.NODE_ENV !== 'production') {
 export const DisqusJSReTestModeButton = memo(({ children }: React.PropsWithChildren) => {
   const setDisqusJsMode = useSetMode();
   return (
-    <a id="dsqjs-test-disqus" className="dsqjs-msg-btn" onClick={() => setDisqusJsMode(null)}>{children}</a>
+    <a id="dsqjs-test-disqus" className="dsqjs-msg-btn" onClick={() => setDisqusJsMode(null)} role="button">{children}</a>
   );
 });
 
@@ -49,7 +50,7 @@ if (process.env.NODE_ENV !== 'production') {
 export const DisqusJSForceDisqusJsModeButton = memo(({ children }: React.PropsWithChildren) => {
   const setDisqusJsMode = useSetMode();
   return (
-    <a id="dsqjs-force-dsqjs" className="dsqjs-msg-btn" onClick={() => setDisqusJsMode('dsqjs')}>{children}</a>
+    <a id="dsqjs-force-dsqjs" className="dsqjs-msg-btn" onClick={() => setDisqusJsMode('dsqjs')} role="button">{children}</a>
   );
 });
 
@@ -60,7 +61,7 @@ if (process.env.NODE_ENV !== 'production') {
 export const DisqusJSRetryButton = memo(({ children }: React.PropsWithChildren) => {
   const setDisqusJsHasError = useSetHasError();
   return (
-    <a id="dsqjs-reload-dsqjs" className="dsqjs-msg-btn" onClick={() => setDisqusJsHasError(false)}>{children}</a>
+    <a id="dsqjs-reload-dsqjs" className="dsqjs-msg-btn" onClick={() => setDisqusJsHasError(false)} role="button">{children}</a>
   );
 });
 

@@ -105,7 +105,7 @@ function findChildrenFromComments(allChildrenComments: DisqusAPI.Post[], parentI
   return list;
 }
 
-export const DisqusJSCommentsList = ({ comments }: { comments: DisqusAPI.Post[] }) => {
+export function DisqusJSCommentsList({ comments }: { comments: DisqusAPI.Post[] }) {
   const processedComments = useMemo(() => {
     const topLevelComments: DisqusAPI.Post[] = [];
     const childComments: DisqusAPI.Post[] = [];
@@ -129,4 +129,4 @@ export const DisqusJSCommentsList = ({ comments }: { comments: DisqusAPI.Post[] 
       ))}
     </ul>
   );
-};
+}

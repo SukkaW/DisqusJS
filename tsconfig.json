@@ -4,8 +4,8 @@
     "lib": ["esnext", "dom"],
     "jsx": "react-jsx",
     "jsxImportSource": "react",
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "module": "preserve",
+    "moduleResolution": "bundler",
     "resolveJsonModule": false,
     "declaration": true,
     "outDir": "./dist",
@@ -13,6 +13,6 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true
   },
-  "include": ["src/**/*", "example/**/*", "rollup.config.ts"],
+  "include": ["src/**/*", "example/**/*"],
   "exclude": ["dist/**/*", "node_modules/**/*"]
 }

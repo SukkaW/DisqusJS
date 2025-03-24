@@ -18,13 +18,13 @@ interface DisqusJSSortTypeRadioProps {
   onChange: () => void
 }
 
-const DisqusJSSortTypeRadio = ({
+function DisqusJSSortTypeRadio({
   sortType,
   onChange,
   checked,
   title,
   label
-}: DisqusJSSortTypeRadioProps) => {
+}: DisqusJSSortTypeRadioProps) {
   return (
     <>
       <input
@@ -39,7 +39,7 @@ const DisqusJSSortTypeRadio = ({
       <label className="dsqjs-order-label" htmlFor={`dsqjs-order-${sortType}`} title={title}>{label}</label>
     </>
   );
-};
+}
 
 const DisqusJSSortTypeRadioGroup = memo(() => {
   const sortType = useSortType();
@@ -99,7 +99,7 @@ if (process.env.NODE_ENV !== 'production') {
   DisqusJSHeader.displayName = 'DisqusJSHeader';
 }
 
-const DisqusJSPosts = ({ id }: { id: string }) => {
+function DisqusJSPosts({ id }: { id: string }) {
   const { apikey, shortname, api } = useConfig();
 
   const apiKey = useRef(useRandomApiKey(apikey));
@@ -191,9 +191,9 @@ const DisqusJSPosts = ({ id }: { id: string }) => {
   }
 
   return null;
-};
+}
 
-export const DisqusJSThread = () => {
+export function DisqusJSThread() {
   const { apikey: $apikey, identifier: $identifier, shortname, api, siteName, nocomment } = useConfig();
 
   const apiKey = useRef(useRandomApiKey($apikey));
@@ -201,10 +201,10 @@ export const DisqusJSThread = () => {
   const [thread, setThread] = useState<DisqusAPI.Thread | null>(null);
   const setError = useSetHasError();
 
-  const identifier = typeof window !== 'undefined'
-    // eslint-disable-next-line ssr-friendly/no-dom-globals-in-react-fc -- bundler condition
-    ? ($identifier ?? document.location.origin + document.location.pathname + document.location.search)
-    : $identifier ?? null;
+  const identifier = typeof window === 'undefined'
+
+    ? $identifier ?? null
+    : ($identifier ?? document.location.origin + document.location.pathname + document.location.search);
 
   const fetchThread = useCallback(async () => {
     try {
@@ -230,7 +230,15 @@ export const DisqusJSThread = () => {
       </>
     );
 
-    if (fetchThreadRef.current !== identifier) {
+    if (fetchThreadRef.current === identifier) {
+      setMsg(
+        <>
+          你可能无法访问 Disqus，已启用评论基础模式。如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并
+          {' '}
+          {actionElement}
+        </>
+      );
+    } else {
       setMsg(
         <>
           评论基础模式加载中... 如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并
@@ -240,14 +248,6 @@ export const DisqusJSThread = () => {
       );
       fetchThreadRef.current = identifier;
       void fetchThread();
-    } else {
-      setMsg(
-        <>
-          你可能无法访问 Disqus，已启用评论基础模式。如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并
-          {' '}
-          {actionElement}
-        </>
-      );
     }
   }, [thread, fetchThread, identifier, setMsg, shortname, api]);
 
@@ -270,4 +270,4 @@ export const DisqusJSThread = () => {
         : <DisqusJSPosts id={matchedThread.id} />}
     </>
   );
-};
+}
