@@ -9,6 +9,7 @@ import { useSortType, useSetSortType } from '../context/sort-type';
 import { useSetHasError } from '../context/error';
 import { disqusJsApiFetcher } from '../lib/util';
 import { useConfig } from '../context/config';
+import { useComponentWillReceiveUpdate } from 'foxact/use-component-will-receive-update';
 
 interface DisqusJSSortTypeRadioProps {
   checked: boolean,
@@ -108,7 +109,6 @@ function DisqusJSPosts({ id }: { id: string }) {
   const setError = useSetHasError();
 
   const sortType = useSortType();
-  const prevSortType = useRef(sortType);
 
   const [isLoadingMorePosts, setIsLoadingMorePosts] = useState(false);
   const [errorWhenLoadingMorePosts, setErrorWhenLoadingMorePosts] = useState(false);
@@ -148,8 +148,6 @@ function DisqusJSPosts({ id }: { id: string }) {
     }
   }, [id, posts, api, shortname, sortType, setError]);
 
-  const fetchFirstPageRef = useRef<string | null>(null);
-
   const resetAndFetchFirstPageOfPosts = useCallback(
     () => fetchMorePosts(true),
     [fetchMorePosts]
@@ -159,17 +157,7 @@ function DisqusJSPosts({ id }: { id: string }) {
     [fetchMorePosts]
   );
 
-  useEffect(() => {
-    // When there is no posts at all, load the first pagination of posts.
-    if (fetchFirstPageRef.current !== id) {
-      fetchFirstPageRef.current = id;
-      void resetAndFetchFirstPageOfPosts();
-    } else if (prevSortType.current !== sortType) {
-      prevSortType.current = sortType;
-      fetchFirstPageRef.current = id;
-      void resetAndFetchFirstPageOfPosts();
-    }
-  }, [posts, resetAndFetchFirstPageOfPosts, id, isLoadingMorePosts, sortType]);
+  useComponentWillReceiveUpdate(resetAndFetchFirstPageOfPosts, [id, sortType]);
 
   const comments = useMemo(() => posts.filter(Boolean).flatMap(i => i.response), [posts]);
 

@@ -1,7 +1,3 @@
-export function randomInt(min: number, max: number): number {
-  return (Math.random() * (max - min + 1) + min) | 0;
-}
-
 export function disqusJsApiFetcher<T>(apiKey: string, url: string): Promise<T> {
   const Url = new URL(url);
   Url.searchParams.set('api_key', apiKey);
