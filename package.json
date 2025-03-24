@@ -84,7 +84,9 @@
     "prebuild:analyze": "rimraf dist",
     "build:analyze": "cross-env NODE_ENV=production ANALYZE=true rollup --configPlugin swc3 -c rollup.config.ts",
     "dev": "parcel ./example/index.html",
-    "lint": "eslint --format=sukka ."
+    "lint": "eslint --format=sukka .",
+    "prerelease": "pnpm run lint && pnpm run build",
+    "release": "bumpp -r --all --commit \"release: %s\" --tag \"%s\""
   },
   "keywords": [
     "Disqus",
@@ -112,6 +114,7 @@
     "@types/node": "^20.17.27",
     "@types/react": "^18.3.20",
     "@types/react-dom": "^18.3.5",
+    "bumpp": "^10.1.0",
     "cross-env": "^7.0.3",
     "eslint": "^9.23.0",
     "eslint-config-sukka": "^6.17.1",
