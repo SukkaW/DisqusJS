@@ -12,7 +12,7 @@ import type { JscTarget } from '@swc/core';
 
 const dtsOutput: Record<string, Set<string>> = {};
 
-const noBundleExternal = ['react', 'react-dom', 'preact', 'foxact'];
+const noBundleExternal = ['react', 'react-dom', 'preact', 'foxact', 'foxts'];
 
 function outputMatrix(config: {
   input: string,

@@ -6,3 +6,4 @@ node_modules
 _build
 dist
 stats.html
+.parcel-cache

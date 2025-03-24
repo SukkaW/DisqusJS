@@ -83,7 +83,7 @@
     "prepublishOnly": "npm run build",
     "prebuild:analyze": "rimraf dist",
     "build:analyze": "cross-env NODE_ENV=production ANALYZE=true rollup --configPlugin swc3 -c rollup.config.ts",
-    "dev": "nollup -c ./example/rollup.config.js --rc ./example/.nolluprc.js --environment NODE_ENV:development",
+    "dev": "parcel ./example/index.html",
     "lint": "eslint --format=sukka ."
   },
   "keywords": [
@@ -96,11 +96,13 @@
   "author": "Sukka <https://skk.moe>",
   "license": "MIT",
   "dependencies": {
-    "foxact": "^0.2.45"
+    "foxact": "^0.2.45",
+    "foxts": "^3.0.0"
   },
   "devDependencies": {
     "@eslint-sukka/node": "^6.17.1",
     "@eslint-sukka/react": "^6.17.1",
+    "@parcel/transformer-sass": "2.14.2",
     "@rollup/plugin-alias": "^5.1.1",
     "@rollup/plugin-commonjs": "^28.0.3",
     "@rollup/plugin-node-resolve": "^16.0.1",
@@ -114,7 +116,9 @@
     "eslint": "^9.23.0",
     "eslint-config-sukka": "^6.17.1",
     "eslint-formatter-sukka": "^6.17.1",
-    "nollup": "^0.21.0",
+    "parcel": "^2.14.2",
+    "postcss": "^8.4.38",
+    "postcss-modules": "^6.0.1",
     "preact": "^10.26.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -144,6 +148,12 @@
     }
   },
   "packageManager": "pnpm@10.6.5",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "lmdb",
+      "msgpackr-extract"
+    ]
+  },
   "overrides": {
     "array-includes": "npm:@nolyfill/array-includes@latest",
     "array.prototype.flat": "npm:@nolyfill/array.prototype.flat@latest",
@@ -161,5 +171,8 @@
     "object.values": "npm:@nolyfill/object.values@latest",
     "side-channel": "npm:@nolyfill/side-channel@latest",
     "string.prototype.matchall": "npm:@nolyfill/string.prototype.matchall@latest"
+  },
+  "@parcel/resolver-default": {
+    "packageExports": true
   }
 }
