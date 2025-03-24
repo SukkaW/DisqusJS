@@ -2,6 +2,7 @@ import { memo, useEffect, useState } from 'react';
 import type { DisqusConfig } from '../types';
 import { DisqusJSForceDisqusJsModeButton } from './Button';
 import { useSetMessage } from '../context/message';
+import { useIsomorphicLayoutEffect } from 'foxact/use-isomorphic-layout-effect';
 
 const THREAD_ID = 'disqus_thread';
 const EMBED_SCRIPT_ID = 'dsq-embed-scr';
@@ -28,81 +29,79 @@ export const Disqus = memo(({
   const setMsg = useSetMessage();
   const [loaded, setLoaded] = useState(false);
 
+  useIsomorphicLayoutEffect(() => setMsg(null));
+
   useEffect(() => {
-    setMsg(null);
+    const clearDisqusInstance = () => {
+      if (typeof window !== 'undefined') {
+        window.disqus_config = undefined;
+        const scriptEl = document.getElementById(EMBED_SCRIPT_ID);
+        if (scriptEl) {
+          document.head.removeChild(scriptEl);
+          scriptEl.remove();
+        }
 
-    if (typeof window !== 'undefined') {
-      const clearDisqusInstance = () => {
-        if (typeof window !== 'undefined') {
-          window.disqus_config = undefined;
-          const scriptEl = document.getElementById(EMBED_SCRIPT_ID);
-          if (scriptEl) {
-            document.head.removeChild(scriptEl);
-            scriptEl.remove();
-          }
+        window.DISQUS?.reset({});
 
-          window.DISQUS?.reset({});
+        try {
+          delete window.DISQUS;
+        } catch {
+          window.DISQUS = undefined;
+        }
 
-          try {
-            delete window.DISQUS;
-          } catch {
-            window.DISQUS = undefined;
-          }
-
-          const containerEl = document.getElementById(THREAD_ID);
-          if (containerEl) {
-            while (containerEl.hasChildNodes()) {
-              if (containerEl.firstChild) {
-                containerEl.firstChild.remove();
-              }
+        const containerEl = document.getElementById(THREAD_ID);
+        if (containerEl) {
+          while (containerEl.hasChildNodes()) {
+            if (containerEl.firstChild) {
+              containerEl.firstChild.remove();
             }
           }
-
-          document.querySelectorAll(
-            'link[href*="disquscdn.com/next"], link[href*="disqus.com/next"], script[src*="disquscdn.com/next/embed"], script[src*="disqus.com/count-data.js"], iframe[title="Disqus"]'
-          ).forEach((el) => el.remove());
         }
-      };
 
-      if (window.disqus_shortname !== shortname) {
-        clearDisqusInstance();
+        document.querySelectorAll(
+          'link[href*="disquscdn.com/next"], link[href*="disqus.com/next"], script[src*="disquscdn.com/next/embed"], script[src*="disqus.com/count-data.js"], iframe[title="Disqus"]'
+        ).forEach((el) => el.remove());
       }
+    };
 
-      // eslint-disable-next-line sukka/unicorn/consistent-function-scoping -- scope of "this"
-      const getDisqusConfig = () => function (this: any) {
-        if (identifier) {
-          this.page.identifier = identifier;
-        }
-        if (url) {
-          this.page.url = url;
-        }
-        if (title) {
-          this.page.title = title;
-        }
-        this.callbacks.onReady = [
-          () => setLoaded(true)
-        ];
-      };
-
-      if (window.DISQUS && document.getElementById(EMBED_SCRIPT_ID)) {
-        window.DISQUS.reset({
-          reload: true,
-          config: getDisqusConfig()
-        });
-      } else {
-        window.disqus_config = getDisqusConfig();
-        window.disqus_shortname = shortname;
-
-        const scriptEl = document.createElement('script');
-        scriptEl.id = EMBED_SCRIPT_ID;
-        scriptEl.src = `https://${shortname}.disqus.com/embed.js`;
-        scriptEl.async = true;
-        document.head.appendChild(scriptEl);
-      }
-
-      return clearDisqusInstance;
+    if (window.disqus_shortname !== shortname) {
+      clearDisqusInstance();
     }
-  }, [shortname, identifier, url, title, setMsg]);
+
+    // eslint-disable-next-line sukka/unicorn/consistent-function-scoping -- scope of "this"
+    const getDisqusConfig = () => function (this: any) {
+      if (identifier) {
+        this.page.identifier = identifier;
+      }
+      if (url) {
+        this.page.url = url;
+      }
+      if (title) {
+        this.page.title = title;
+      }
+      this.callbacks.onReady = [
+        () => setLoaded(true)
+      ];
+    };
+
+    if (window.DISQUS && document.getElementById(EMBED_SCRIPT_ID)) {
+      window.DISQUS.reset({
+        reload: true,
+        config: getDisqusConfig()
+      });
+    } else {
+      window.disqus_config = getDisqusConfig();
+      window.disqus_shortname = shortname;
+
+      const scriptEl = document.createElement('script');
+      scriptEl.id = EMBED_SCRIPT_ID;
+      scriptEl.src = `https://${shortname}.disqus.com/embed.js`;
+      scriptEl.async = true;
+      document.head.appendChild(scriptEl);
+    }
+
+    return clearDisqusInstance;
+  }, [shortname, identifier, url, title]);
 
   return (
     <>
