@@ -10,6 +10,7 @@ import { useSetHasError } from '../context/error';
 import { disqusJsApiFetcher } from '../lib/util';
 import { useConfig } from '../context/config';
 import { useComponentWillReceiveUpdate } from 'foxact/use-component-will-receive-update';
+import { useSingleton } from 'foxact/use-singleton';
 
 interface DisqusJSSortTypeRadioProps {
   checked: boolean,
@@ -158,6 +159,7 @@ function DisqusJSPosts({ id }: { id: string }) {
   );
 
   useComponentWillReceiveUpdate(resetAndFetchFirstPageOfPosts, [id, sortType]);
+  useSingleton(resetAndFetchFirstPageOfPosts);
 
   const comments = useMemo(() => posts.filter(Boolean).flatMap(i => i.response), [posts]);
 

@@ -97,7 +97,7 @@
   "license": "MIT",
   "dependencies": {
     "foxact": "^0.2.45",
-    "foxts": "^3.0.0"
+    "foxts": "^3.0.1"
   },
   "devDependencies": {
     "@eslint-sukka/node": "^6.17.1",
@@ -174,5 +174,11 @@
   },
   "@parcel/resolver-default": {
     "packageExports": true
+  },
+  "alias": {
+    "crypto": false,
+    "fs": false,
+    "process": false,
+    "buffer": false
   }
 }
