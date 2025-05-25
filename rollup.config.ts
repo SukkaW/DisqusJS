@@ -48,6 +48,7 @@ function outputMatrix(config: {
             name: 'DisqusJS'
           })
         },
+      treeshake: config.browser ? 'smallest' : 'recommended',
       plugins: [
         config.preact && alias({
           entries: [
