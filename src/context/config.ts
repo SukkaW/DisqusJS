@@ -1,14 +1,11 @@
 import { createContext, useContext } from 'react';
 import type { DisqusJSConfig } from '../types';
+import { nullthrow } from 'foxact/nullthrow';
 
 const ConfigContext = createContext<DisqusJSConfig | null>(null);
 
 export const ConfigProvider = ConfigContext.Provider;
 
 export function useConfig() {
-  const config = useContext(ConfigContext);
-  if (!config) {
-    throw new TypeError('<ConfigProvider /> is missing');
-  }
-  return config;
+  return nullthrow(useContext(ConfigContext), '<ConfigProvider /> is missing');
 }

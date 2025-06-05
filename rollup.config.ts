@@ -10,6 +10,8 @@ import { adapter, analyzer } from 'vite-bundle-analyzer';
 import type { RollupOptions } from 'rollup';
 import type { JscTarget } from '@swc/core';
 
+import { simpleStringHash } from 'foxts/simple-string-hash';
+
 const dtsOutput: Record<string, Set<string>> = {};
 
 const noBundleExternal = ['react', 'react-dom', 'preact', 'foxact', 'foxts'];
@@ -77,7 +79,7 @@ function outputMatrix(config: {
         postcss({
           modules: {
             generateScopedName(name: string, filename: string, css: string) {
-              return `__${name}_${stringHash(css).toString(36).slice(0, 6)}`;
+              return `__${name}_${simpleStringHash(css).slice(0, 6)}`;
             }
           },
           extract: 'styles/disqusjs.css',
@@ -234,20 +236,5 @@ const buildConfig: RollupOptions[] = process.env.ANALYZE === 'true'
     ),
     dtsMatrix()
   ].flat();
-
-function stringHash(str: string) {
-  let hash = 5381;
-  let i = str.length;
-
-  while (i) {
-    hash = (hash * 33) ^ str.charCodeAt(--i);
-  }
-
-  /* JavaScript does bitwise operations (like XOR, above) on 32-bit signed
-   * integers. Since we want the results to be always positive, convert the
-   * signed int to an unsigned by doing an unsigned bitshift. */
-
-  return hash >>> 0;
-}
 
 export default buildConfig;
