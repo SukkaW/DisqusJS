@@ -44,5 +44,4 @@ jobs:
             echo "Not a release, skipping publish"
           fi
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
