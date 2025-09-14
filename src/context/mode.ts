@@ -20,7 +20,7 @@ function useSetMode() {
 
   return useCallback((mode: DisqusJsMode) => {
     setDisqusJsMode(mode);
-    void Promise.resolve(() => {
+    void Promise.resolve().then(() => {
       if (mode === null) {
         localStorage.removeItem('dsqjs_mode');
       } else {
