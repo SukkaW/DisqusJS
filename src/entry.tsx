@@ -6,7 +6,7 @@ import { DisqusJSError } from './components/Error';
 import { useHasError } from './context/error';
 import { useMessage, useSetMessage } from './context/message';
 
-import { checkDomainAccessiblity } from './lib/util';
+import { checkDomainAccessibility } from './lib/util';
 import { useMode, useSetMode } from './context/mode';
 import { useConfig } from './context/config';
 
@@ -26,7 +26,7 @@ export function DisqusJSEntry() {
     setMsg('正在检查 Disqus 能否访问...');
 
     Promise.all(
-      (['disqus.com', `${shortname}.disqus.com`]).map(checkDomainAccessiblity)
+      (['disqus.com', `${shortname}.disqus.com`]).map(checkDomainAccessibility)
     ).then(() => {
       if (!signal.aborted) {
         setMode('disqus');

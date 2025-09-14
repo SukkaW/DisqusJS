@@ -109,11 +109,11 @@ disqusjs.render(document.getElementById('disqusjs'));
 ```jsx
 import 'disqusjs/react/styles/disqusjs.css';
 import { DisqusJS } from 'disqusjs/react/es2015';
-// import { DisqusJS } from 'disqusjs/es2017';
-// import { DisqusJS } from 'disqusjs/es2022';
-// const { DisqusJS } = require('disqusjs/es2015');
-// const { DisqusJS } = require('disqusjs/es2017');
-// const { DisqusJS } = require('disqusjs/es2022');
+// import { DisqusJS } from 'disqusjs/react/es2017';
+// import { DisqusJS } from 'disqusjs/react/es2022';
+// const { DisqusJS } = require('disqusjs/react/es2015');
+// const { DisqusJS } = require('disqusjs/react/es2017');
+// const { DisqusJS } = require('disqusjs/react/es2022');
 
 <DisqusJS
   shortname=""
