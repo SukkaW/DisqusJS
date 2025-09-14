@@ -78,7 +78,7 @@ function DisqusJSChildrenPostItems({ children, nesting: currentNesting = 1 }: { 
   return (
     <ul className={`dsqjs-post-list ${currentNesting < nestingSetting ? 'dsqjs-children' : ''}`}>
       {children.map(comment => (
-        <DisqusJSPostItem {...comment} key={comment.comment.id} />
+        <DisqusJSPostItem key={comment.comment.id} {...comment} />
       ))}
     </ul>
   );
@@ -123,8 +123,8 @@ export function DisqusJSCommentsList({ comments }: { comments: DisqusAPI.Post[] 
     <ul className="dsqjs-post-list" id="dsqjs-post-container">
       {processedComments.map(comment => (
         <DisqusJSPostItem
-          {...comment}
           key={comment.comment.id}
+          {...comment}
         />
       ))}
     </ul>

@@ -7,7 +7,7 @@ export type { DisqusJSConfig };
 
 // eslint-disable-next-line react-prefer-function-component/react-prefer-function-component -- not a react component
 export default class DisqusJS {
-  private config: DisqusJSConfig;
+  private readonly config: DisqusJSConfig;
   private container?: Element;
 
   constructor(config: DisqusJSConfig) {
