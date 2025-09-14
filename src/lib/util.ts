@@ -33,7 +33,7 @@ export function formatDate(str: string) {
   return `${date.getFullYear()}-${numberPadstart(date.getMonth() + 1)}-${numberPadstart(date.getDate())} ${numberPadstart(date.getHours())}:${numberPadstart(date.getMinutes())}`;
 }
 
-export function checkDomainAccessiblity(domain: string) {
+export function checkDomainAccessibility(domain: string) {
   return new Promise<void>((resolve, reject) => {
     const img = new Image();
 
