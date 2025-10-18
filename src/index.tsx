@@ -29,6 +29,7 @@ export const DisqusJS = forwardRef(({
   admin,
   adminLabel,
   className,
+  disqusJsModeAssetsUrlTransformer,
   ...rest
 }: DisqusJSConfig & React.JSX.IntrinsicElements['div'], ref: React.ForwardedRef<HTMLDivElement>) => {
   const contexts = useMemo(() => [
@@ -45,14 +46,15 @@ export const DisqusJS = forwardRef(({
         nesting,
         nocomment,
         admin,
-        adminLabel
+        adminLabel,
+        disqusJsModeAssetsUrlTransformer
       }}
     />,
     <ModeProvider key="mode" />,
     <SortTypeProvider key="sortType" />,
     <HasErrorProvider key="hasError" />,
     <MessageProvider key="msg" />
-  ], [admin, adminLabel, api, apikey, identifier, nesting, nocomment, shortname, siteName, title, url]);
+  ], [admin, adminLabel, api, apikey, disqusJsModeAssetsUrlTransformer, identifier, nesting, nocomment, shortname, siteName, title, url]);
 
   if (useIsClient()) {
     return (
