@@ -20,6 +20,55 @@ declare global {
   }
 }
 
+function loadDisqusInstance(config: DisqusConfig, onReady: () => void) {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  if (window.DISQUS && document.getElementById(EMBED_SCRIPT_ID)) {
+    window.DISQUS.reset({
+      reload: true,
+      // eslint-disable-next-line object-shorthand -- Disqus uses this
+      config: function (this: any) {
+        if (config.identifier) {
+          this.page.identifier = config.identifier;
+        }
+        if (config.url) {
+          this.page.url = config.url;
+        }
+        if (config.title) {
+          this.page.title = config.title;
+        }
+        this.callbacks.onReady = [
+          onReady
+        ];
+      }
+    });
+  } else {
+    window.disqus_config = function (this: any) {
+      if (config.identifier) {
+        this.page.identifier = config.identifier;
+      }
+      if (config.identifier) {
+        this.page.url = config.identifier;
+      }
+      if (config.identifier) {
+        this.page.title = config.identifier;
+      }
+      this.callbacks.onReady = [
+        onReady
+      ];
+    };
+    window.disqus_shortname = config.shortname;
+
+    const scriptEl = document.createElement('script');
+    scriptEl.id = EMBED_SCRIPT_ID;
+    scriptEl.src = `https://${config.shortname}.disqus.com/embed.js`;
+    scriptEl.async = true;
+    document.head.appendChild(scriptEl);
+  }
+};
+
 export const Disqus = memo(({
   shortname,
   identifier,
@@ -68,47 +117,12 @@ export const Disqus = memo(({
       clearDisqusInstance();
     }
 
-    if (window.DISQUS && document.getElementById(EMBED_SCRIPT_ID)) {
-      window.DISQUS.reset({
-        reload: true,
-        config(this: any) {
-          if (identifier) {
-            this.page.identifier = identifier;
-          }
-          if (url) {
-            this.page.url = url;
-          }
-          if (title) {
-            this.page.title = title;
-          }
-          this.callbacks.onReady = [
-            () => setLoaded(true)
-          ];
-        }
-      });
-    } else {
-      window.disqus_config = function (this: any) {
-        if (identifier) {
-          this.page.identifier = identifier;
-        }
-        if (url) {
-          this.page.url = url;
-        }
-        if (title) {
-          this.page.title = title;
-        }
-        this.callbacks.onReady = [
-          () => setLoaded(true)
-        ];
-      };
-      window.disqus_shortname = shortname;
-
-      const scriptEl = document.createElement('script');
-      scriptEl.id = EMBED_SCRIPT_ID;
-      scriptEl.src = `https://${shortname}.disqus.com/embed.js`;
-      scriptEl.async = true;
-      document.head.appendChild(scriptEl);
-    }
+    loadDisqusInstance({
+      shortname,
+      identifier,
+      url,
+      title
+    }, () => setLoaded(true));
 
     return clearDisqusInstance;
   }, [shortname, identifier, url, title]);
