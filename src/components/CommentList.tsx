@@ -1,8 +1,9 @@
 import { useMemo } from 'react';
-import { formatDate, getTimeStampFromString, processCommentMessage, processCommentMessage as replaceDisqusCdn } from '../lib/util';
+import { formatDate, getTimeStampFromString, processCommentMessage, replaceDisqusCdn } from '../lib/util';
 import type { DisqusAPI } from '../types';
 import { DisqusJSForceDisqusModeButton } from './Button';
 import { useConfig } from '../context/config';
+import { identity } from 'foxts/identity';
 
 interface DisqusJSCommentASTItem {
   comment: DisqusAPI.Post,
@@ -11,9 +12,9 @@ interface DisqusJSCommentASTItem {
 }
 
 function DisqusJSPostItem({ comment, children, nesting }: DisqusJSCommentASTItem) {
-  const { admin, adminLabel } = useConfig();
+  const { admin, adminLabel, disqusJsModeAssetsUrlTransformer = identity } = useConfig();
   const profileUrl = comment.author.profileUrl;
-  const avatarUrl = replaceDisqusCdn(comment.author.avatar.cache);
+  const avatarUrl = disqusJsModeAssetsUrlTransformer(replaceDisqusCdn(comment.author.avatar.cache));
 
   const imgEl = <img alt={comment.author.username} src={avatarUrl} />;
 

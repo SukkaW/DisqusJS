@@ -9,7 +9,8 @@ export interface DisqusJSConfig {
   nesting?: number,
   nocomment?: string,
   admin?: string,
-  adminLabel?: string
+  adminLabel?: string,
+  disqusJsModeAssetsUrlTransformer?: (url: string) => string
 }
 
 export interface DisqusConfig {

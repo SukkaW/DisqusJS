@@ -8,20 +8,46 @@ export const getTimeStampFromString = (dateString: string) => new Date(dateStrin
 
 let domParser: DOMParser | null = null;
 
+export function replaceDisqusCdn(str: string) {
+  return str.replaceAll('a.disquscdn.com', 'c.disquscdn.com');
+}
+
 export function processCommentMessage(str: string) {
-  const rawHtml = str
-    .replaceAll('a.disquscdn.com', 'c.disquscdn.com')
+  const rawHtml = replaceDisqusCdn(str)
     .replaceAll(/https?:\/\/disq.us\/url\?url=(.+)%3A[\w-]+&amp;cuid=\d+/g, (_, $1: string) => decodeURIComponent($1));
 
   domParser ||= new DOMParser();
   const doc = domParser.parseFromString(rawHtml, 'text/html');
   // Very basic, but it will do.
   // Any attempt to bypass XSS limitation will be blocked by Disqus' WAF.
-  doc.querySelectorAll('script').forEach(script => script.remove());
+  doc.querySelectorAll('script, iframe, object, embed, form, input, meta').forEach(e => e.remove());
   doc.querySelectorAll('a').forEach(a => {
-    a.target = '_blank';
-    a.rel = 'external noopener nofollow noreferrer';
+    // Sanitize href to prevent javascript: or data: URLs
+    if (a.href.startsWith('javascript:') || a.href.startsWith('data:')) {
+      a.remove();
+    } else {
+      a.target = '_blank';
+      a.rel = 'external noopener nofollow noreferrer';
+    }
   });
+
+  // Remove event handler attributes (e.g., onclick, onload)
+  doc.querySelectorAll('*').forEach(el => {
+    for (let i = 0, len = el.attributes.length; i < len; i++) {
+      const attr = el.attributes[i];
+
+      // Remove event handler attributes (e.g., onclick, onload)
+      if (attr.name.startsWith('on')) {
+        el.removeAttribute(attr.name);
+      }
+    }
+
+    // Remove inline styles (optional, to prevent potential javascript: in styles)
+    if (el.hasAttribute('style')) {
+      el.removeAttribute('style');
+    }
+  });
+
   return doc.body.innerHTML;
 }
 

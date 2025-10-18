@@ -193,6 +193,11 @@ import { DisqusJS } from 'disqusjs/react/es2015';
 - 没有评论时的提示语（对应 Disqus Admin - Settings - Community - Comment Count Link - Zero comments）
 - 非必须，默认值为 `这里冷冷清清的，一条评论都没有`
 
+**disqusJsModeAssetsUrlTransformer** `{(url: string) => string}`
+
+- 当 DisqusJS 以「评论基础模式」加载时，DisqusJS 会从 Disqus 加载一些静态资源，例如 Disqus 用户头像。由于 Disqus 的静态资源可能在某些地区无法访问，部分浏览器（例如 Mozilla Firefox 在 Enhanced Tracking Protection 模式下）会主动屏蔽 Disqus 所有域名。通过改配置项，你可以将 Disqus 的静态资源 URL 转换为可访问的 URL，从而避免头像等资源无法加载的问题。
+- 非必须
+
 ---
 
 以下配置和 Disqus Moderator Badge 相关，缺少一个都不会显示 Badge
