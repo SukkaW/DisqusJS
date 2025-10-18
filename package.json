@@ -1,6 +1,6 @@
 {
   "name": "disqusjs",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "description": "Alternative DISQUS - Render comments components from Disqus API",
   "homepage": "https://disqusjs.skk.moe",
   "repository": {
