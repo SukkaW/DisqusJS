@@ -99,26 +99,26 @@
   "license": "MIT",
   "dependencies": {
     "foxact": "^0.2.49",
-    "foxts": "^4.4.0"
+    "foxts": "^4.5.0"
   },
   "devDependencies": {
-    "@eslint-sukka/node": "^7.3.3",
-    "@eslint-sukka/react": "^7.3.3",
+    "@eslint-sukka/node": "^7.3.5",
+    "@eslint-sukka/react": "^7.3.5",
     "@parcel/transformer-sass": "2.15.4",
     "@rollup/plugin-alias": "^5.1.1",
-    "@rollup/plugin-commonjs": "^28.0.6",
-    "@rollup/plugin-node-resolve": "^16.0.2",
+    "@rollup/plugin-commonjs": "^28.0.8",
+    "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-replace": "^6.0.2",
     "@swc/core": "^1.13.5",
     "@swc/helpers": "^0.5.17",
-    "@types/node": "^24.7.1",
+    "@types/node": "^24.8.1",
     "@types/react": "^18.3.26",
     "@types/react-dom": "^18.3.7",
     "bumpp": "^10.3.1",
     "cross-env": "^7.0.3",
-    "eslint": "^9.37.0",
-    "eslint-config-sukka": "^7.3.3",
-    "eslint-formatter-sukka": "^7.3.3",
+    "eslint": "^9.38.0",
+    "eslint-config-sukka": "^7.3.5",
+    "eslint-formatter-sukka": "^7.3.5",
     "parcel": "^2.16.0",
     "postcss": "^8.5.6",
     "postcss-modules": "^6.0.1",
@@ -127,7 +127,7 @@
     "react-dom": "^18.3.1",
     "react-refresh": "^0.17.0",
     "rimraf": "^6.0.1",
-    "rollup": "^4.52.4",
+    "rollup": "^4.52.5",
     "rollup-plugin-dts": "^6.2.3",
     "rollup-plugin-postcss": "^4.0.2",
     "rollup-plugin-swc3": "^0.12.1",
@@ -146,7 +146,7 @@
       "optional": true
     }
   },
-  "packageManager": "pnpm@10.18.2",
+  "packageManager": "pnpm@10.18.3",
   "pnpm": {
     "onlyBuiltDependencies": [
       "@swc/core",
