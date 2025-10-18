@@ -68,29 +68,39 @@ export const Disqus = memo(({
       clearDisqusInstance();
     }
 
-    // eslint-disable-next-line sukka/unicorn/consistent-function-scoping -- scope of "this"
-    const getDisqusConfig = () => function (this: any) {
-      if (identifier) {
-        this.page.identifier = identifier;
-      }
-      if (url) {
-        this.page.url = url;
-      }
-      if (title) {
-        this.page.title = title;
-      }
-      this.callbacks.onReady = [
-        () => setLoaded(true)
-      ];
-    };
-
     if (window.DISQUS && document.getElementById(EMBED_SCRIPT_ID)) {
       window.DISQUS.reset({
         reload: true,
-        config: getDisqusConfig()
+        config(this: any) {
+          if (identifier) {
+            this.page.identifier = identifier;
+          }
+          if (url) {
+            this.page.url = url;
+          }
+          if (title) {
+            this.page.title = title;
+          }
+          this.callbacks.onReady = [
+            () => setLoaded(true)
+          ];
+        }
       });
     } else {
-      window.disqus_config = getDisqusConfig();
+      window.disqus_config = function (this: any) {
+        if (identifier) {
+          this.page.identifier = identifier;
+        }
+        if (url) {
+          this.page.url = url;
+        }
+        if (title) {
+          this.page.title = title;
+        }
+        this.callbacks.onReady = [
+          () => setLoaded(true)
+        ];
+      };
       window.disqus_shortname = shortname;
 
       const scriptEl = document.createElement('script');
