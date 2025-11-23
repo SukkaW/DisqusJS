@@ -49,18 +49,20 @@ function loadDisqusInstance(config: DisqusConfig, onReady: () => void) {
       if (config.identifier) {
         this.page.identifier = config.identifier;
       }
-      if (config.identifier) {
-        this.page.url = config.identifier;
+      // 可能是笔误
+      if (config.url) {
+        this.page.url = config.url;
       }
-      if (config.identifier) {
-        this.page.title = config.identifier;
+      if (config.title) {
+        this.page.title = config.title;
       }
-      this.callbacks.onReady = [
-        onReady
-      ];
+      this.callbacks.onReady = [onReady];
+      // 将语言代码中的连字符 `-` 替换为下划线 `_`，并转换为小写以符合 Disqus 要求 (如 zh-CN -> zh_cn)
+      this.language = (document.documentElement.lang || navigator.language)
+        .replace("-", "_")
+        .toLowerCase();
     };
     window.disqus_shortname = config.shortname;
-
     const scriptEl = document.createElement('script');
     scriptEl.id = EMBED_SCRIPT_ID;
     scriptEl.src = `https://${config.shortname}.disqus.com/embed.js`;
