@@ -1,0 +1,6 @@
+onlyBuiltDependencies:
+  - '@swc/core'
+  - lmdb
+  - msgpackr-extract
+  - oxc-resolver
+  - unrs-resolver
