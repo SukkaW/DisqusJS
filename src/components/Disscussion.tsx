@@ -43,7 +43,7 @@ function DisqusJSSortTypeRadio({
   );
 }
 
-const DisqusJSSortTypeRadioGroup = memo(() => {
+const DisqusJSSortTypeRadioGroup = memo(function DisqusJSSortTypeRadioGroup() {
   const sortType = useSortType();
   const setSortType = useSetSortType();
 
@@ -74,32 +74,26 @@ const DisqusJSSortTypeRadioGroup = memo(() => {
   );
 });
 
-if (process.env.NODE_ENV !== 'production') {
-  DisqusJSSortTypeRadioGroup.displayName = 'DisqusJSSortTypeRadio';
-}
-
 interface HeaderProps {
   totalComments: number,
   siteName: string
 }
 
-const DisqusJSHeader = memo(({ totalComments, siteName }: HeaderProps) => (
-  <header className="dsqjs-header" id="dsqjs-header">
-    <nav className="dsqjs-nav dsqjs-clearfix">
-      <ul>
-        <li className="dsqjs-nav-tab dsqjs-tab-active">
-          <span>{totalComments} Comments</span>
-        </li>
-        <li className="dsqjs-nav-tab">{siteName}</li>
-      </ul>
-      <DisqusJSSortTypeRadioGroup />
-    </nav>
-  </header>
-));
-
-if (process.env.NODE_ENV !== 'production') {
-  DisqusJSHeader.displayName = 'DisqusJSHeader';
-}
+const DisqusJSHeader = memo(function DisqusJSHeader({ totalComments, siteName }: HeaderProps) {
+  return (
+    <header className="dsqjs-header" id="dsqjs-header">
+      <nav className="dsqjs-nav dsqjs-clearfix">
+        <ul>
+          <li className="dsqjs-nav-tab dsqjs-tab-active">
+            <span>{totalComments} Comments</span>
+          </li>
+          <li className="dsqjs-nav-tab">{siteName}</li>
+        </ul>
+        <DisqusJSSortTypeRadioGroup />
+      </nav>
+    </header>
+  );
+});
 
 function DisqusJSPosts({ id }: { id: string }) {
   const { apikey, shortname, api } = useConfig();
@@ -128,11 +122,10 @@ function DisqusJSPosts({ id }: { id: string }) {
     const handleError = () => {
       if (reset) {
         setError(true);
-        setIsLoadingMorePosts(false);
       } else {
         setErrorWhenLoadingMorePosts(true);
-        setIsLoadingMorePosts(false);
       }
+      setIsLoadingMorePosts(false);
     };
 
     try {
@@ -196,19 +189,6 @@ export function DisqusJSThread() {
     ? $identifier ?? null
     : ($identifier ?? document.location.origin + document.location.pathname + document.location.search);
 
-  const fetchThread = useCallback(async () => {
-    try {
-      const thread = await disqusJsApiFetcher<DisqusAPI.Thread>(apiKey.current, `${api}3.0/threads/list.json?forum=${encodeURIComponent(shortname)}&thread=${encodeURIComponent(`ident:${identifier}`)}`);
-      if (thread.code === 0) {
-        setThread(thread);
-      } else {
-        setError(true);
-      }
-    } catch {
-      setError(true);
-    }
-  }, [api, apiKey, identifier, setError, setThread, shortname]);
-
   const setMsg = useSetMessage();
 
   const fetchThreadRef = useRef<string | null>(null);
@@ -236,10 +216,22 @@ export function DisqusJSThread() {
           {actionElement}
         </>
       );
+
       fetchThreadRef.current = identifier;
-      void fetchThread();
+      (async () => {
+        try {
+          const thread = await disqusJsApiFetcher<DisqusAPI.Thread>(apiKey.current, `${api}3.0/threads/list.json?forum=${encodeURIComponent(shortname)}&thread=${encodeURIComponent(`ident:${identifier}`)}`);
+          if (thread.code === 0) {
+            setThread(thread);
+          } else {
+            setError(true);
+          }
+        } catch {
+          setError(true);
+        }
+      })();
     }
-  }, [thread, fetchThread, identifier, setMsg, shortname, api]);
+  }, [thread, identifier, setMsg, shortname, api, setError]);
 
   if (!thread) {
     return null;

@@ -4,13 +4,15 @@ module.exports = require('eslint-config-sukka').sukka(
   {},
   {
     rules: {
-      '@eslint-react/naming-convention/filename': 'off'
+      '@eslint-react/naming-convention/filename': 'off',
+      '@eslint-react/no-implicit-key': 'off'
     }
   },
   {
     files: ['example/**/*'],
     rules: {
-      'ssr-friendly/no-dom-globals-in-module-scope': 'off'
+      'ssr-friendly/no-dom-globals-in-module-scope': 'off',
+      'sukka/unicorn/filename-case': 'off'
     }
   }
 );

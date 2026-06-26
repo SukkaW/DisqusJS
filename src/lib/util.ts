@@ -4,7 +4,7 @@ export function disqusJsApiFetcher<T>(apiKey: string, url: string): Promise<T> {
   return fetch(Url.href).then(res => res.json());
 }
 
-export const getTimeStampFromString = (dateString: string) => new Date(dateString).getTime();
+export const getTimestampFromString = (dateString: string) => new Date(dateString).getTime();
 
 let domParser: DOMParser | null = null;
 
@@ -54,7 +54,7 @@ export function processCommentMessage(str: string) {
 const timezoneOffset = new Date().getTimezoneOffset();
 const numberPadstart = (num: number) => String(num).padStart(2, '0');
 export function formatDate(str: string) {
-  const utcTimestamp = getTimeStampFromString(str);
+  const utcTimestamp = getTimestampFromString(str);
   const date = new Date(utcTimestamp - timezoneOffset * 60 * 1000);
   return `${date.getFullYear()}-${numberPadstart(date.getMonth() + 1)}-${numberPadstart(date.getDate())} ${numberPadstart(date.getHours())}:${numberPadstart(date.getMinutes())}`;
 }

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { formatDate, getTimeStampFromString, processCommentMessage, replaceDisqusCdn } from '../lib/util';
+import { formatDate, getTimestampFromString, processCommentMessage, replaceDisqusCdn } from '../lib/util';
 import type { DisqusAPI } from '../types';
 import { DisqusJSForceDisqusModeButton } from './Button';
 import { useConfig } from '../context/config';
@@ -111,7 +111,7 @@ export function DisqusJSCommentsList({ comments }: { comments: DisqusAPI.Post[] 
     const topLevelComments: DisqusAPI.Post[] = [];
     const childComments: DisqusAPI.Post[] = [];
 
-    comments.map((comment, i) => ({ i, p: comment.parent, d: getTimeStampFromString(comment.createdAt) }))
+    comments.map((comment, i) => ({ i, p: comment.parent, d: getTimestampFromString(comment.createdAt) }))
       .sort((a, b) => (a.p && b.p ? a.d - b.d : 0))
       .forEach(({ i }) => {
         (comments[i].parent ? childComments : topLevelComments).push(comments[i]);
