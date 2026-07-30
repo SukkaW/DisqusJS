@@ -4,15 +4,12 @@ import { DisqusJSThread } from './components/Disscussion';
 import { DisqusJSError } from './components/Error';
 
 import { useHasError } from './context/error';
-import { useMessage, useSetMessage } from './context/message';
 
 import { checkDomainAccessibility } from './lib/util';
 import { useMode, useSetMode } from './context/mode';
 import { useConfig } from './context/config';
 
 export function DisqusJSEntry() {
-  const setMsg = useSetMessage();
-
   const mode = useMode();
   const setMode = useSetMode();
 
@@ -22,8 +19,6 @@ export function DisqusJSEntry() {
     if (mode === 'disqus' || mode === 'dsqjs') {
       return;
     }
-
-    setMsg('正在检查 Disqus 能否访问...');
 
     Promise.all(
       (['disqus.com', `${shortname}.disqus.com`]).map(checkDomainAccessibility)
@@ -36,10 +31,9 @@ export function DisqusJSEntry() {
         setMode('dsqjs');
       }
     });
-  }, [mode, setMode, setMsg, shortname]);
+  }, [mode, setMode, shortname]);
 
   const disqusJsHasError = useHasError();
-  const msg = useMessage();
 
   if (disqusJsHasError) {
     return <DisqusJSError />;
@@ -47,7 +41,7 @@ export function DisqusJSEntry() {
 
   return (
     <>
-      {msg != null && <div id="dsqjs-msg">{msg}</div>}
+      {mode === null && <div id="dsqjs-msg">正在检查 Disqus 能否访问...</div>}
       {mode === 'disqus' && <Disqus shortname={shortname} identifier={identifier} url={url} title={title} />}
       {mode === 'dsqjs' && <DisqusJSThread />}
     </>

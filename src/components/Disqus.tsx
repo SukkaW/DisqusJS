@@ -1,8 +1,6 @@
 import { memo, useEffect, useState } from 'react';
 import type { DisqusConfig } from '../types';
 import { DisqusJSForceDisqusJsModeButton } from './Button';
-import { useSetMessage } from '../context/message';
-import { useIsomorphicLayoutEffect } from 'foxact/use-isomorphic-layout-effect';
 
 const THREAD_ID = 'disqus_thread';
 const EMBED_SCRIPT_ID = 'dsq-embed-scr';
@@ -75,10 +73,7 @@ export const Disqus = memo(({
   url,
   title
 }: DisqusConfig) => {
-  const setMsg = useSetMessage();
   const [loaded, setLoaded] = useState(false);
-
-  useIsomorphicLayoutEffect(() => setMsg(null));
 
   useEffect(() => {
     const clearDisqusInstance = () => {
@@ -144,7 +139,3 @@ export const Disqus = memo(({
     </>
   );
 });
-
-if (process.env.NODE_ENV !== 'production') {
-  Disqus.displayName = 'Disqus';
-}

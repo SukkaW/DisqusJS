@@ -14,7 +14,7 @@ import { simpleStringHash } from 'foxts/simple-string-hash';
 
 const dtsOutput: Record<string, Set<string>> = {};
 
-const noBundleExternal = ['react', 'react-dom', 'preact', 'foxact', 'foxts'];
+const noBundleExternal = new Set(['react', 'react-dom', 'preact', 'foxact', 'foxts']);
 
 function outputMatrix(config: {
   input: string,
@@ -114,8 +114,8 @@ function outputMatrix(config: {
       external: config.bundle
         ? undefined
         : (id) => (
-          noBundleExternal.includes(id)
-          || noBundleExternal.some(dep => id.startsWith(`${dep}/`))
+          noBundleExternal.has(id)
+          || Array.from(noBundleExternal).some(dep => id.startsWith(`${dep}/`))
         )
     }
   ];

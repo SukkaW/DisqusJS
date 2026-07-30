@@ -1,10 +1,10 @@
 import type { DisqusAPI } from '../types';
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useMemo, useRef, useState } from 'react';
+import { useEffect } from 'foxact/use-abortable-effect';
 import { DisqusJSCreateThread, DisqusJSNoComment } from './Error';
 import { DisqusJSCommentsList } from './CommentList';
 import { DisqusJSForceDisqusModeButton, DisqusJSLoadMoreCommentsButton, DisqusJSReTestModeButton } from './Button';
 import { useRandomApiKey } from '../lib/hooks';
-import { useSetMessage } from '../context/message';
 import { useSortType, useSetSortType } from '../context/sort-type';
 import { useSetHasError } from '../context/error';
 import { disqusJsApiFetcher } from '../lib/util';
@@ -181,7 +181,10 @@ export function DisqusJSThread() {
 
   const apiKey = useRef(useRandomApiKey($apikey));
 
-  const [thread, setThread] = useState<DisqusAPI.Thread | null>(null);
+  const [threadResult, setThreadResult] = useState<{
+    requestUrl: string,
+    thread: DisqusAPI.Thread
+  } | null>(null);
   const setError = useSetHasError();
 
   const identifier = typeof window === 'undefined'
@@ -189,52 +192,59 @@ export function DisqusJSThread() {
     ? $identifier ?? null
     : ($identifier ?? document.location.origin + document.location.pathname + document.location.search);
 
-  const setMsg = useSetMessage();
+  const requestUrl = `${api}3.0/threads/list.json?forum=${encodeURIComponent(shortname)}&thread=${encodeURIComponent(`ident:${identifier}`)}`;
 
-  const fetchThreadRef = useRef<string | null>(null);
+  const fetchThreadRef = useRef<{
+    requestUrl: string,
+    promise: Promise<DisqusAPI.Thread>
+  } | null>(null);
 
-  useEffect(() => {
-    const actionElement = (
-      <>
-        <DisqusJSReTestModeButton>尝试完整 Disqus 模式</DisqusJSReTestModeButton> | <DisqusJSForceDisqusModeButton>强制完整 Disqus 模式</DisqusJSForceDisqusModeButton>
-      </>
-    );
+  useEffect(signal => {
+    let request = fetchThreadRef.current;
 
-    if (fetchThreadRef.current === identifier) {
-      setMsg(
-        <>
-          你可能无法访问 Disqus，已启用评论基础模式。如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并
-          {' '}
-          {actionElement}
-        </>
-      );
-    } else {
-      setMsg(
-        <>
-          评论基础模式加载中... 如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并
-          {' '}
-          {actionElement}
-        </>
-      );
-
-      fetchThreadRef.current = identifier;
-      (async () => {
-        try {
-          const thread = await disqusJsApiFetcher<DisqusAPI.Thread>(apiKey.current, `${api}3.0/threads/list.json?forum=${encodeURIComponent(shortname)}&thread=${encodeURIComponent(`ident:${identifier}`)}`);
-          if (thread.code === 0) {
-            setThread(thread);
-          } else {
-            setError(true);
-          }
-        } catch {
-          setError(true);
-        }
-      })();
+    if (request?.requestUrl !== requestUrl) {
+      request = {
+        requestUrl,
+        promise: disqusJsApiFetcher<DisqusAPI.Thread>(apiKey.current, requestUrl)
+      };
+      fetchThreadRef.current = request;
     }
-  }, [thread, identifier, setMsg, shortname, api, setError]);
+
+    request.promise.then(thread => {
+      if (signal.aborted) {
+        return;
+      }
+
+      if (thread.code === 0) {
+        setThreadResult({ requestUrl, thread });
+      } else {
+        setError(true);
+      }
+    }).catch(() => {
+      if (!signal.aborted) {
+        setError(true);
+      }
+    });
+  }, [requestUrl, setError]);
+
+  const thread = threadResult?.requestUrl === requestUrl
+    ? threadResult.thread
+    : null;
+
+  const message = (
+    <div id="dsqjs-msg">
+      {thread === null
+        ? '评论基础模式加载中...'
+        : '你可能无法访问 Disqus，已启用评论基础模式。'}
+      {' '}
+      如需完整体验请针对 disq.us | disquscdn.com | disqus.com 启用代理并
+      {' '}
+      <DisqusJSReTestModeButton>尝试完整 Disqus 模式</DisqusJSReTestModeButton> | <DisqusJSForceDisqusModeButton>强制完整 Disqus 模式</DisqusJSForceDisqusModeButton>
+    </div>
+  );
 
   if (!thread) {
-    return null;
+    return message;
   }
 
   if (thread.response.length !== 1) {
@@ -246,6 +256,7 @@ export function DisqusJSThread() {
 
   return (
     <>
+      {message}
       <DisqusJSHeader totalComments={totalComments} siteName={siteName ?? ''} />
       {totalComments === 0
         ? <DisqusJSNoComment text={nocomment ?? '这里空荡荡的，一个人都没有'} />

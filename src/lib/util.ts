@@ -12,9 +12,11 @@ export function replaceDisqusCdn(str: string) {
   return str.replaceAll('a.disquscdn.com', 'c.disquscdn.com');
 }
 
+const rDisqusUrlShortLink = /https?:\/\/disq.us\/url\?url=(.+)%3A[\w-]+&amp;cuid=\d+/g;
+
 export function processCommentMessage(str: string) {
   const rawHtml = replaceDisqusCdn(str)
-    .replaceAll(/https?:\/\/disq.us\/url\?url=(.+)%3A[\w-]+&amp;cuid=\d+/g, (_, $1: string) => decodeURIComponent($1));
+    .replaceAll(rDisqusUrlShortLink, (_, $1: string) => decodeURIComponent($1));
 
   domParser ||= new DOMParser();
   const doc = domParser.parseFromString(rawHtml, 'text/html');

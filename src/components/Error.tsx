@@ -25,9 +25,3 @@ export const DisqusJSCreateThread = memo(() => (
 export const DisqusJSNoComment = memo(({ text }: { text: string }) => (
   <p className="dsqjs-no-comment">{text}</p>
 ));
-
-if (process.env.NODE_ENV !== 'production') {
-  DisqusJSError.displayName = 'DisqusJSError';
-  DisqusJSCreateThread.displayName = 'DisqusJSCreateThread';
-  DisqusJSNoComment.displayName = 'DisqusJSNoComment';
-}

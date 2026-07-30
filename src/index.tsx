@@ -12,7 +12,6 @@ import { DisqusJSEntry } from './entry';
 import { ModeProvider } from './context/mode';
 import { SortTypeProvider } from './context/sort-type';
 import { HasErrorProvider } from './context/error';
-import { MessageProvider } from './context/message';
 import { ConfigProvider } from './context/config';
 
 export type { DisqusJSConfig };
@@ -52,8 +51,7 @@ export const DisqusJS = forwardRef(({
     />,
     <ModeProvider key="mode" />,
     <SortTypeProvider key="sortType" />,
-    <HasErrorProvider key="hasError" />,
-    <MessageProvider key="msg" />
+    <HasErrorProvider key="hasError" />
   ], [admin, adminLabel, api, apikey, disqusJsModeAssetsUrlTransformer, identifier, nesting, nocomment, shortname, siteName, title, url]);
 
   if (useIsClient()) {

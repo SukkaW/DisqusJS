@@ -1,4 +1,3 @@
-/* eslint-disable sukka/react-prefer-foxact-persistent -- intentional */
 import { createContextState } from 'foxact/context-state';
 import type { DisqusJsMode } from '../types';
 import { useCallback } from 'react';
