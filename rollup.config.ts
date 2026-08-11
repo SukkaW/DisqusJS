@@ -131,7 +131,7 @@ function outputMatrix(config: {
 function dtsMatrix(): RollupOptions[] {
   return Object.keys(dtsOutput).map(input => ({
     input,
-    output: [...dtsOutput[input]].map(file => ({
+    output: Array.from(dtsOutput[input], file => ({
       file
     })),
     plugins: [

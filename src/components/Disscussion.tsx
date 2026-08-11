@@ -98,7 +98,7 @@ const DisqusJSHeader = memo(function DisqusJSHeader({ totalComments, siteName }:
 function DisqusJSPosts({ id }: { id: string }) {
   const { apikey, shortname, api } = useConfig();
 
-  const apiKey = useRef(useRandomApiKey(apikey));
+  const apiKeyRef = useRef(useRandomApiKey(apikey));
 
   const [posts, setPosts] = useState<DisqusAPI.Posts[]>([]);
   const setError = useSetHasError();
@@ -114,7 +114,7 @@ function DisqusJSPosts({ id }: { id: string }) {
     setIsLoadingMorePosts(true);
     setErrorWhenLoadingMorePosts(false);
 
-    const lastPost = reset ? null : posts[posts.length - 1];
+    const lastPost = reset ? null : posts.at(-1);
     if (lastPost && !lastPost.cursor.hasNext) return;
 
     const url = `${api}3.0/threads/listPostsThreaded?forum=${shortname}&thread=${id}&order=${sortType ?? 'desc'}${posts.length !== 0 && lastPost?.cursor.next ? `&cursor=${encodeURIComponent(lastPost.cursor.next)}` : ''}`;
@@ -129,7 +129,7 @@ function DisqusJSPosts({ id }: { id: string }) {
     };
 
     try {
-      const newPosts = await disqusJsApiFetcher<DisqusAPI.Posts>(apiKey.current, url);
+      const newPosts = await disqusJsApiFetcher<DisqusAPI.Posts>(apiKeyRef.current, url);
 
       if (newPosts.code === 0) {
         setPosts(prevPosts => (reset ? [] : prevPosts).concat(newPosts));
@@ -161,7 +161,7 @@ function DisqusJSPosts({ id }: { id: string }) {
       <>
         <DisqusJSCommentsList comments={comments} />
         {
-          posts[posts.length - 1]?.cursor.hasNext && (
+          posts.at(-1)?.cursor.hasNext && (
             <DisqusJSLoadMoreCommentsButton
               isLoading={isLoadingMorePosts}
               isError={errorWhenLoadingMorePosts}
@@ -179,7 +179,7 @@ function DisqusJSPosts({ id }: { id: string }) {
 export function DisqusJSThread() {
   const { apikey: $apikey, identifier: $identifier, shortname, api, siteName, nocomment } = useConfig();
 
-  const apiKey = useRef(useRandomApiKey($apikey));
+  const apiKeyRef = useRef(useRandomApiKey($apikey));
 
   const [threadResult, setThreadResult] = useState<{
     requestUrl: string,
@@ -205,7 +205,7 @@ export function DisqusJSThread() {
     if (request?.requestUrl !== requestUrl) {
       request = {
         requestUrl,
-        promise: disqusJsApiFetcher<DisqusAPI.Thread>(apiKey.current, requestUrl)
+        promise: disqusJsApiFetcher<DisqusAPI.Thread>(apiKeyRef.current, requestUrl)
       };
       fetchThreadRef.current = request;
     }
