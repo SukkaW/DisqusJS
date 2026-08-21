@@ -4,11 +4,11 @@ on:
     branches:
       - master
     tags-ignore:
-      - '**'
+      - "**"
     paths-ignore:
-      - '**/*.md'
+      - "**/*.md"
       - LICENSE
-      - '**/*.gitignore'
+      - "**/*.gitignore"
       - .editorconfig
       - docs/**
   pull_request: null
@@ -20,15 +20,18 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
         with:
-          node-version-file: '.node-version'
+          run_install: false
+          cache: true
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: ".node-version"
           check-latest: true
-          cache: 'pnpm'
-          registry-url: 'https://registry.npmjs.org'
-      - run: npm install -g npm
+          package-manager-cache: false
+          registry-url: "https://registry.npmjs.org"
+      - run: pnpm config set --location=global minimumReleaseAge 0
       - run: pnpm install
       - run: pnpm run lint
       - run: pnpm run build

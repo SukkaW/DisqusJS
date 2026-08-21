@@ -1,9 +1,9 @@
-onlyBuiltDependencies:
-  - '@swc/core'
-  - lmdb
-  - msgpackr-extract
-  - oxc-resolver
-  - unrs-resolver
+allowBuilds:
+  "@parcel/watcher": true
+  "@swc/core": true
+  lmdb: true
+  msgpackr-extract: true
+  unrs-resolver: true
 overrides:
   array-includes: npm:@nolyfill/array-includes@latest
   array.prototype.flat: npm:@nolyfill/array.prototype.flat@latest
