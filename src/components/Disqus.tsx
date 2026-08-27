@@ -47,11 +47,11 @@ function loadDisqusInstance(config: DisqusConfig, onReady: () => void) {
       if (config.identifier) {
         this.page.identifier = config.identifier;
       }
-      if (config.identifier) {
-        this.page.url = config.identifier;
+      if (config.url) {
+        this.page.url = config.url;
       }
-      if (config.identifier) {
-        this.page.title = config.identifier;
+      if (config.title) {
+        this.page.title = config.title;
       }
       this.callbacks.onReady = [
         onReady
